@@ -10,9 +10,9 @@ namespace System.Runtime.InteropServices
 {
     internal sealed partial class NativeLibraryHandle : CriticalFinalizerObject
     {
-        private int OneReference = 1 << 2;
-        private int NeedsToCloseMask = 1 << 1;
-        private int HasClosedMask = 1 << 0;
+        private const int OneReference = 1 << 2;
+        private const int NeedsToCloseMask = 1 << 1;
+        private const int HasClosedMask = 1 << 0;
 
         private readonly IntPtr _rawHandle;
         private int _refCount;
