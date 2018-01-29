@@ -24,6 +24,7 @@
     <Compile Include="System\Runtime\InteropServices\ComEventInterfaceAttribute.cs" Condition="'$(TargetGroup)' != 'uapaot'" />
     <Compile Include="System\Runtime\InteropServices\DefaultParameterValueAttribute.cs" Condition="'$(TargetGroup)' != 'uapaot'" />
     <Compile Include="System\Runtime\InteropServices\HandleCollector.cs" Condition="'$(TargetGroup)' != 'uapaot'" />
+    <Compile Include="System\Runtime\InteropServices\NativeLibraryHandle.Windows.cs" />
     <Compile Include="System\Runtime\InteropServices\RuntimeEnvironment.cs" />
     <Compile Include="System\Runtime\InteropServices\ComTypes\advf.cs" Condition="'$(TargetGroup)' != 'uapaot'" />
     <Compile Include="System\Runtime\InteropServices\ComTypes\datadir.cs" Condition="'$(TargetGroup)' != 'uapaot'" />
@@ -40,6 +41,7 @@
     <Compile Include="System\Runtime\InteropServices\ExporterEventKind.cs" />
     <Compile Include="System\Runtime\InteropServices\RegistrationClassContext.cs" />
     <Compile Include="System\Runtime\InteropServices\RegistrationConnectionType.cs" />
+    <Compile Include="System\Runtime\InteropServices\NativeLibraryHandle.cs" />
     <Compile Include="System\Security\SecureStringMarshal.cs" />
   </ItemGroup>
   <ItemGroup>
