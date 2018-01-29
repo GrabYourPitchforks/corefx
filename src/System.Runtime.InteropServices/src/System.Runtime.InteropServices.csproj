@@ -24,6 +24,7 @@
     <Compile Include="System\Runtime\InteropServices\ComEventInterfaceAttribute.cs" Condition="'$(TargetGroup)' != 'uapaot'" />
     <Compile Include="System\Runtime\InteropServices\DefaultParameterValueAttribute.cs" Condition="'$(TargetGroup)' != 'uapaot'" />
     <Compile Include="System\Runtime\InteropServices\HandleCollector.cs" Condition="'$(TargetGroup)' != 'uapaot'" />
+    <Compile Include="System\Runtime\InteropServices\NativeLibrary.cs" />
     <Compile Include="System\Runtime\InteropServices\NativeLibraryHandle.Windows.cs" />
     <Compile Include="System\Runtime\InteropServices\RuntimeEnvironment.cs" />
     <Compile Include="System\Runtime\InteropServices\ComTypes\advf.cs" Condition="'$(TargetGroup)' != 'uapaot'" />

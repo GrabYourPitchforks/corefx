@@ -29,19 +29,19 @@ namespace System.Runtime.InteropServices
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddRef(ref bool success)
+        public void AddRef(ref bool refAdded)
         {
-            AddRefInternal(ref success);
-            if (!success)
+            AddRefInternal(ref refAdded);
+            if (!refAdded)
             {
                 // TODO: Replace with SR
                 throw new Exception("Handle has been closed.");
             }
         }
 
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void AddRefInternal(ref bool success)
+        private void AddRefInternal(ref bool refAdded)
         {
             if ((Interlocked.Add(ref _refCount, OneReference) & (NeedsToCloseMask | HasClosedMask)) != 0)
             {
@@ -51,7 +51,7 @@ namespace System.Runtime.InteropServices
             }
             else
             {
-                success = true;
+                refAdded = true;
             }
         }
 
@@ -63,6 +63,23 @@ namespace System.Runtime.InteropServices
             {
                 // There are no remaining references to this handle. Unload.
                 Unload();
+            }
+        }
+
+        public IntPtr GetProcAddress(string procName)
+        {
+            bool refAdded = false;
+            try
+            {
+                AddRef(ref refAdded);
+                return GetProcAddressInternal(procName);
+            }
+            finally
+            {
+                if (refAdded)
+                {
+                    Release();
+                }
             }
         }
 

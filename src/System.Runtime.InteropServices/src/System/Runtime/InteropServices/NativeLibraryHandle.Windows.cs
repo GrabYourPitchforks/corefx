@@ -10,6 +10,11 @@ namespace System.Runtime.InteropServices
 {
     internal sealed partial class NativeLibraryHandle
     {
+        private IntPtr GetProcAddressInternal(string procName)
+        {
+            return NativeMethods.GetProcAddress(_rawHandle, procName);
+        }
+
         private static void Load(string name, DllImportSearchPath paths, out IntPtr handle)
         {
             // TODO: Cleanup 'paths'
@@ -22,7 +27,7 @@ namespace System.Runtime.InteropServices
             }
         }
 
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         private static void LoadInternal(string name, uint flags, out IntPtr handle)
         {
             handle = NativeMethods.LoadLibraryEx(name, IntPtr.Zero, flags);
@@ -50,9 +55,16 @@ namespace System.Runtime.InteropServices
             public static extern bool FreeLibrary(
                 [In] IntPtr hModule);
 
+            [DllImport("kernel32.dll", CallingConvention = CallingConvention.Winapi)]
+            [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+            public static extern IntPtr GetProcAddress(
+                [In] IntPtr hModule,
+                [In, MarshalAs(UnmanagedType.LPStr)] string lpProcName);
+
             [DllImport("kernel32.dll", CallingConvention = CallingConvention.Winapi, EntryPoint = "LoadLibraryExW", SetLastError = true)]
             [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
             public static extern IntPtr LoadLibraryEx(
                 [In, MarshalAs(UnmanagedType.LPWStr)] string lpFileName,
                 [In] IntPtr hFile,
