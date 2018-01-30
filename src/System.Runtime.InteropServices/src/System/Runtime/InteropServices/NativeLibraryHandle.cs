@@ -34,8 +34,7 @@ namespace System.Runtime.InteropServices
             AddRefInternal(ref refAdded);
             if (!refAdded)
             {
-                // TODO: Replace with SR
-                throw new Exception("Handle has been closed.");
+                ThrowHandleClosed();
             }
         }
 
@@ -47,7 +46,7 @@ namespace System.Runtime.InteropServices
             {
                 // We just added a reference, but the handle is in the process of being closed, so we need
                 // to release the reference just in case we're blocking final disposal.
-                Release();
+                ReleaseNonInlined();
             }
             else
             {
@@ -126,6 +125,20 @@ namespace System.Runtime.InteropServices
             {
                 Unload();
             }
+        }
+
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ReleaseNonInlined()
+        {
+            Release();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowHandleClosed()
+        {
+            // TODO: SR
+            throw new Exception("Handle has been closed.");
         }
     }
 }

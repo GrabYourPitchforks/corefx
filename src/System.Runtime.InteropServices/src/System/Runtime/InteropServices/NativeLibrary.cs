@@ -2,12 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
-using System.Runtime.ConstrainedExecution;
-using System.Threading;
 
 namespace System.Runtime.InteropServices
 {
@@ -45,10 +42,9 @@ namespace System.Runtime.InteropServices
 
         public bool TryGetDelegateSafe<TDelegate>(string name, out TDelegate result) where TDelegate : class
         {
-            IntPtr farproc = _handle.GetProcAddress(name);
-            if (farproc != IntPtr.Zero)
+            if (TryGetDelegateDangerous<TDelegate>(name, out var stub))
             {
-                result = DelegateWrapperFactory<TDelegate>.WrapDelegate(_handle, Marshal.GetDelegateForFunctionPointer<TDelegate>(farproc));
+                result = DelegateWrapperFactory<TDelegate>.WrapDelegate(_handle, stub);
                 return true;
             }
             else
@@ -128,7 +124,7 @@ namespace System.Runtime.InteropServices
 
                 ilGen.Emit(OpCodes.Ldarg_0);
                 ilGen.Emit(OpCodes.Ldfld, typeof(ProcInfo).GetField(nameof(ProcInfo.NativeLibraryHandle)));
-                ilGen.Emit(OpCodes.Ldarga_S, refAddedLocal);
+                ilGen.Emit(OpCodes.Ldloca_S, refAddedLocal);
                 ilGen.Emit(OpCodes.Call, typeof(NativeLibraryHandle).GetMethod("AddRef")); // call instead of callvirt since we know not null
 
                 // retVal = @this.DelegateToStub(arg1, arg2, ..., argn);
@@ -146,7 +142,7 @@ namespace System.Runtime.InteropServices
                     ilGen.Emit(OpCodes.Stloc_S, retValLocal);
                 }
 
-                ilGen.Emit(OpCodes.Jmp, afterFinallyBlockLabel);
+                ilGen.Emit(OpCodes.Leave_S, afterFinallyBlockLabel);
 
                 // } finally {
 
@@ -166,6 +162,7 @@ namespace System.Runtime.InteropServices
                 // } // finally
 
                 ilGen.EndExceptionBlock();
+                ilGen.MarkLabel(afterFinallyBlockLabel);
 
                 // return retVal;
 
@@ -176,37 +173,15 @@ namespace System.Runtime.InteropServices
                 ilGen.Emit(OpCodes.Ret);
 
                 // We actually created a dynamic method with a hidden 'this' parameter, and this parameter messed up
-                // the delegate signature. We close over a null 'this' in order to restore the original delegate sig.
+                // the delegate signature. Passing a real 'this' parameter in calls to CreateDelegate will allow us
+                // to close over the first parameter and restore the proper TDelegate signature. Once we compile the
+                // method, future calls to CreateDelegate will be fast.
 
-                Delegate canonDelegate = dynamicMethod.CreateDelegate(typeof(TDelegate), target: null);
-                RuntimeHelpers.PrepareDelegate(canonDelegate); // ensure jitted
+                typeof(DynamicMethod).InvokeMember("GetMethodDescriptor", BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, dynamicMethod, null);
+                var methodHandle = typeof(DynamicMethod).GetField("m_methodHandle", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).GetValue(dynamicMethod);
+                typeof(RuntimeHelpers).InvokeMember("_CompileMethod", BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic, null, null, new[] { methodHandle });
 
-                // The delegate that we just created isn't usable on its own, but we can use it as a blueprint
-                // to create other wrappers of this same type by substituting the 'this' parameter.
-
-                var dm2 = new DynamicMethod(
-                    "Factory",
-                    returnType: typeof(TDelegate),
-                    parameterTypes: new[] { typeof(object), typeof(IntPtr) },
-                    owner: typeof(TDelegate),
-                    skipVisibility: true);
-
-                var ilg2 = dm2.GetILGenerator();
-
-                ilg2.Emit(OpCodes.Ldarg_0);
-                ilg2.Emit(OpCodes.Ldarg_1);
-                ilg2.Emit(OpCodes.Newobj, typeof(TDelegate).GetConstructor(BindingFlags.Public | BindingFlags.Instance, null, new[] { typeof(object), typeof(IntPtr) }, null));
-                ilg2.Emit(OpCodes.Ret);
-
-                var delFac = (Func<object, IntPtr, TDelegate>)dm2.CreateDelegate(typeof(Func<object, IntPtr, TDelegate>));
-                RuntimeHelpers.PrepareDelegate(delFac);
-
-                GCHandle.Alloc(canonDelegate); // we don't ever want this to be GCed
-                var canonMethodImpl = canonDelegate.Method.MethodHandle.Value;
-                return (procInfo) =>
-                {
-                    return delFac(procInfo, canonMethodImpl);
-                };
+                return (procInfo) => (TDelegate)(object)dynamicMethod.CreateDelegate(typeof(TDelegate), target: procInfo);
             }
 
             public static TDelegate WrapDelegate(NativeLibraryHandle handle, TDelegate delegateToStub)
