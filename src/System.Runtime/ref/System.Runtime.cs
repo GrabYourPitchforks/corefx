@@ -2532,6 +2532,8 @@ namespace System
         public System.String TrimStart() { throw null; }
         public System.String TrimStart(char trimChar) { throw null; }
         public System.String TrimStart(params char[] trimChars) { throw null; }
+        public System.Text.UnicodeScalar GetScalarAt(int index) { throw null; }
+        public bool TryGetScalarAt(int index, out System.Text.UnicodeScalar value) { throw null; }
     }
     public enum StringComparison
     {
