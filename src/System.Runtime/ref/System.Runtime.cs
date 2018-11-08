@@ -2265,6 +2265,8 @@ namespace System
         public int GetHashCode(StringComparison comparisonType) => throw null;
         public static int GetHashCode(ReadOnlySpan<byte> value) => throw null;
         public static int GetHashCode(ReadOnlySpan<byte> value, StringComparison comparisonType) => throw null;
+        public static int GetHashCode(ReadOnlySpan<System.Text.Utf8Char> value) => throw null;
+        public static int GetHashCode(ReadOnlySpan<System.Text.Utf8Char> value, StringComparison comparisonType) => throw null;
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public ref readonly byte GetPinnableReference() => throw null;
         public System.Text.UnicodeScalar GetScalarAt(int index) => throw null;
