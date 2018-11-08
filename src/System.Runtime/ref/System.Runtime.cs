@@ -7829,6 +7829,59 @@ namespace System.Text
         public static int ToUpperInvariant(ReadOnlySpan<byte> source, Span<byte> destination) => throw null;
         public static System.Buffers.OperationStatus ToUpperInvariant(ReadOnlySpan<byte> source, Span<byte> destination, bool isFinalChunk, InvalidSequenceBehavior behavior, out int bytesConsumed, out int bytesWritten) => throw null;
     }
+    public static partial class UnicodeExtensions
+    {
+        public static CharSpanScalarEnumerator GetScalars(ReadOnlySpan<char> value) => throw null;
+        public static Utf8CharSpanScalarEnumerator GetScalars(ReadOnlySpan<Utf8Char> value) => throw null;
+        public static StringScalarEnumerator GetScalars(string value) => throw null;
+        public static Utf8StringScalarEnumerator GetScalars(Utf8String value) => throw null;
+        public struct StringScalarEnumerator
+            : System.Collections.Generic.IEnumerable<(System.Text.UnicodeScalar? ScalarValue, int StartIndex, int Length)>
+            , System.Collections.Generic.IEnumerator<(System.Text.UnicodeScalar? ScalarValue, int StartIndex, int Length)>
+        {
+            private int _dummy;
+            public (System.Text.UnicodeScalar? ScalarValue, int StartIndex, int Length) Current => throw null;
+            [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+            public StringScalarEnumerator GetEnumerator() => throw null;
+            public bool MoveNext() => throw null;
+            void IDisposable.Dispose() { }
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => throw null;
+            System.Collections.Generic.IEnumerator<(UnicodeScalar? ScalarValue, int StartIndex, int Length)> System.Collections.Generic.IEnumerable<(UnicodeScalar? ScalarValue, int StartIndex, int Length)>.GetEnumerator() => throw null;
+            object System.Collections.IEnumerator.Current => Current;
+            void System.Collections.IEnumerator.Reset() { }
+        }
+        public ref struct CharSpanScalarEnumerator
+        {
+            private int _dummy;
+            public (UnicodeScalar? ScalarValue, int StartIndex, int Length) Current => throw null;
+            [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+            public CharSpanScalarEnumerator GetEnumerator() => throw null;
+            public bool MoveNext() => throw null;
+        }
+        public struct Utf8StringScalarEnumerator
+            : System.Collections.Generic.IEnumerable<(System.Text.UnicodeScalar? ScalarValue, int StartIndex, int Length)>
+            , System.Collections.Generic.IEnumerator<(System.Text.UnicodeScalar? ScalarValue, int StartIndex, int Length)>
+        {
+            private int _dummy;
+            public (System.Text.UnicodeScalar? ScalarValue, int StartIndex, int Length) Current => throw null;
+            [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+            public Utf8StringScalarEnumerator GetEnumerator() => throw null;
+            public bool MoveNext() => throw null;
+            void IDisposable.Dispose() { }
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => throw null;
+            System.Collections.Generic.IEnumerator<(UnicodeScalar? ScalarValue, int StartIndex, int Length)> System.Collections.Generic.IEnumerable<(UnicodeScalar? ScalarValue, int StartIndex, int Length)>.GetEnumerator() => throw null;
+            object System.Collections.IEnumerator.Current => Current;
+            void System.Collections.IEnumerator.Reset() { }
+        }
+        public ref struct Utf8CharSpanScalarEnumerator
+        {
+            private int _dummy;
+            public (UnicodeScalar? ScalarValue, int StartIndex, int Length) Current => throw null;
+            [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+            public Utf8CharSpanScalarEnumerator GetEnumerator() => throw null;
+            public bool MoveNext() => throw null;
+        }
+    }
     public readonly partial struct UnicodeScalar : IComparable<UnicodeScalar>, IEquatable<UnicodeScalar>
     {
         private readonly int _dummyPrimitive;
@@ -7954,59 +8007,6 @@ namespace System.Text.Unicode
     {
         public static System.Buffers.OperationStatus TranscodeUtf8ToUtf16(ReadOnlySpan<byte> source, Span<char> destination, bool isFinalChunk, InvalidSequenceBehavior behavior, out int bytesConsumed, out int charsWritten) => throw null;
         public static System.Buffers.OperationStatus TranscodeUtf16ToUtf8(ReadOnlySpan<char> source, Span<byte> destination, bool isFinalChunk, InvalidSequenceBehavior behavior, out int charsConsumed, out int bytesWritten) => throw null;
-    }
-    public static partial class ScalarEnumerator
-    {
-        public static CharSpanScalarEnumerator GetScalars(ReadOnlySpan<char> value) => throw null;
-        public static Utf8CharSpanScalarEnumerator GetScalars(ReadOnlySpan<Utf8Char> value) => throw null;
-        public static StringScalarEnumerator GetScalars(string value) => throw null;
-        public static Utf8StringScalarEnumerator GetScalars(Utf8String value) => throw null;
-        public struct StringScalarEnumerator
-            : System.Collections.Generic.IEnumerable<(System.Text.UnicodeScalar? ScalarValue, int StartIndex, int Length)>
-            , System.Collections.Generic.IEnumerator<(System.Text.UnicodeScalar? ScalarValue, int StartIndex, int Length)>
-        {
-            private int _dummy;
-            public (System.Text.UnicodeScalar? ScalarValue, int StartIndex, int Length) Current => throw null;
-            [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-            public StringScalarEnumerator GetEnumerator() => throw null;
-            public bool MoveNext() => throw null;
-            void IDisposable.Dispose() { }
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => throw null;
-            System.Collections.Generic.IEnumerator<(UnicodeScalar? ScalarValue, int StartIndex, int Length)> System.Collections.Generic.IEnumerable<(UnicodeScalar? ScalarValue, int StartIndex, int Length)>.GetEnumerator() => throw null;
-            object System.Collections.IEnumerator.Current => Current;
-            void System.Collections.IEnumerator.Reset() { }
-        }
-        public ref struct CharSpanScalarEnumerator
-        {
-            private int _dummy;
-            public (UnicodeScalar? ScalarValue, int StartIndex, int Length) Current => throw null;
-            [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-            public CharSpanScalarEnumerator GetEnumerator() => throw null;
-            public bool MoveNext() => throw null;
-        }
-        public struct Utf8StringScalarEnumerator
-            : System.Collections.Generic.IEnumerable<(System.Text.UnicodeScalar? ScalarValue, int StartIndex, int Length)>
-            , System.Collections.Generic.IEnumerator<(System.Text.UnicodeScalar? ScalarValue, int StartIndex, int Length)>
-        {
-            private int _dummy;
-            public (System.Text.UnicodeScalar? ScalarValue, int StartIndex, int Length) Current => throw null;
-            [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-            public Utf8StringScalarEnumerator GetEnumerator() => throw null;
-            public bool MoveNext() => throw null;
-            void IDisposable.Dispose() { }
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => throw null;
-            System.Collections.Generic.IEnumerator<(UnicodeScalar? ScalarValue, int StartIndex, int Length)> System.Collections.Generic.IEnumerable<(UnicodeScalar? ScalarValue, int StartIndex, int Length)>.GetEnumerator() => throw null;
-            object System.Collections.IEnumerator.Current => Current;
-            void System.Collections.IEnumerator.Reset() { }
-        }
-        public ref struct Utf8CharSpanScalarEnumerator
-        {
-            private int _dummy;
-            public (UnicodeScalar? ScalarValue, int StartIndex, int Length) Current => throw null;
-            [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-            public Utf8CharSpanScalarEnumerator GetEnumerator() => throw null;
-            public bool MoveNext() => throw null;
-        }
     }
 }
 namespace System.Threading
