@@ -7842,6 +7842,10 @@ namespace System.Text
         public static bool operator <=(UnicodeScalar a, UnicodeScalar b) => throw null;
         public static bool operator >(UnicodeScalar a, UnicodeScalar b) => throw null;
         public static bool operator >=(UnicodeScalar a, UnicodeScalar b) => throw null;
+        public static explicit operator UnicodeScalar(char value) => throw null;
+        [CLSCompliant(false)]
+        public static explicit operator UnicodeScalar(uint value) =>throw null;
+        public static explicit operator UnicodeScalar(int value) => throw null;
         public bool IsAscii { get => throw null; }
         public bool IsBmp { get => throw null; }
         public int Plane { get => throw null; }
@@ -7858,10 +7862,14 @@ namespace System.Text
         public bool Equals(UnicodeScalar other) => throw null;
         public override int GetHashCode() => throw null;
         public static bool IsValid(int value) => throw null;
+        [CLSCompliant(false)]
+        public static bool IsValid(uint value) => throw null;
         public override string ToString() => throw null;
         public int ToUtf16(Span<char> output) => throw null;
         public int ToUtf8(Span<byte> output) => throw null;
+        public int ToUtf8(Span<System.Text.Utf8Char> output) => throw null;
         public Utf8String ToUtf8String() => throw null;
+        public static bool TryCreate(char value, out UnicodeScalar result) => throw null;
         public static bool TryCreate(int value, out UnicodeScalar result) => throw null;
         [CLSCompliant(false)]
         public static bool TryCreate(uint value, out UnicodeScalar result) => throw null;
