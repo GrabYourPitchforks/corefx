@@ -14,7 +14,6 @@
     <Compile Include="System\Buffers\BuffersExtensions.cs" />
     <Compile Include="System\Buffers\IBufferWriter.cs" />
     <Compile Include="System\Buffers\MemoryPool.cs" />
-    <Compile Include="System\Buffers\OperationStatus.cs" />
     <Compile Include="System\Buffers\ReadOnlySequence.cs" />
     <Compile Include="System\Buffers\ReadOnlySequenceDebugView.cs" />
     <Compile Include="System\Buffers\ReadOnlySequenceSegment.cs" />
@@ -28,6 +27,9 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Common or Common-branched source files -->
+    <Compile Include="$(CommonPath)\CoreLib\System\Buffers\OperationStatus.cs">
+      <Link>Common\System\Buffers\OperationStatus.cs</Link>
+    </Compile>
     <Compile Include="$(CommonPath)\CoreLib\System\Numerics\Hashing\HashHelpers.cs">
       <Link>Common\System\Collections\HashHelpers.cs</Link>
     </Compile>
