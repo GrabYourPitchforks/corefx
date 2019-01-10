@@ -7,7 +7,7 @@ using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace System.Memory
+namespace System.Buffers
 {
     public static unsafe partial class BoundedMemory
     {

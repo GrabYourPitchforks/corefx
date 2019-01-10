@@ -4,7 +4,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace System.Memory
+namespace System.Buffers
 {
     /// <summary>
     /// Contains factory methods to create <see cref="BoundedMemory{T}"/> instances.
