@@ -29,7 +29,7 @@ namespace System.Buffers
             {
                 throw new ArgumentOutOfRangeException(nameof(elementCount));
             }
-            if (placement != PoisonPagePlacement.Before || placement != PoisonPagePlacement.After)
+            if (placement != PoisonPagePlacement.Before && placement != PoisonPagePlacement.After)
             {
                 throw new ArgumentOutOfRangeException(nameof(placement));
             }
@@ -45,7 +45,7 @@ namespace System.Buffers
         /// </summary>
         public static BoundedMemory<T> AllocateFromExistingData<T>(ReadOnlySpan<T> data, PoisonPagePlacement placement = PoisonPagePlacement.After) where T : unmanaged
         {
-            if (placement != PoisonPagePlacement.Before || placement != PoisonPagePlacement.After)
+            if (placement != PoisonPagePlacement.Before && placement != PoisonPagePlacement.After)
             {
                 throw new ArgumentOutOfRangeException(nameof(placement));
             }
