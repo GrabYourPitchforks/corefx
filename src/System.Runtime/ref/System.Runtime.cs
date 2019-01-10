@@ -7807,6 +7807,14 @@ namespace System.Text
         void System.Collections.IEnumerator.Reset() { }
     }
 }
+namespace System.Text.Unicode
+{
+    public static partial class Utf8
+    {
+        public static bool IsWellFormed(ReadOnlySpan<byte> source) { throw null; }
+        public static int GetIndexOfFirstInvalidByte(ReadOnlySpan<byte> source, out int utf16CharCount, out int runeCount) { throw null; }
+    }
+}
 namespace System.Threading
 {
     public readonly partial struct CancellationToken
