@@ -54,5 +54,26 @@ namespace System.Buffers
             data.CopyTo(retVal.Span);
             return retVal;
         }
+
+        /// <summary>
+        /// Similar to <see cref="Allocate(int, PoisonPagePlacement)"/>, but populates the allocated
+        /// native memory block from existing data rather than using random data.
+        /// </summary>
+        public static BoundedMemory<T> AllocateFromExistingData<T>(T[] data, PoisonPagePlacement placement = PoisonPagePlacement.After) where T : unmanaged
+        {
+            return AllocateFromExistingData(new ReadOnlySpan<T>(data), placement);
+        }
+
+        private static BoundedMemory<T> AllocateWithoutDataPopulation<T>(int elementCount, PoisonPagePlacement placement) where T : unmanaged
+        {
+            if (PlatformDetection.IsWindows)
+            {
+                return AllocateWithoutDataPopulationWindows<T>(elementCount, placement);
+            }
+            else
+            {
+                return AllocateWithoutDataPopulationUnix<T>(elementCount, placement);
+            }
+        }
     }
 }

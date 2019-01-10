@@ -13,7 +13,7 @@ namespace System.Buffers
     {
         private static readonly int SystemPageSize = Environment.SystemPageSize;
 
-        private static Implementation<T> AllocateWithoutDataPopulation<T>(int elementCount, PoisonPagePlacement placement) where T : unmanaged
+        private static WindowsImplementation<T> AllocateWithoutDataPopulationWindows<T>(int elementCount, PoisonPagePlacement placement) where T : unmanaged
         {
             long cb, totalBytesToAllocate;
             checked
@@ -55,7 +55,7 @@ namespace System.Buffers
             // align" the section we carve out so that it's guaranteed adjacent to one of
             // the NOACCESS bookend pages.
 
-            return new Implementation<T>(
+            return new WindowsImplementation<T>(
                 handle: handle,
                 byteOffsetIntoHandle: (placement == PoisonPagePlacement.Before)
                     ? SystemPageSize /* just after leading poison page */
@@ -66,14 +66,14 @@ namespace System.Buffers
             };
         }
 
-        private sealed class Implementation<T> : BoundedMemory<T> where T : unmanaged
+        private sealed class WindowsImplementation<T> : BoundedMemory<T> where T : unmanaged
         {
             private readonly VirtualAllocHandle _handle;
             private readonly int _byteOffsetIntoHandle;
             private readonly int _elementCount;
             private readonly BoundedMemoryManager _memoryManager;
 
-            internal Implementation(VirtualAllocHandle handle, int byteOffsetIntoHandle, int elementCount)
+            internal WindowsImplementation(VirtualAllocHandle handle, int byteOffsetIntoHandle, int elementCount)
             {
                 _handle = handle;
                 _byteOffsetIntoHandle = byteOffsetIntoHandle;
@@ -177,9 +177,9 @@ namespace System.Buffers
 
             private sealed class BoundedMemoryManager : MemoryManager<T>
             {
-                private readonly Implementation<T> _impl;
+                private readonly WindowsImplementation<T> _impl;
 
-                public BoundedMemoryManager(Implementation<T> impl)
+                public BoundedMemoryManager(WindowsImplementation<T> impl)
                 {
                     _impl = impl;
                 }
