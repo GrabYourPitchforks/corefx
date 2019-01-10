@@ -260,6 +260,7 @@
     <Compile Include="System\Text\RuneTests.TestData.netcoreapp.cs" />
     <Compile Include="System\Text\StringBuilderTests.netcoreapp.cs" />
     <Compile Include="System\Text\Unicode\Utf8Tests.netcoreapp.cs" />
+    <Compile Include="System\Text\Unicode\Utf8Tests.GetIndexOfFirstInvalidByte.netcoreapp.cs" />
     <Compile Include="System\Type\TypePropertyTests.netcoreapp.cs" />
     <Compile Include="System\Type\TypeTests.netcoreapp.cs" />
     <Compile Include="System\ArgIteratorTests.netcoreapp.cs" />
