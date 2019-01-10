@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
@@ -136,6 +137,28 @@ namespace System
     public static partial class TestEnvironment
     {
         public static bool IsStressModeEnabled { get { throw null; } }
+    }
+}
+namespace System.Buffers
+{
+    public static partial class BoundedMemory
+    {
+        public static BoundedMemory<T> Allocate<T>(int elementCount, PoisonPagePlacement placement = PoisonPagePlacement.After) where T : unmanaged { throw null; }
+        public static BoundedMemory<T> AllocateFromExistingData<T>(ReadOnlySpan<T> data, PoisonPagePlacement placement = PoisonPagePlacement.After) where T : unmanaged { throw null; }
+    }
+    public abstract class BoundedMemory<T> : IDisposable where T : unmanaged
+    {
+        public abstract bool IsReadonly { get; }
+        public abstract Memory<T> Memory { get; }
+        public abstract Span<T> Span { get; }
+        public abstract void Dispose();
+        public abstract void MakeReadonly();
+        public abstract void MakeWriteable();
+    }
+    public enum PoisonPagePlacement
+    {
+        After = 0,
+        Before = 1
     }
 }
 namespace System.Diagnostics

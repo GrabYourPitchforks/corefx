@@ -10,17 +10,17 @@ namespace System.Buffers
     public enum PoisonPagePlacement
     {
         /// <summary>
+        /// The poison page should be placed immediately after the memory region.
+        /// Attempting to access the memory page immediately following the
+        /// span will result in an AV.
+        /// </summary>
+        After,
+
+        /// <summary>
         /// The poison page should be placed immediately before the memory region.
         /// Attempting to access the memory page immediately before the
         /// span will result in an AV.
         /// </summary>
         Before,
-
-        /// <summary>
-        /// The poison page should be placed immediately after the memory region.
-        /// Attempting to access the memory page immediately following the
-        /// span will result in an AV.
-        /// </summary>
-        After
     }
 }
