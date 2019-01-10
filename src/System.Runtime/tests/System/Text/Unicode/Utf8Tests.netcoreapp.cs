@@ -14,7 +14,7 @@ namespace System.Text.Unicode.Tests
         private static readonly UTF8Encoding _utf8EncodingWithoutReplacement = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
         // All valid scalars [ U+0000 .. U+D7FF ] and [ U+E000 .. U+10FFFF ].
-        private static readonly IEnumerable<int> _allValidScalars = Enumerable.Range(0x0000, 0xD800).Concat(Enumerable.Range(0xE000, 0x110000 - 0xE000));
+        private static readonly IEnumerable<Rune> _allValidRunes = Enumerable.Range(0x0000, 0xD800).Concat(Enumerable.Range(0xE000, 0x110000 - 0xE000)).Select(value => new Rune(value));
 
         [Fact]
         public void IsWellFormedUtf8String_WithStringOfAllPossibleScalarValues_ReturnsTrue()
@@ -54,11 +54,10 @@ namespace System.Text.Unicode.Tests
 
         private static string CreateStringWithAllScalars()
         {
-            return string.Create(0xF800 /* number of BMP scalar values */ + 2 * 0x100000 /* number of astral scalar values */, (object)null, (buffer, _) =>
+            return string.Create(_allValidRunes.Sum(rune => rune.Utf16SequenceLength), (object)null, (buffer, _) =>
             {
-                foreach (var scalarValue in _allValidScalars)
+                foreach (var rune in _allValidRunes)
                 {
-                    var rune = new Rune(scalarValue);
                     Assert.True(rune.TryEncode(buffer, out int charsWritten));
                     buffer = buffer.Slice(charsWritten);
                 }
