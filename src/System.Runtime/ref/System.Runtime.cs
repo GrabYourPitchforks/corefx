@@ -3778,6 +3778,13 @@ namespace System
 }
 namespace System.Buffers
 {
+    public enum OperationStatus
+    {
+        DestinationTooSmall = 1,
+        Done = 0,
+        InvalidData = 3,
+        NeedMoreData = 2,
+    }
     public partial interface IMemoryOwner<T> : System.IDisposable
     {
         System.Memory<T> Memory { get; }
@@ -7811,8 +7818,9 @@ namespace System.Text.Unicode
 {
     public static partial class Utf8
     {
-        public static bool IsWellFormed(ReadOnlySpan<byte> source) { throw null; }
         public static int GetIndexOfFirstInvalidByte(ReadOnlySpan<byte> source, out int utf16CharCount, out int runeCount) { throw null; }
+        public static bool IsWellFormed(ReadOnlySpan<byte> source) { throw null; }
+        public static unsafe System.Buffers.OperationStatus ToChars(ReadOnlySpan<byte> source, Span<char> destination, bool replaceInvalidSequences, bool isFinalChunk, out int numBytesRead, out int numCharsWritten) { throw null; }
     }
 }
 namespace System.Threading
