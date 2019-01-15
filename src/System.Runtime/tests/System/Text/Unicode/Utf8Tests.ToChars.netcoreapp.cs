@@ -187,6 +187,52 @@ namespace System.Text.Unicode.Tests
                 expectedUtf16Transcoding: expectedUtf16Transcoding);
         }
 
+        [Theory]
+        [InlineData(X_UTF8 + "80" + X_UTF8, X_UTF16 + REPLACEMENT_CHAR_UTF16 + X_UTF16)]
+        public void ToChars_WithReplacement(string utf8HexInput, string expectedUtf16Transcoding)
+        {
+            // First run the test with isFinalBlock = false,
+            // both with and without some bytes of incomplete trailing data.
+
+            ToChars_Test_Core(
+                utf8Input: DecodeHex(utf8HexInput),
+                destinationSize: expectedUtf16Transcoding.Length,
+                replaceInvalidSequences: true,
+                isFinalChunk: false,
+                expectedOperationStatus: OperationStatus.Done,
+                expectedNumBytesRead: utf8HexInput.Length / 2,
+                expectedUtf16Transcoding: expectedUtf16Transcoding);
+
+            ToChars_Test_Core(
+                utf8Input: DecodeHex(utf8HexInput + "E0BF" /* trailing data */),
+                destinationSize: expectedUtf16Transcoding.Length,
+                replaceInvalidSequences: true,
+                isFinalChunk: false,
+                expectedOperationStatus: OperationStatus.NeedMoreData,
+                expectedNumBytesRead: utf8HexInput.Length / 2,
+                expectedUtf16Transcoding: expectedUtf16Transcoding);
+
+            // Then run the test with isFinalBlock = true, with incomplete trailing data.
+
+            ToChars_Test_Core(
+                utf8Input: DecodeHex(utf8HexInput + "E0BF" /* trailing data */),
+                destinationSize: expectedUtf16Transcoding.Length,
+                replaceInvalidSequences: true,
+                isFinalChunk: true,
+                expectedOperationStatus: OperationStatus.DestinationTooSmall,
+                expectedNumBytesRead: utf8HexInput.Length / 2,
+                expectedUtf16Transcoding: expectedUtf16Transcoding);
+
+            ToChars_Test_Core(
+                 utf8Input: DecodeHex(utf8HexInput + "E0BF" /* trailing data */),
+                 destinationSize: expectedUtf16Transcoding.Length + 1, // allow room for U+FFFD
+                 replaceInvalidSequences: true,
+                 isFinalChunk: true,
+                 expectedOperationStatus: OperationStatus.Done,
+                 expectedNumBytesRead: utf8HexInput.Length / 2 + 1,
+                 expectedUtf16Transcoding: expectedUtf16Transcoding + REPLACEMENT_CHAR_UTF16);
+        }
+
         private static void ToChars_Test_Core(byte[] utf8Input, int destinationSize, bool replaceInvalidSequences, bool isFinalChunk, OperationStatus expectedOperationStatus, int expectedNumBytesRead, string expectedUtf16Transcoding)
         {
             // Arrange
