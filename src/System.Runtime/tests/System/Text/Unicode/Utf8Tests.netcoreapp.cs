@@ -11,6 +11,24 @@ namespace System.Text.Unicode.Tests
 {
     public partial class Utf8Tests
     {
+        private const string X_UTF8 = "58"; // U+0058 LATIN CAPITAL LETTER X, 1 byte
+        private const string X_UTF16 = "X";
+
+        private const string Y_UTF8 = "59"; // U+0058 LATIN CAPITAL LETTER Y, 1 byte
+        private const string Y_UTF16 = "Y";
+
+        private const string Z_UTF8 = "5A"; // U+0058 LATIN CAPITAL LETTER Z, 1 byte
+        private const string Z_UTF16 = "Z";
+
+        private const string E_ACUTE_UTF8 = "C3A9"; // U+00E9 LATIN SMALL LETTER E WITH ACUTE, 2 bytes
+        private const string E_ACUTE_UTF16 = "\u00E9";
+
+        private const string EURO_SYMBOL_UTF8 = "E282AC"; // U+20AC EURO SIGN, 3 bytes
+        private const string EURO_SYMBOL_UTF16 = "\u20AC";
+
+        private const string GRINNING_FACE_UTF8 = "F09F9880"; // U+1F600 GRINNING FACE, 4 bytes
+        private const string GRINNING_FACE_UTF16 = "\U0001F600";
+
         private static readonly UTF8Encoding _utf8EncodingWithoutReplacement = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
         // All valid scalars [ U+0000 .. U+D7FF ] and [ U+E000 .. U+10FFFF ].
