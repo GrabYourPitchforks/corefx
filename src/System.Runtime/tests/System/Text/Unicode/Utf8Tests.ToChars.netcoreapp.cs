@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Buffers;
-using System.Globalization;
 using Xunit;
 
 namespace System.Text.Unicode.Tests
@@ -47,9 +46,7 @@ namespace System.Text.Unicode.Tests
         [InlineData("C08081", 0, "")] // [ C0 ] is always invalid
         [InlineData(X_UTF8 + "C1", 1, X_UTF16)] // [ C1 ] is always invalid
         [InlineData(X_UTF8 + "C180", 1, X_UTF16)] // [ C1 ] is always invalid
-        [InlineData("C2", 0, "")] // [ C2 ] is improperly terminated
         [InlineData(X_UTF8 + "C27F", 1, X_UTF16)] // [ C2 ] is improperly terminated
-        [InlineData(X_UTF8 + "E282", 1, X_UTF16)] // [ E2 82 ] is improperly terminated
         [InlineData("E2827F", 0, "")] // [ E2 82 ] is improperly terminated
         [InlineData("E09F80", 0, "")] // [ E0 9F ... ] is overlong
         [InlineData("E0C080", 0, "")] // [ E0 ] is improperly terminated
@@ -74,6 +71,7 @@ namespace System.Text.Unicode.Tests
 
         [Theory]
         [InlineData("C2", 0, "")] // [ C2 ] is an incomplete sequence
+        [InlineData("E282", 0, "")] // [ E2 82 ] is an incomplete sequence
         [InlineData(X_UTF8 + "C2", 1, X_UTF16)] // [ C2 ] is an incomplete sequence
         [InlineData(X_UTF8 + "E0", 1, X_UTF16)] // [ E0 ] is an incomplete sequence
         [InlineData(X_UTF8 + "E0BF", 1, X_UTF16)] // [ E0 BF ] is an incomplete sequence
@@ -82,18 +80,16 @@ namespace System.Text.Unicode.Tests
         [InlineData(X_UTF8 + "F0BFA0", 1, X_UTF16)] // [ F0 BF A0 ] is an incomplete sequence
         [InlineData(E_ACUTE_UTF8 + "C2", 2, E_ACUTE_UTF16)] // [ C2 ] is an incomplete sequence
         [InlineData(E_ACUTE_UTF8 + "E0", 2, E_ACUTE_UTF16)] // [ E0 ] is an incomplete sequence
-        [InlineData(E_ACUTE_UTF8 + "E0BF", 2, E_ACUTE_UTF16)] // [ E0 BF ] is an incomplete sequence
         [InlineData(E_ACUTE_UTF8 + "F0", 2, E_ACUTE_UTF16)] // [ F0 ] is an incomplete sequence
+        [InlineData(E_ACUTE_UTF8 + "E0BF", 2, E_ACUTE_UTF16)] // [ E0 BF ] is an incomplete sequence
         [InlineData(E_ACUTE_UTF8 + "F0BF", 2, E_ACUTE_UTF16)] // [ F0 BF ] is an incomplete sequence
         [InlineData(EURO_SYMBOL_UTF8 + "C2", 3, EURO_SYMBOL_UTF16)] // [ C2 ] is an incomplete sequence
         [InlineData(EURO_SYMBOL_UTF8 + "E0", 3, EURO_SYMBOL_UTF16)] // [ E0 ] is an incomplete sequence
         [InlineData(EURO_SYMBOL_UTF8 + "F0", 3, EURO_SYMBOL_UTF16)] // [ F0 ] is an incomplete sequence
-        public void ToChars_WithSmallIncompleteBuffers(string utf8HexInput, int expectedNumBytesConsumed, string expectedUtf16Transcoding)
+        public void ToChars_WithVariousIncompleteBuffers(string utf8HexInput, int expectedNumBytesConsumed, string expectedUtf16Transcoding)
         {
             // These test cases are for the "slow processing" code path at the end of TranscodeToUtf16,
             // so inputs should be less than 4 bytes.
-
-            Assert.InRange(utf8HexInput.Length, 0, 6);
 
             ToChars_Test_Core(
               utf8Input: DecodeHex(utf8HexInput),
@@ -192,13 +188,13 @@ namespace System.Text.Unicode.Tests
         [InlineData(X_UTF8 + "FF" + X_UTF8, X_UTF16 + REPLACEMENT_CHAR_UTF16 + X_UTF16)] // invalid UTF-8 byte [ FF ]
         [InlineData(X_UTF8 + "C2" + X_UTF8, X_UTF16 + REPLACEMENT_CHAR_UTF16 + X_UTF16)] // 2-byte sequence starter [ C2 ] not followed by continuation byte
         [InlineData(X_UTF8 + "C1C180" + X_UTF8, X_UTF16 + REPLACEMENT_CHAR_UTF16 + REPLACEMENT_CHAR_UTF16 + REPLACEMENT_CHAR_UTF16 + X_UTF16)] // [ C1 80 ] is overlong but consists of two maximal invalid subsequences, each of length 1 byte
-        [InlineData(X_UTF8 + E_ACUTE_UTF8 + "E08080", X_UTF16 + E_ACUTE_UTF16 + REPLACEMENT_CHAR_UTF16 + REPLACEMENT_CHAR_UTF16)] // [ E0 80 ] is overlong 2-byte maximal invalid subsequence, and following [ 80 ] is stray continuation byte
-        [InlineData(GRINNING_FACE_UTF8 + "F08F8080" + GRINNING_FACE_UTF8, GRINNING_FACE_UTF16 + REPLACEMENT_CHAR_UTF16 + REPLACEMENT_CHAR_UTF16 + REPLACEMENT_CHAR_UTF16 + GRINNING_FACE_UTF8)] // [ F0 8F ] is overlong 2-byte maximal invalid subsequences, and following [ 80 ] instances are stray continuation bytes
-        [InlineData(GRINNING_FACE_UTF8 + "F4908080" + GRINNING_FACE_UTF8, GRINNING_FACE_UTF16 + REPLACEMENT_CHAR_UTF16 + REPLACEMENT_CHAR_UTF16 + REPLACEMENT_CHAR_UTF16 + GRINNING_FACE_UTF8)] // [ F4 90 ] is out-of-range 2-byte maximal invalid subsequences, and following [ 80 ] instances are stray continuation bytes
+        [InlineData(X_UTF8 + E_ACUTE_UTF8 + "E08080", X_UTF16 + E_ACUTE_UTF16 + REPLACEMENT_CHAR_UTF16 + REPLACEMENT_CHAR_UTF16 + REPLACEMENT_CHAR_UTF16)] // [ E0 80 ] is overlong 2-byte sequence (1 byte maximal invalid subsequence), and following [ 80 ] is stray continuation byte
+        [InlineData(GRINNING_FACE_UTF8 + "F08F8080" + GRINNING_FACE_UTF8, GRINNING_FACE_UTF16 + REPLACEMENT_CHAR_UTF16 + REPLACEMENT_CHAR_UTF16 + REPLACEMENT_CHAR_UTF16 + REPLACEMENT_CHAR_UTF16 + GRINNING_FACE_UTF16)] // [ F0 8F ] is overlong 4-byte sequence (1 byte maximal invalid subsequence), and following [ 80 ] instances are stray continuation bytes
+        [InlineData(GRINNING_FACE_UTF8 + "F4908080" + GRINNING_FACE_UTF8, GRINNING_FACE_UTF16 + REPLACEMENT_CHAR_UTF16 + REPLACEMENT_CHAR_UTF16 + REPLACEMENT_CHAR_UTF16 + REPLACEMENT_CHAR_UTF16 + GRINNING_FACE_UTF16)] // [ F4 90 ] is out-of-range 4-byte sequence (1 byte maximal invalid subsequence), and following [ 80 ] instances are stray continuation bytes
         [InlineData(E_ACUTE_UTF8 + "EDA0" + X_UTF8, E_ACUTE_UTF16 + REPLACEMENT_CHAR_UTF16 + REPLACEMENT_CHAR_UTF16 + X_UTF16)] // [ ED A0 ] is encoding of UTF-16 surrogate code point, so consists of two maximal invalid subsequences, each of length 1 byte
         [InlineData(E_ACUTE_UTF8 + "ED80" + X_UTF8, E_ACUTE_UTF16 + REPLACEMENT_CHAR_UTF16 + X_UTF16)] // [ ED 80 ] is incomplete 3-byte sequence, so is 2-byte maximal invalid subsequence
         [InlineData(E_ACUTE_UTF8 + "F380" + X_UTF8, E_ACUTE_UTF16 + REPLACEMENT_CHAR_UTF16 + X_UTF16)] // [ F3 80 ] is incomplete 4-byte sequence, so is 2-byte maximal invalid subsequence
-        [InlineData(E_ACUTE_UTF8 + "F380800" + X_UTF8, E_ACUTE_UTF16 + REPLACEMENT_CHAR_UTF16 + X_UTF16)] // [ F3 80 80 ] is incomplete 4-byte sequence, so is 3-byte maximal invalid subsequence
+        [InlineData(E_ACUTE_UTF8 + "F38080" + X_UTF8, E_ACUTE_UTF16 + REPLACEMENT_CHAR_UTF16 + X_UTF16)] // [ F3 80 80 ] is incomplete 4-byte sequence, so is 3-byte maximal invalid subsequence
         public void ToChars_WithReplacement(string utf8HexInput, string expectedUtf16Transcoding)
         {
             // First run the test with isFinalBlock = false,
@@ -239,7 +235,7 @@ namespace System.Text.Unicode.Tests
                  replaceInvalidSequences: true,
                  isFinalChunk: true,
                  expectedOperationStatus: OperationStatus.Done,
-                 expectedNumBytesRead: utf8HexInput.Length / 2 + 1,
+                 expectedNumBytesRead: utf8HexInput.Length / 2 + 2,
                  expectedUtf16Transcoding: expectedUtf16Transcoding + REPLACEMENT_CHAR_UTF16);
         }
 

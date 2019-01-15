@@ -4,6 +4,7 @@
 
 using System.Buffers;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using Xunit;
 
 namespace System.Text.Unicode.Tests
@@ -128,8 +129,8 @@ namespace System.Text.Unicode.Tests
 
         private static byte[] DecodeHex(ReadOnlySpan<char> inputHex)
         {
-            Assert.True(inputHex.Length % 2 == 0, "Input must be an even number of characters.");
-
+            Assert.True(Regex.IsMatch(inputHex.ToString(), "^([0-9a-fA-F]{2})*$"), "Input must be an even number of hex characters.");
+            
             byte[] retVal = new byte[inputHex.Length / 2];
             for (int i = 0; i < retVal.Length; i++)
             {
