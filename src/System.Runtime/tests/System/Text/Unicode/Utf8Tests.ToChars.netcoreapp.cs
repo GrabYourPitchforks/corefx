@@ -141,6 +141,52 @@ namespace System.Text.Unicode.Tests
                 expectedUtf16Transcoding: expectedUtf16Transcoding);
         }
 
+        [Theory]
+        [InlineData("3031" + "80" + "202122232425", 2, "01")] // Continuation character at start of sequence should match no bitmask
+        [InlineData("3031" + "C080" + "2021222324", 2, "01")] // Overlong 2-byte sequence at start of DWORD
+        [InlineData("3031" + "C180" + "2021222324", 2, "01")] // Overlong 2-byte sequence at start of DWORD
+        [InlineData("C280" + "C180", 2, "\u0080")] // Overlong 2-byte sequence at end of DWORD
+        [InlineData("C27F" + "C280", 0, "")] // Improperly terminated 2-byte sequence at start of DWORD
+        [InlineData("C2C0" + "C280", 0, "")] // Improperly terminated 2-byte sequence at start of DWORD
+        [InlineData("C280" + "C27F", 2, "\u0080")] // Improperly terminated 2-byte sequence at end of DWORD
+        [InlineData("C280" + "C2C0", 2, "\u0080")] // Improperly terminated 2-byte sequence at end of DWORD
+        [InlineData("C280" + "C280" + "80203040", 4, "\u0080\u0080")] // Continuation character at start of sequence, within "stay in 2-byte processing" optimization
+        [InlineData("C280" + "C280" + "C180" + "C280", 4, "\u0080\u0080")] // Overlong 2-byte sequence at start of DWORD, within "stay in 2-byte processing" optimization
+        [InlineData("C280" + "C280" + "C280" + "C180", 6, "\u0080\u0080\u0080")] // Overlong 2-byte sequence at end of DWORD, within "stay in 2-byte processing" optimization
+        [InlineData("3031" + "E09F80" + EURO_SYMBOL_UTF8 + EURO_SYMBOL_UTF8, 2, "01")] // Overlong 3-byte sequence at start of DWORD
+        [InlineData("3031" + "E07F80" + EURO_SYMBOL_UTF8 + EURO_SYMBOL_UTF8, 2, "01")] // Improperly terminated 3-byte sequence at start of DWORD
+        [InlineData("3031" + "E0C080" + EURO_SYMBOL_UTF8 + EURO_SYMBOL_UTF8, 2, "01")] // Improperly terminated 3-byte sequence at start of DWORD
+        [InlineData("3031" + "E17F80" + EURO_SYMBOL_UTF8 + EURO_SYMBOL_UTF8, 2, "01")] // Improperly terminated 3-byte sequence at start of DWORD
+        [InlineData("3031" + "E1C080" + EURO_SYMBOL_UTF8 + EURO_SYMBOL_UTF8, 2, "01")] // Improperly terminated 3-byte sequence at start of DWORD
+        [InlineData("3031" + "EDA080" + EURO_SYMBOL_UTF8 + EURO_SYMBOL_UTF8, 2, "01")] // Surrogate 3-byte sequence at start of DWORD
+        [InlineData("3031" + "F5808080", 2, "01")] // [ F5 ] is always invalid
+        [InlineData("3031" + "F6808080", 2, "01")] // [ F6 ] is always invalid
+        [InlineData("3031" + "F7808080", 2, "01")] // [ F7 ] is always invalid
+        [InlineData("3031" + "F8808080", 2, "01")] // [ F8 ] is always invalid
+        [InlineData("3031" + "F9808080", 2, "01")] // [ F9 ] is always invalid
+        [InlineData("3031" + "FA808080", 2, "01")] // [ FA ] is always invalid
+        [InlineData("3031" + "FB808080", 2, "01")] // [ FB ] is always invalid
+        [InlineData("3031" + "FC808080", 2, "01")] // [ FC ] is always invalid
+        [InlineData("3031" + "FD808080", 2, "01")] // [ FD ] is always invalid
+        [InlineData("3031" + "FE808080", 2, "01")] // [ FE ] is always invalid
+        [InlineData("3031" + "FF808080", 2, "01")] // [ FF ] is always invalid
+        public void ToChars_WithLargeInvalidBuffers(string utf8HexInput, int expectedNumBytesConsumed, string expectedUtf16Transcoding)
+        {
+            // These test cases are for the "fast processing" code which is the main loop of TranscodeToUtf16,
+            // so inputs should be less >= 4 bytes.
+
+            Assert.True(utf8HexInput.Length >= 8);
+
+            ToChars_Test_Core(
+                utf8Input: DecodeHex(utf8HexInput),
+                destinationSize: expectedUtf16Transcoding.Length,
+                replaceInvalidSequences: false,
+                isFinalChunk: false,
+                expectedOperationStatus: OperationStatus.InvalidData,
+                expectedNumBytesRead: expectedNumBytesConsumed,
+                expectedUtf16Transcoding: expectedUtf16Transcoding);
+        }
+
         private static void ToChars_Test_Core(byte[] utf8Input, int destinationSize, bool replaceInvalidSequences, bool isFinalChunk, OperationStatus expectedOperationStatus, int expectedNumBytesRead, string expectedUtf16Transcoding)
         {
             // Arrange
