@@ -26,6 +26,9 @@ namespace System.Text.Unicode.Tests
         private const string EURO_SYMBOL_UTF8 = "E282AC"; // U+20AC EURO SIGN, 3 bytes
         private const string EURO_SYMBOL_UTF16 = "\u20AC";
 
+        private const string REPLACEMENT_CHAR_UTF8 = "EFBFBD"; // U+FFFD REPLACEMENT CHAR, 3 bytes
+        private const string REPLACEMENT_CHAR_UTF16 = "\uFFFD";
+
         private const string GRINNING_FACE_UTF8 = "F09F9880"; // U+1F600 GRINNING FACE, 4 bytes
         private const string GRINNING_FACE_UTF16 = "\U0001F600";
 
