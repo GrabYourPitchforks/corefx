@@ -4,6 +4,7 @@
 
 using System.Buffers;
 using System.Linq;
+using System.Numerics;
 using Xunit;
 
 namespace System.Text.Unicode.Tests
@@ -127,6 +128,40 @@ namespace System.Text.Unicode.Tests
         }
 
         [Fact]
+        public void GetIndexOfFirstInvalidByte_Vectorization()
+        {
+            int LengthOfTenVectors = 10 * Vector<byte>.Count;
+
+            // All-ASCII input
+
+            byte[] utf8Input = Enumerable.Repeat((byte)'x', LengthOfTenVectors).ToArray();
+
+            // First test inputs with no interspersed non-ASCII bytes
+
+            for (int i = Vector<byte>.Count; i < utf8Input.Length; i++)
+            {
+                GetIndexOfFirstInvalidByte_Test_Core(
+                    input: utf8Input.AsSpan(0, i),
+                    expectedRetVal: -1,
+                    expectedUtf16CharCount: i,
+                    expectedScalarCount: i);
+            }
+
+            // Now test inputs with interspersed non-ASCII bytes.
+            // We test the presence of a non-ASCII scalar value at each insertion position,
+            // which should also test boundary conditions within the vectorization code.
+
+            for (int i = 0; i < utf8Input.Length; i++)
+            {
+                GetIndexOfFirstInvalidByte_Test_Core(
+                    input: utf8Input.Take(i).Concat(DecodeHex(EURO_SYMBOL_UTF8)).Concat(utf8Input.Skip(i)).ToArray(),
+                    expectedRetVal: -1,
+                    expectedUtf16CharCount: i - 2,
+                    expectedScalarCount: i - 2);
+            }
+        }
+
+        [Fact]
         public void GetIndexOfFirstInvalidByte_AllPossibleScalarValues()
         {
             GetIndexOfFirstInvalidByte_Test_Core(
@@ -139,7 +174,7 @@ namespace System.Text.Unicode.Tests
         private static void GetIndexOfFirstInvalidByte_Test_Core(string inputHex, int expectedRetVal, int expectedUtf16CharCount, int expectedScalarCount)
           => GetIndexOfFirstInvalidByte_Test_Core(DecodeHex(inputHex), expectedRetVal, expectedUtf16CharCount, expectedScalarCount);
 
-        private static void GetIndexOfFirstInvalidByte_Test_Core(byte[] input, int expectedRetVal, int expectedUtf16CharCount, int expectedScalarCount)
+        private static void GetIndexOfFirstInvalidByte_Test_Core(ReadOnlySpan<byte> input, int expectedRetVal, int expectedUtf16CharCount, int expectedScalarCount)
         {
             // Arrange
 
