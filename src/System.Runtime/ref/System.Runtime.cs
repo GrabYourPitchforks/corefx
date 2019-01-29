@@ -3781,6 +3781,13 @@ namespace System
 }
 namespace System.Buffers
 {
+    public enum OperationStatus
+    {
+        DestinationTooSmall = 1,
+        Done = 0,
+        InvalidData = 3,
+        NeedMoreData = 2,
+    }
     public partial interface IMemoryOwner<T> : System.IDisposable
     {
         System.Memory<T> Memory { get; }
@@ -7808,6 +7815,16 @@ namespace System.Text
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { throw null; }
         System.Collections.Generic.IEnumerator<System.Text.Rune> System.Collections.Generic.IEnumerable<System.Text.Rune>.GetEnumerator() { throw null; }
         void System.Collections.IEnumerator.Reset() { }
+    }
+}
+namespace System.Text.Unicode
+{
+    public static partial class Utf8
+    {
+        public static int GetIndexOfFirstInvalidByte(System.ReadOnlySpan<byte> source, out int utf16CharCount, out int runeCount) { throw null; }
+        public static bool IsWellFormed(System.ReadOnlySpan<byte> source) { throw null; }
+        public static unsafe System.Buffers.OperationStatus ToBytes(System.ReadOnlySpan<char> source, System.Span<byte> destination, bool replaceInvalidSequences, bool isFinalChunk, out int numCharsRead, out int numBytesWritten) { throw null; }
+        public static unsafe System.Buffers.OperationStatus ToChars(System.ReadOnlySpan<byte> source, System.Span<char> destination, bool replaceInvalidSequences, bool isFinalChunk, out int numBytesRead, out int numCharsWritten) { throw null; }
     }
 }
 namespace System.Threading

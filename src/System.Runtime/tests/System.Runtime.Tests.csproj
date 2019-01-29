@@ -244,6 +244,11 @@
     <Compile Include="System\UInt32Tests.netcoreapp.cs" />
     <Compile Include="System\UInt64Tests.netcoreapp.cs" />
     <Compile Include="System\VersionTests.netcoreapp.cs" />
+    <Compile Include="System\Buffers\BoundedMemory.cs" />
+    <Compile Include="System\Buffers\BoundedMemory.Creation.cs" />
+    <Compile Include="System\Buffers\BoundedMemory.Unix.cs" />
+    <Compile Include="System\Buffers\BoundedMemory.Windows.cs" />
+    <Compile Include="System\Buffers\PoisonPagePlacement.cs" />
     <Compile Include="System\ComponentModel\DefaultValueAttributeTests.netcoreapp.cs" />
     <Compile Include="System\Reflection\BindingFlagsDoNotWrap.netcoreapp.cs" />
     <Compile Include="System\Reflection\InvokeRefReturn.netcoreapp.cs" />
@@ -262,6 +267,10 @@
     <Compile Include="System\Text\RuneTests.netcoreapp.cs" />
     <Compile Include="System\Text\RuneTests.TestData.netcoreapp.cs" />
     <Compile Include="System\Text\StringBuilderTests.netcoreapp.cs" />
+    <Compile Include="System\Text\Unicode\Utf8Tests.netcoreapp.cs" />
+    <Compile Include="System\Text\Unicode\Utf8Tests.GetIndexOfFirstInvalidByte.netcoreapp.cs" />
+    <Compile Include="System\Text\Unicode\Utf8Tests.ToBytes.netcoreapp.cs" />
+    <Compile Include="System\Text\Unicode\Utf8Tests.ToChars.netcoreapp.cs" />
     <Compile Include="System\Type\TypePropertyTests.netcoreapp.cs" />
     <Compile Include="System\Type\TypeTests.netcoreapp.cs" />
     <Compile Include="System\ArgIteratorTests.netcoreapp.cs" />
