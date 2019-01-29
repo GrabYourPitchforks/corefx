@@ -143,13 +143,13 @@ namespace System.Text.Unicode.Tests
         {
             // Arrange
 
-            using (var boundedMemory = BoundedMemory.AllocateFromExistingData(input))
+            using (BoundedMemory<byte> boundedMemory = BoundedMemory.AllocateFromExistingData(input))
             {
                 boundedMemory.MakeReadonly();
 
                 // Act
 
-                var indexOfFirstInvalidByte = Utf8.GetIndexOfFirstInvalidByte(boundedMemory.Span, out int actualUtf16Count, out int actualScalarCount);
+                int indexOfFirstInvalidByte = Utf8.GetIndexOfFirstInvalidByte(boundedMemory.Span, out int actualUtf16Count, out int actualScalarCount);
 
                 // Assert
 

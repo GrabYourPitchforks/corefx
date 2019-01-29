@@ -33,9 +33,7 @@ namespace System.Text.Unicode.Tests
 
         private const string GRINNING_FACE_UTF8 = "F09F9880"; // U+1F600 GRINNING FACE, 4 bytes
         private const string GRINNING_FACE_UTF16 = "\U0001F600";
-
-        private static readonly UTF8Encoding _utf8EncodingWithoutReplacement = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
-
+        
         // All valid scalars [ U+0000 .. U+D7FF ] and [ U+E000 .. U+10FFFF ].
         private static readonly IEnumerable<Rune> s_allValidScalars = Enumerable.Range(0x0000, 0xD800).Concat(Enumerable.Range(0xE000, 0x110000 - 0xE000)).Select(value => new Rune(value));
 
@@ -47,7 +45,7 @@ namespace System.Text.Unicode.Tests
             List<char> allScalarsAsUtf16 = new List<char>();
             List<byte> allScalarsAsUtf8 = new List<byte>();
 
-            foreach (var rune in s_allValidScalars)
+            foreach (Rune rune in s_allValidScalars)
             {
                 allScalarsAsUtf16.AddRange(ToUtf16(rune));
                 allScalarsAsUtf8.AddRange(ToUtf8(rune));
@@ -80,7 +78,7 @@ namespace System.Text.Unicode.Tests
             byte[] allScalarsAsUtf8 = s_allScalarsAsUtf8.ToArray();
             allScalarsAsUtf8[0x1000] ^= 0x80; // modify the high bit of one of the characters, which will corrupt the header
 
-            using (var boundedMemory = BoundedMemory.AllocateFromExistingData(allScalarsAsUtf8))
+            using (BoundedMemory<byte> boundedMemory = BoundedMemory.AllocateFromExistingData(allScalarsAsUtf8))
             {
                 boundedMemory.MakeReadonly();
 

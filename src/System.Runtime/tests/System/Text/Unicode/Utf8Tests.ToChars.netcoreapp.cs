@@ -290,7 +290,7 @@ namespace System.Text.Unicode.Tests
 
                 // Act
 
-                var actualOperationStatus = Utf8.ToChars(boundedSource.Span, boundedDestination.Span, replaceInvalidSequences, isFinalChunk, out int actualNumBytesRead, out int actualNumCharsWritten);
+                OperationStatus actualOperationStatus = Utf8.ToChars(boundedSource.Span, boundedDestination.Span, replaceInvalidSequences, isFinalChunk, out int actualNumBytesRead, out int actualNumCharsWritten);
 
                 // Assert
 

@@ -250,7 +250,7 @@ namespace System.Text.Unicode.Tests
 
                 // Act
 
-                var actualOperationStatus = Utf8.ToBytes(boundedSource.Span, boundedDestination.Span, replaceInvalidSequences, isFinalChunk, out int actualNumCharsRead, out int actualNumBytesWritten);
+                OperationStatus actualOperationStatus = Utf8.ToBytes(boundedSource.Span, boundedDestination.Span, replaceInvalidSequences, isFinalChunk, out int actualNumCharsRead, out int actualNumBytesWritten);
 
                 // Assert
 
