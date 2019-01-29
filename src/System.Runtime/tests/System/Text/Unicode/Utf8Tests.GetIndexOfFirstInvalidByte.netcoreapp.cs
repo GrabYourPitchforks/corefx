@@ -159,6 +159,17 @@ namespace System.Text.Unicode.Tests
                     expectedUtf16CharCount: utf8Input.Length + 1,
                     expectedScalarCount: utf8Input.Length + 1);
             }
+
+            // Same tests as above, but with invalid data.
+
+            for (int i = 0; i < utf8Input.Length; i++)
+            {
+                GetIndexOfFirstInvalidByte_Test_Core(
+                    input: utf8Input.Take(i).Concat(new[] { (byte)0xFF }).Concat(utf8Input.Skip(i)).ToArray(),
+                    expectedRetVal: i,
+                    expectedUtf16CharCount: i,
+                    expectedScalarCount: i);
+            }
         }
 
         [Fact]
