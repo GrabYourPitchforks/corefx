@@ -156,8 +156,8 @@ namespace System.Text.Unicode.Tests
                 GetIndexOfFirstInvalidByte_Test_Core(
                     input: utf8Input.Take(i).Concat(DecodeHex(EURO_SYMBOL_UTF8)).Concat(utf8Input.Skip(i)).ToArray(),
                     expectedRetVal: -1,
-                    expectedUtf16CharCount: i - 2,
-                    expectedScalarCount: i - 2);
+                    expectedUtf16CharCount: utf8Input.Length + 1,
+                    expectedScalarCount: utf8Input.Length + 1);
             }
         }
 
