@@ -1459,7 +1459,7 @@ namespace System
     {
         private readonly int _dummyPrimitive;
         public Index(int value, bool fromEnd) { throw null; }
-        public bool FromEnd { get { throw null; } }
+        // public bool FromEnd { get { throw null; } }
         public int Value { get { throw null; } }
         public bool Equals(System.Index other) { throw null; }
         public override bool Equals(object value) { throw null; }
@@ -1968,20 +1968,20 @@ namespace System
         public PlatformNotSupportedException(string message, System.Exception inner) { }
     }
     public delegate bool Predicate<in T>(T obj);
-    public readonly partial struct Range : System.IEquatable<System.Range>
-    {
-        private readonly int _dummyPrimitive;
-        public System.Index End { get { throw null; } }
-        public System.Index Start { get { throw null; } }
-        public static System.Range All() { throw null; }
-        public static System.Range Create(System.Index start, System.Index end) { throw null; }
-        public override bool Equals(object value) { throw null; }
-        public bool Equals(System.Range other) { throw null; }
-        public static System.Range FromStart(System.Index start) { throw null; }
-        public override int GetHashCode() { throw null; }
-        public static System.Range ToEnd(System.Index end) { throw null; }
-        public override string ToString() { throw null; }
-    }
+    //public readonly partial struct Range : System.IEquatable<System.Range>
+    //{
+    //    private readonly int _dummyPrimitive;
+    //    public System.Index End { get { throw null; } }
+    //    public System.Index Start { get { throw null; } }
+    //    public static System.Range All() { throw null; }
+    //    public static System.Range Create(System.Index start, System.Index end) { throw null; }
+    //    public override bool Equals(object value) { throw null; }
+    //    public bool Equals(System.Range other) { throw null; }
+    //    public static System.Range FromStart(System.Index start) { throw null; }
+    //    public override int GetHashCode() { throw null; }
+    //    public static System.Range ToEnd(System.Index end) { throw null; }
+    //    public override string ToString() { throw null; }
+    //}
     public partial class RankException : System.SystemException
     {
         public RankException() { }
@@ -2026,7 +2026,7 @@ namespace System
         public bool IsEmpty { get { throw null; } }
         public ref readonly T this[System.Index index] { get { throw null; } }
         public ref readonly T this[int index] { get { throw null; } }
-        public System.ReadOnlySpan<T> this[System.Range range] { get { throw null; } }
+        // public System.ReadOnlySpan<T> this[System.Range range] { get { throw null; } }
         public int Length { get { throw null; } }
         public void CopyTo(System.Span<T> destination) { }
         [System.ComponentModel.EditorBrowsableAttribute((System.ComponentModel.EditorBrowsableState)(1))]
@@ -2230,7 +2230,7 @@ namespace System
         public bool IsEmpty { get { throw null; } }
         public ref T this[System.Index index] { get { throw null; } }
         public ref T this[int index] { get { throw null; } }
-        public System.Span<T> this[System.Range range] { get { throw null; } }
+        // public System.Span<T> this[System.Range range] { get { throw null; } }
         public int Length { get { throw null; } }
         public void Clear() { }
         public void CopyTo(System.Span<T> destination) { }
@@ -7366,6 +7366,14 @@ namespace System.Security.Cryptography
 }
 namespace System.Text
 {
+    [CLSCompliant(false)]
+    public static partial class AsciiUtility
+    {
+        public static ulong GetIndexOfFirstNonAsciiByte(ref byte buffer, ulong bufferLength) => throw null;
+        public static unsafe ulong GetIndexOfFirstNonAsciiChar(ref char buffer, ulong bufferLength /* in chars */) => throw null;
+        public static unsafe ulong NarrowUtf16ToAscii(ref char utf16Buffer, ref byte asciiBuffer, ulong elementCount) => throw null;
+        public static unsafe ulong WidenAsciiToUtf16(ref byte asciiBuffer, ref char utf16Buffer, ulong elementCount) => throw null;
+    }
     public abstract partial class Decoder
     {
         protected Decoder() { }
