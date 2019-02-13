@@ -15,7 +15,7 @@ namespace System.Text.Tests
 {
     // Since many of the methods we'll be testing are internal, we'll need to invoke
     // them via reflection.
-    public static partial class AsciiUtilityTests
+    public unsafe static partial class AsciiUtilityTests
     {
         private static bool Is64Bit => IntPtr.Size >= 8;
 
@@ -23,13 +23,13 @@ namespace System.Text.Tests
 
         // The delegate definitions and members below provide us access to CoreLib's internals.
 
-        private delegate TNuint FnGetIndexOfFirstNonAsciiElement<TElement, TNuint>(ref TElement buffer, TNuint bufferLength);
+        private delegate TNuint FnGetIndexOfFirstNonAsciiElement<TElement, TNuint>(TElement* pBuffer, TNuint bufferLength) where TElement : unmanaged;
         private static Lazy<FnGetIndexOfFirstNonAsciiElement<byte, UIntPtr>> _fnGetIndexOfFirstNonAsciiByte
             = new Lazy<FnGetIndexOfFirstNonAsciiElement<byte, UIntPtr>>(() => CreateNuintDelegate<FnGetIndexOfFirstNonAsciiElement<byte, UIntPtr>>("GetIndexOfFirstNonAsciiByte"));
         private static Lazy<FnGetIndexOfFirstNonAsciiElement<char, UIntPtr>> _fnGetIndexOfFirstNonAsciiChar
             = new Lazy<FnGetIndexOfFirstNonAsciiElement<char, UIntPtr>>(() => CreateNuintDelegate<FnGetIndexOfFirstNonAsciiElement<char, UIntPtr>>("GetIndexOfFirstNonAsciiChar"));
 
-        private delegate TNuint FnTranscodeAsciiElements<TElementFrom, TElementTo, TNuint>(ref TElementFrom bufferFrom, ref TElementTo bufferTo, TNuint bufferLenght);
+        private delegate TNuint FnTranscodeAsciiElements<TElementFrom, TElementTo, TNuint>(TElementFrom* pBufferFrom, TElementTo* pBufferTo, TNuint bufferLenght) where TElementFrom : unmanaged where TElementTo : unmanaged;
         private static Lazy<FnTranscodeAsciiElements<char, byte, UIntPtr>> _fnNarrowAsciiCharsToBytes
             = new Lazy<FnTranscodeAsciiElements<char, byte, UIntPtr>>(() => CreateNuintDelegate<FnTranscodeAsciiElements<char, byte, UIntPtr>>("NarrowUtf16ToAscii"));
         private static Lazy<FnTranscodeAsciiElements<byte, char, UIntPtr>> _fnWidenAsciiBytesToChars
@@ -252,6 +252,7 @@ namespace System.Text.Tests
                 {
                     chars[i - 1] = '\u0123'; // set non-ASCII
                     Assert.Equal(i - 1, CallGetIndexOfFirstNonAsciiChar(chars.Slice(0, i)));
+                    Assert.Equal(i - 1, CallGetIndexOfFirstNonAsciiChar(chars));
                 }
             }
         }
@@ -458,7 +459,10 @@ namespace System.Text.Tests
         private static ulong CallGetIndexOfFirstNonAsciiByte(ref byte buffer, ulong bufferLength)
         {
             // Conversions between UIntPtr <-> ulong are checked.
-            return (ulong)_fnGetIndexOfFirstNonAsciiByte.Value(ref buffer, (UIntPtr)bufferLength);
+            fixed (byte* pBuffer = &buffer)
+            {
+                return (ulong)_fnGetIndexOfFirstNonAsciiByte.Value(pBuffer, (UIntPtr)bufferLength);
+            }
         }
 
         private static int CallGetIndexOfFirstNonAsciiChar(ReadOnlySpan<char> buffer)
@@ -469,7 +473,10 @@ namespace System.Text.Tests
         private static ulong CallGetIndexOfFirstNonAsciiChar(ref char buffer, ulong bufferLength)
         {
             // Conversions between UIntPtr <-> ulong are checked.
-            return (ulong)_fnGetIndexOfFirstNonAsciiChar.Value(ref buffer, (UIntPtr)bufferLength);
+            fixed (char* pBuffer = &buffer)
+            {
+                return (ulong)_fnGetIndexOfFirstNonAsciiChar.Value(pBuffer, (UIntPtr)bufferLength);
+            }
         }
 
         private static int CallNarrowUtf16ToAscii(ReadOnlySpan<char> utf16, Span<byte> ascii)
@@ -481,7 +488,11 @@ namespace System.Text.Tests
         private static ulong CallNarrowUtf16ToAscii(ref char utf16, ref byte ascii, ulong bufferLength)
         {
             // Conversions between UIntPtr <-> ulong are checked.
-            return (ulong)_fnNarrowAsciiCharsToBytes.Value(ref utf16, ref ascii, (UIntPtr)bufferLength);
+            fixed (char* pUtf16 = &utf16)
+            fixed (byte* pAscii = &ascii)
+            {
+                return (ulong)_fnNarrowAsciiCharsToBytes.Value(pUtf16, pAscii, (UIntPtr)bufferLength);
+            }
         }
 
         private static int CallWidenAsciiToUtf16(ReadOnlySpan<byte> ascii, Span<char> utf16)
@@ -493,7 +504,11 @@ namespace System.Text.Tests
         private static ulong CallWidenAsciiToUtf16(ref byte ascii, ref char utf16, ulong bufferLength)
         {
             // Conversions between UIntPtr <-> ulong are checked.
-            return (ulong)_fnWidenAsciiBytesToChars.Value(ref ascii, ref utf16, (UIntPtr)bufferLength);
+            fixed (byte* pAscii = &ascii)
+            fixed (char* pUtf16 = &utf16)
+            {
+                return (ulong)_fnWidenAsciiBytesToChars.Value(pAscii, pUtf16, (UIntPtr)bufferLength);
+            }
         }
 
         private static Type GetAsciiUtilityType()
