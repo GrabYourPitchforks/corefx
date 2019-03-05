@@ -216,16 +216,15 @@ namespace System.Text.Tests
             byte[] bytes = new byte[chars.Length * 2];
             Encoder encoder = Encoding.UTF8.GetEncoder();
 
-            VerificationHelper(encoder, chars, 0, 1, bytes, 0, 0, true, 1, 0, expectedCompleted: false);
-            VerificationHelper(encoder, chars, 0, 1, bytes, 0, 3, false, 1, 3, expectedCompleted: true);
-            VerificationHelper(encoder, chars, 0, 2, bytes, 0, 7, false, 2, 7, expectedCompleted: true);
+            VerificationHelper(encoder, chars, 0, 1, bytes, 0, 3, true, 1, 3, expectedCompleted: true);
+            VerificationHelper(encoder, chars, 0, 2, bytes, 0, 7, false, 2, 4, expectedCompleted: true);
             VerificationHelper(encoder, chars, 0, 4, bytes, 0, 6, false, 4, 6, expectedCompleted: true);
             VerificationHelper(encoder, chars, 0, 4, bytes, 0, 6, true, 4, 6, expectedCompleted: true);
             VerificationHelper(encoder, chars, 2, 2, bytes, 0, 2, true, 2, 2, expectedCompleted: true);
             VerificationHelper(encoder, chars, 1, 3, bytes, 1, 3, false, 1, 3, expectedCompleted: false);
             VerificationHelper(encoder, chars, 1, 3, bytes, 1, 5, true, 3, 5, expectedCompleted: true);
 
-            VerificationHelper(encoder, chars, 0, 1, bytes, 0, bytes.Length, false, 1, 0, expectedCompleted: true);
+            VerificationHelper(encoder, chars, 0, 1, bytes, 0, bytes.Length, false, 1, 0, expectedCompleted: false);
             VerificationHelper(encoder, chars, 1, 1, bytes, 0, bytes.Length, true, 1, 4, expectedCompleted: true);
         }
  
