@@ -5742,6 +5742,11 @@ namespace System.Reflection
         Filter = 1,
         Finally = 2,
     }
+    public sealed partial class FieldAccessor<TObject, TField> where TObject : class
+    {
+        public FieldAccessor(System.Reflection.FieldInfo fieldInfo) { }
+        public ref TField GetRef(TObject obj) { throw null; }
+    }
     [System.FlagsAttribute]
     public enum FieldAttributes
     {
