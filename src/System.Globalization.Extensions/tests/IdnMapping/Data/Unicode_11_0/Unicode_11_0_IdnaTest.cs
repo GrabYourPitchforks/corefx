@@ -13,15 +13,14 @@ namespace System.Globalization.Tests
     /// 
     /// The structure of the data set is a semicolon delimited list with the following columns:
     ///
-    /// Column 1: type - T for transitional, N for nontransitional, B for both
-    /// Column 2: source - the source string to be tested
+    /// Column 1: source - the source string to be tested
     /// Column 3: toUnicode - the result of applying toUnicode to the source, using the specified type. A blank value means the same as the source value.
     /// Column 4: toASCII - the result of applying toASCII to the source, using nontransitional. A blank value means the same as the toUnicode value.
     /// Column 5: NV8 - present if the toUnicode value would not be a valid domain name under IDNA2008. Not a normative field.
     /// </summary>
     public class Unicode_11_0_IdnaTest : IConformanceIdnaTest
     {
-        public IdnType Type { get; set; }
+        public IdnType Type => IdnType.Both; // Each line in Unicode 11.0's IdnaTest file contains both transitional and nontransitional test vectors
         public string Source { get; set; }
         public ConformanceIdnaUnicodeTestResult UnicodeResult { get; set; }
         public ConformanceIdnaTestResult ASCIIResult { get; set; }

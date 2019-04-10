@@ -74,6 +74,7 @@ namespace System.Globalization.Tests
         /// Abstracts retrieving the dataset so this can be changed depending on platform support, such as
         /// when the IDNA implementation is updated to a newer version of Unicode.  Windows 10 up to 1607 supports
         /// and uses 6.0 in IDNA processing. Windows 10 1703 and greater currently uses 9.0 in IDNA processing. 
+        /// Windows 10 1903 and greater currently use 11.0 in IDNA processing.
         /// 
         /// This method retrieves the dataset to be used by the test.  Windows implementation uses transitional 
         /// mappings, which only affect 4 characters, known as deviations.  See the description at
