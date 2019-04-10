@@ -30,7 +30,7 @@ namespace System.Globalization.Tests
             if (PlatformDetection.IsWindows7)
                 fileName = "IdnaTest_Win7.txt";
             else if (PlatformDetection.IsWindows10Version1903OrGreater)
-                fileName = "IdnaTest_12.txt";
+                fileName = "IdnaTest_11.txt";
             else if (PlatformDetection.IsWindows10Version1703OrGreater)
                 fileName = "IdnaTest_9.txt";
             else
@@ -63,7 +63,7 @@ namespace System.Globalization.Tests
             if (PlatformDetection.IsWindows7)
                 return new Unicode_Win7_IdnaTest(line, lineCount);
             else if (PlatformDetection.IsWindows10Version1903OrGreater)
-                return new Unicode_12_0_IdnaTest(line, lineCount);
+                return new Unicode_11_0_IdnaTest(line, lineCount);
             else if (PlatformDetection.IsWindows10Version1703OrGreater)
                 return new Unicode_9_0_IdnaTest(line, lineCount);
             else

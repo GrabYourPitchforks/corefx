@@ -9,7 +9,7 @@ namespace System.Globalization.Tests
 {
     /// <summary>
     /// Class to read data obtained from http://www.unicode.org/Public/idna.  For more information read the information
-    /// contained in Data\Unicode_12_0\IdnaTest_12.txt
+    /// contained in Data\Unicode_11_0\IdnaTest_11.txt
     /// 
     /// The structure of the data set is a semicolon delimited list with the following columns:
     ///
@@ -19,7 +19,7 @@ namespace System.Globalization.Tests
     /// Column 4: toASCII - the result of applying toASCII to the source, using nontransitional. A blank value means the same as the toUnicode value.
     /// Column 5: NV8 - present if the toUnicode value would not be a valid domain name under IDNA2008. Not a normative field.
     /// </summary>
-    public class Unicode_12_0_IdnaTest : IConformanceIdnaTest
+    public class Unicode_11_0_IdnaTest : IConformanceIdnaTest
     {
         public IdnType Type { get; set; }
         public string Source { get; set; }
@@ -27,7 +27,7 @@ namespace System.Globalization.Tests
         public ConformanceIdnaTestResult ASCIIResult { get; set; }
         public int LineNumber { get; set; }
 
-        public Unicode_12_0_IdnaTest(string line, int lineNumber)
+        public Unicode_11_0_IdnaTest(string line, int lineNumber)
         {
             string[] split = line.Split(';');
 
