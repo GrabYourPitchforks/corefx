@@ -466,6 +466,35 @@ namespace System.Text.Tests
             Assert.Equal(0, result.Value);
         }
 
+        [Fact]
+        // [OuterLoop]
+        public static void TryCreate_Char_AllInputs()
+        {
+            // Non-surrogate chars
+
+            for (int i = 0; i < 0xD800; i++)
+            {
+                Assert.True(Rune.TryCreate((char)i, out Rune result));
+                Assert.Equal(i, result.Value);
+            }
+
+            // Surrogate chars
+
+            for (int i = 0xD800; i < 0xE000; i++)
+            {
+                Assert.False(Rune.TryCreate((char)i, out Rune result));
+                Assert.Equal(0, result.Value);
+            }
+
+            // Non-surrogate chars
+
+            for (int i = 0xE000; i <= char.MaxValue; i++)
+            {
+                Assert.True(Rune.TryCreate((char)i, out Rune result));
+                Assert.Equal(i, result.Value);
+            }
+        }
+
         [Theory]
         [MemberData(nameof(SurrogatePairTestData_InvalidOnly))]
         public static void TryCreate_SurrogateChars_Invalid(char highSurrogate, char lowSurrogate)
@@ -480,6 +509,30 @@ namespace System.Text.Tests
         {
             Assert.True(Rune.TryCreate(highSurrogate, lowSurrogate, out Rune result));
             Assert.Equal(expectedValue, result.Value);
+        }
+
+        [Fact]
+        // [OuterLoop]
+        public static void TryCreate_SurrogateChar_AllInputs()
+        {
+            for (int high = 0; high <= char.MaxValue; high++)
+            {
+                for (int low = 0; low <= char.MaxValue; low++)
+                {
+                    if (0xD800 <= high && high <= 0xDBFF && 0xDC00 <= low && low <= 0xDFFF)
+                    {
+                        Assert.True(Rune.TryCreate((char)high, (char)low, out Rune result));
+
+                        int expectedCodePoint = ((high - 0xD800) * 0x0400) + (low - 0xDC00) + 0x10000;
+                        Assert.Equal(expectedCodePoint, result.Value);
+                    }
+                    else
+                    {
+                        Assert.False(Rune.TryCreate((char)high, (char)low, out Rune result));
+                        Assert.Equal(0, result.Value);
+                    }
+                }
+            }
         }
 
         [Theory]
