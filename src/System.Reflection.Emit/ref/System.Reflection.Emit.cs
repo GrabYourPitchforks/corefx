@@ -292,6 +292,7 @@ namespace System.Reflection.Emit
         public override System.Type DeclaringType { get { throw null; } }
         public override System.Reflection.Module Module { get { throw null; } }
         public override string Name { get { throw null; } }
+        public System.Reflection.Emit.PropertyToken PropertyToken { get { throw null; } }
         public override System.Type PropertyType { get { throw null; } }
         public override System.Type ReflectedType { get { throw null; } }
         public void AddOtherMethod(System.Reflection.Emit.MethodBuilder mdBuilder) { }

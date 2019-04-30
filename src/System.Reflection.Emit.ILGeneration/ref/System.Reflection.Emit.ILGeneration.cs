@@ -81,9 +81,32 @@ namespace System.Reflection.Emit
         public bool IsOut { get { throw null; } }
         public virtual string Name { get { throw null; } }
         public virtual int Position { get { throw null; } }
+        public virtual System.Reflection.Emit.ParameterToken GetToken() { throw null; }
         public virtual void SetConstant(object defaultValue) { }
         public void SetCustomAttribute(System.Reflection.ConstructorInfo con, byte[] binaryAttribute) { }
         public void SetCustomAttribute(System.Reflection.Emit.CustomAttributeBuilder customBuilder) { }
+    }
+    public partial struct ParameterToken
+    {
+        private object _dummy;
+        public static readonly System.Reflection.Emit.ParameterToken Empty;
+        public int Token { get { throw null; } }
+        public override int GetHashCode() { throw null; }
+        public override bool Equals(object obj) { throw null; }
+        public bool Equals(System.Reflection.Emit.ParameterToken obj) { throw null; }
+        public static bool operator ==(System.Reflection.Emit.ParameterToken a, System.Reflection.Emit.ParameterToken b) { throw null; }
+        public static bool operator !=(System.Reflection.Emit.ParameterToken a, System.Reflection.Emit.ParameterToken b) { throw null; }
+    }
+    public partial struct PropertyToken
+    {
+        private object _dummy;
+        public static readonly System.Reflection.Emit.PropertyToken Empty;
+        public int Token { get { throw null; } }
+        public override int GetHashCode() { throw null; }
+        public override bool Equals(object obj) { throw null; }
+        public bool Equals(System.Reflection.Emit.PropertyToken obj) { throw null; }
+        public static bool operator ==(System.Reflection.Emit.PropertyToken a, System.Reflection.Emit.PropertyToken b) { throw null; }
+        public static bool operator !=(System.Reflection.Emit.PropertyToken a, System.Reflection.Emit.PropertyToken b) { throw null; }
     }
     public sealed partial class SignatureHelper
     {
