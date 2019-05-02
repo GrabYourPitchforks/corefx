@@ -42,13 +42,16 @@ namespace System.Reflection.Emit
         public override System.Reflection.Module Module { get { throw null; } }
         public override string Name { get { throw null; } }
         public override System.Type ReflectedType { get { throw null; } }
+        public string Signature { get { throw null; } }
         public System.Reflection.Emit.ParameterBuilder DefineParameter(int iSequence, System.Reflection.ParameterAttributes attributes, string strParamName) { throw null; }
         public override object[] GetCustomAttributes(bool inherit) { throw null; }
         public override object[] GetCustomAttributes(System.Type attributeType, bool inherit) { throw null; }
         public System.Reflection.Emit.ILGenerator GetILGenerator() { throw null; }
         public System.Reflection.Emit.ILGenerator GetILGenerator(int streamSize) { throw null; }
         public override System.Reflection.MethodImplAttributes GetMethodImplementationFlags() { throw null; }
+        public System.Reflection.Module GetModule() { throw null; }
         public override System.Reflection.ParameterInfo[] GetParameters() { throw null; }
+        public System.Reflection.Emit.MethodToken GetToken() { throw null; } 
         public override object Invoke(object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, object[] parameters, System.Globalization.CultureInfo culture) { throw null; }
         public override object Invoke(System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, object[] parameters, System.Globalization.CultureInfo culture) { throw null; }
         public override bool IsDefined(System.Type attributeType, bool inherit) { throw null; }
@@ -57,7 +60,7 @@ namespace System.Reflection.Emit
         public void SetImplementationFlags(System.Reflection.MethodImplAttributes attributes) { }
         public override string ToString() { throw null; }
     }
-    public sealed partial class EnumBuilder : System.Type
+    public sealed partial class EnumBuilder : System.Reflection.TypeInfo
     {
         internal EnumBuilder() { }
         public override System.Reflection.Assembly Assembly { get { throw null; } }
@@ -72,8 +75,10 @@ namespace System.Reflection.Emit
         public override string Namespace { get { throw null; } }
         public override System.Type ReflectedType { get { throw null; } }
         public override System.RuntimeTypeHandle TypeHandle { get { throw null; } }
+        public System.Reflection.Emit.TypeToken TypeToken { get { throw null; } }
         public System.Reflection.Emit.FieldBuilder UnderlyingField { get { throw null; } }
         public override System.Type UnderlyingSystemType { get { throw null; } }
+        public System.Type CreateType() { throw null; }
         public System.Reflection.TypeInfo CreateTypeInfo() { throw null; }
         public System.Reflection.Emit.FieldBuilder DefineLiteral(string literalName, object literalValue) { throw null; }
         protected override System.Reflection.TypeAttributes GetAttributeFlagsImpl() { throw null; }
@@ -119,6 +124,7 @@ namespace System.Reflection.Emit
     {
         internal EventBuilder() { }
         public void AddOtherMethod(System.Reflection.Emit.MethodBuilder mdBuilder) { }
+        public System.Reflection.Emit.EventToken GetEventToken() { throw null; }
         public void SetAddOnMethod(System.Reflection.Emit.MethodBuilder mdBuilder) { }
         public void SetCustomAttribute(System.Reflection.ConstructorInfo con, byte[] binaryAttribute) { }
         public void SetCustomAttribute(System.Reflection.Emit.CustomAttributeBuilder customBuilder) { }
@@ -136,6 +142,7 @@ namespace System.Reflection.Emit
         public override System.Type ReflectedType { get { throw null; } }
         public override object[] GetCustomAttributes(bool inherit) { throw null; }
         public override object[] GetCustomAttributes(System.Type attributeType, bool inherit) { throw null; }
+        public System.Reflection.Emit.FieldToken GetToken() { throw null; }
         public override object GetValue(object obj) { throw null; }
         public override bool IsDefined(System.Type attributeType, bool inherit) { throw null; }
         public void SetConstant(object defaultValue) { }
@@ -144,7 +151,7 @@ namespace System.Reflection.Emit
         public void SetOffset(int iOffset) { }
         public override void SetValue(object obj, object val, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Globalization.CultureInfo culture) { }
     }
-    public sealed partial class GenericTypeParameterBuilder : System.Type
+    public sealed partial class GenericTypeParameterBuilder : System.Reflection.TypeInfo
     {
         internal GenericTypeParameterBuilder() { }
         public override System.Reflection.Assembly Assembly { get { throw null; } }
@@ -233,6 +240,7 @@ namespace System.Reflection.Emit
         public override System.Reflection.ParameterInfo ReturnParameter { get { throw null; } }
         public override System.Type ReturnType { get { throw null; } }
         public override System.Reflection.ICustomAttributeProvider ReturnTypeCustomAttributes { get { throw null; } }
+        public string Signature { get { throw null; } }
         public System.Reflection.Emit.GenericTypeParameterBuilder[] DefineGenericParameters(params string[] names) { throw null; }
         public System.Reflection.Emit.ParameterBuilder DefineParameter(int position, System.Reflection.ParameterAttributes attributes, string strParamName) { throw null; }
         public override bool Equals(object obj) { throw null; }
@@ -245,7 +253,9 @@ namespace System.Reflection.Emit
         public System.Reflection.Emit.ILGenerator GetILGenerator() { throw null; }
         public System.Reflection.Emit.ILGenerator GetILGenerator(int size) { throw null; }
         public override System.Reflection.MethodImplAttributes GetMethodImplementationFlags() { throw null; }
+        public System.Reflection.Module GetModule() { throw null; }
         public override System.Reflection.ParameterInfo[] GetParameters() { throw null; }
+        public System.Reflection.Emit.MethodToken GetToken() { throw null; }
         public override object Invoke(object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, object[] parameters, System.Globalization.CultureInfo culture) { throw null; }
         public override bool IsDefined(System.Type attributeType, bool inherit) { throw null; }
         public override System.Reflection.MethodInfo MakeGenericMethod(params System.Type[] typeArguments) { throw null; }
@@ -279,7 +289,13 @@ namespace System.Reflection.Emit
         public System.Reflection.Emit.FieldBuilder DefineUninitializedData(string name, int size, System.Reflection.FieldAttributes attributes) { throw null; }
         public override bool Equals(object obj) { throw null; }
         public System.Reflection.MethodInfo GetArrayMethod(System.Type arrayClass, string methodName, System.Reflection.CallingConventions callingConvention, System.Type returnType, System.Type[] parameterTypes) { throw null; }
+        public System.Reflection.Emit.FieldToken GetFieldToken(System.Reflection.FieldInfo field) { throw null; }
         public override int GetHashCode() { throw null; }
+        public System.Reflection.Emit.MethodToken GetMethodToken(System.Reflection.MethodInfo method) { throw null; }
+        public System.Reflection.Emit.StringToken GetStringConstant(string str) { throw null; }
+        public System.Reflection.Emit.TypeToken GetTypeToken(string name) { throw null; }
+        public System.Reflection.Emit.TypeToken GetTypeToken(System.Type type) { throw null; }
+        public bool IsTransient() { throw null; }
         public void SetCustomAttribute(System.Reflection.ConstructorInfo con, byte[] binaryAttribute) { }
         public void SetCustomAttribute(System.Reflection.Emit.CustomAttributeBuilder customBuilder) { }
     }
@@ -313,7 +329,7 @@ namespace System.Reflection.Emit
         public override void SetValue(object obj, object value, object[] index) { }
         public override void SetValue(object obj, object value, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, object[] index, System.Globalization.CultureInfo culture) { }
     }
-    public sealed partial class TypeBuilder : System.Type
+    public sealed partial class TypeBuilder : System.Reflection.TypeInfo
     {
         internal TypeBuilder() { }
         public const int UnspecifiedTypeSize = 0;
@@ -340,6 +356,7 @@ namespace System.Reflection.Emit
         public override System.Type ReflectedType { get { throw null; } }
         public int Size { get { throw null; } }
         public override System.RuntimeTypeHandle TypeHandle { get { throw null; } }
+        public System.Reflection.Emit.TypeToken TypeToken { get { throw null; } }
         public override System.Type UnderlyingSystemType { get { throw null; } }
         public void AddInterfaceImplementation(System.Type interfaceType) { }
         public System.Reflection.TypeInfo CreateTypeInfo() { throw null; }
