@@ -14,6 +14,28 @@ namespace System.Reflection.Emit
         public CustomAttributeBuilder(System.Reflection.ConstructorInfo con, object[] constructorArgs, System.Reflection.PropertyInfo[] namedProperties, object[] propertyValues) { }
         public CustomAttributeBuilder(System.Reflection.ConstructorInfo con, object[] constructorArgs, System.Reflection.PropertyInfo[] namedProperties, object[] propertyValues, System.Reflection.FieldInfo[] namedFields, object[] fieldValues) { }
     }
+    public partial struct EventToken
+    {
+        public static readonly System.Reflection.Emit.EventToken Empty;
+        private object _dummy;
+        public int Token { get { throw null; } }
+        public override int GetHashCode() { throw null; }
+        public override bool Equals(object obj) { throw null; }
+        public bool Equals(System.Reflection.Emit.EventToken obj) { throw null; }
+        public static bool operator ==(System.Reflection.Emit.EventToken a, System.Reflection.Emit.EventToken b) { throw null; }
+        public static bool operator !=(System.Reflection.Emit.EventToken a, System.Reflection.Emit.EventToken b) { throw null; }
+    }
+    public partial struct FieldToken
+    {
+        public static readonly System.Reflection.Emit.FieldToken Empty;
+        private object _dummy;
+        public int Token { get { throw null; } }
+        public override int GetHashCode() { throw null; }
+        public override bool Equals(object obj) { throw null; }
+        public bool Equals(System.Reflection.Emit.FieldToken obj) { throw null; }
+        public static bool operator ==(System.Reflection.Emit.FieldToken a, System.Reflection.Emit.FieldToken b) { throw null; }
+        public static bool operator !=(System.Reflection.Emit.FieldToken a, System.Reflection.Emit.FieldToken b) { throw null; }
+    }
     public partial class ILGenerator
     {
         internal ILGenerator() { }
@@ -88,8 +110,8 @@ namespace System.Reflection.Emit
     }
     public partial struct ParameterToken
     {
-        private object _dummy;
         public static readonly System.Reflection.Emit.ParameterToken Empty;
+        private object _dummy;
         public int Token { get { throw null; } }
         public override int GetHashCode() { throw null; }
         public override bool Equals(object obj) { throw null; }
@@ -99,8 +121,8 @@ namespace System.Reflection.Emit
     }
     public partial struct PropertyToken
     {
-        private object _dummy;
         public static readonly System.Reflection.Emit.PropertyToken Empty;
+        private object _dummy;
         public int Token { get { throw null; } }
         public override int GetHashCode() { throw null; }
         public override bool Equals(object obj) { throw null; }
@@ -132,6 +154,7 @@ namespace System.Reflection.Emit
     }
     public partial struct SignatureToken
     {
+        public static readonly System.Reflection.Emit.SignatureToken Empty;
         private object _dummy;
         public int Token { get { throw null; } }
         public override int GetHashCode() { throw null; }
@@ -152,6 +175,7 @@ namespace System.Reflection.Emit
     }
     public partial struct TypeToken
     {
+        public static readonly System.Reflection.Emit.TypeToken Empty;
         private object _dummy;
         public int Token { get { throw null; } }
         public override int GetHashCode() { throw null; }
