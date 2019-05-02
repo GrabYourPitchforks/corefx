@@ -130,4 +130,34 @@ namespace System.Reflection.Emit
         public byte[] GetSignature() { throw null; }
         public override string ToString() { throw null; }
     }
+    public partial struct SignatureToken
+    {
+        private object _dummy;
+        public int Token { get { throw null; } }
+        public override int GetHashCode() { throw null; }
+        public override bool Equals(object obj) { throw null; }
+        public bool Equals(System.Reflection.Emit.SignatureToken obj) { throw null; }
+        public static bool operator ==(System.Reflection.Emit.SignatureToken a, System.Reflection.Emit.SignatureToken b) { throw null; }
+        public static bool operator !=(System.Reflection.Emit.SignatureToken a, System.Reflection.Emit.SignatureToken b) { throw null; }
+    }
+    public partial struct StringToken
+    {
+        private object _dummy;
+        public int Token { get { throw null; } }
+        public override int GetHashCode() { throw null; }
+        public override bool Equals(object obj) { throw null; }
+        public bool Equals(System.Reflection.Emit.StringToken obj) { throw null; }
+        public static bool operator ==(System.Reflection.Emit.StringToken a, System.Reflection.Emit.StringToken b) { throw null; }
+        public static bool operator !=(System.Reflection.Emit.StringToken a, System.Reflection.Emit.StringToken b) { throw null; }
+    }
+    public partial struct TypeToken
+    {
+        private object _dummy;
+        public int Token { get { throw null; } }
+        public override int GetHashCode() { throw null; }
+        public override bool Equals(object obj) { throw null; }
+        public bool Equals(System.Reflection.Emit.TypeToken obj) { throw null; }
+        public static bool operator ==(System.Reflection.Emit.TypeToken a, System.Reflection.Emit.TypeToken b) { throw null; }
+        public static bool operator !=(System.Reflection.Emit.TypeToken a, System.Reflection.Emit.TypeToken b) { throw null; }
+    }
 }
