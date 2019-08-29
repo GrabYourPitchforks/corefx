@@ -235,4 +235,26 @@ namespace System.Text
         [System.Runtime.CompilerServices.UnsafeMemberAttribute]
         public static System.Text.Utf8Span UnsafeCreateWithoutValidation(System.ReadOnlySpan<byte> buffer) { throw null; }
     }
+    public abstract class Utf8StringComparer : System.Collections.Generic.IComparer<System.Text.Utf8Segment>, System.Collections.Generic.IComparer<System.Utf8String?>, System.Collections.Generic.IEqualityComparer<System.Text.Utf8Segment>, System.Collections.Generic.IEqualityComparer<System.Utf8String?>
+    {
+        private Utf8StringComparer() { }
+        public static System.Text.Utf8StringComparer CurrentCulture { get { throw null; } }
+        public static System.Text.Utf8StringComparer CurrentCultureIgnoreCase { get { throw null; } }
+        public static System.Text.Utf8StringComparer InvariantCulture { get { throw null; } }
+        public static System.Text.Utf8StringComparer InvariantCultureIgnoreCase { get { throw null; } }
+        public static System.Text.Utf8StringComparer Ordinal { get { throw null; } }
+        public static System.Text.Utf8StringComparer OrdinalIgnoreCase { get { throw null; } }
+        public static System.Text.Utf8StringComparer Create(System.Globalization.CultureInfo culture, bool ignoreCase) { throw null; }
+        public static System.Text.Utf8StringComparer Create(System.Globalization.CultureInfo culture, System.Globalization.CompareOptions options) { throw null; }
+        public static System.Text.Utf8StringComparer FromComparison(System.StringComparison comparisonType) { throw null; }
+        public abstract int Compare(System.Text.Utf8Segment x, System.Text.Utf8Segment y);
+        public abstract int Compare(System.Utf8String? x, System.Utf8String? y);
+        public abstract int Compare(System.Text.Utf8Span x, System.Text.Utf8Span y);
+        public abstract bool Equals(System.Text.Utf8Segment x, System.Text.Utf8Segment y);
+        public abstract bool Equals(System.Utf8String? x, System.Utf8String? y);
+        public abstract bool Equals(System.Text.Utf8Span x, System.Text.Utf8Span y);
+        public abstract int GetHashCode(System.Text.Utf8Segment obj);
+        public abstract int GetHashCode(System.Utf8String obj);
+        public abstract int GetHashCode(System.Text.Utf8Span obj);
+    }
 }
