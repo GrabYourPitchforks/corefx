@@ -41,7 +41,10 @@ namespace System
         public Utf8String(System.ReadOnlySpan<byte> value) { }
         public Utf8String(System.ReadOnlySpan<char> value) { }
         public Utf8String(string? value) { }
+        public ByteEnumerable Bytes { get { throw null; } }
+        public CharEnumerable Chars { get { throw null; } }
         public int Length { get { throw null; } }
+        public RuneEnumerable Runes { get { throw null; } }
         public int CompareTo(System.Utf8String? other) { throw null; }
         public bool Contains(char value) { throw null; }
         public bool Contains(System.Text.Rune value) { throw null; }
@@ -78,6 +81,57 @@ namespace System
         public static bool TryCreateFrom(System.ReadOnlySpan<char> buffer, [System.Diagnostics.CodeAnalysis.NotNullWhenAttribute(true)] out System.Utf8String? value) { throw null; }
         public static System.Utf8String UnsafeCreateWithoutValidation(System.ReadOnlySpan<byte> utf8Contents) { throw null; }
         public static System.Utf8String UnsafeCreateWithoutValidation<TState>(int length, TState state, System.Buffers.SpanAction<byte, TState> action) { throw null; }
+        public readonly partial struct ByteEnumerable : System.Collections.Generic.IEnumerable<byte>
+        {
+            private readonly object _dummy;
+            public Enumerator GetEnumerator() { throw null; }
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { throw null; }
+            System.Collections.Generic.IEnumerator<byte> System.Collections.Generic.IEnumerable<byte>.GetEnumerator() { throw null; }
+            public struct Enumerator : System.Collections.Generic.IEnumerable<byte>
+            {
+                private readonly object _dummy;
+                private readonly int _dummyPrimitive;
+                public byte Current { get { throw null; } }
+                public bool MoveNext() { throw null; }
+                void System.IDisposable.Dispose() { }
+                object System.Collections.IEnumerator.Current { get { throw null; } }
+                void System.Collections.IEnumerator.Reset() { }
+            }
+        }
+        public readonly partial struct CharEnumerable : System.Collections.Generic.IEnumerable<char>
+        {
+            private readonly object _dummy;
+            public Enumerator GetEnumerator() { throw null; }
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { throw null; }
+            System.Collections.Generic.IEnumerator<char> System.Collections.Generic.IEnumerable<char>.GetEnumerator() { throw null; }
+            public struct Enumerator : System.Collections.Generic.IEnumerable<char>
+            {
+                private readonly object _dummy;
+                private readonly int _dummyPrimitive;
+                public char Current { get { throw null; } }
+                public bool MoveNext() { throw null; }
+                void System.IDisposable.Dispose() { }
+                object System.Collections.IEnumerator.Current { get { throw null; } }
+                void System.Collections.IEnumerator.Reset() { }
+            }
+        }
+        public readonly partial struct RuneEnumerable : System.Collections.Generic.IEnumerable<System.Text.Rune>
+        {
+            private readonly object _dummy;
+            public Enumerator GetEnumerator() { throw null; }
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { throw null; }
+            System.Collections.Generic.IEnumerator<System.Text.Rune> System.Collections.Generic.IEnumerable<System.Text.Rune>.GetEnumerator() { throw null; }
+            public struct Enumerator : System.Collections.Generic.IEnumerable<System.Text.Rune>
+            {
+                private readonly object _dummy;
+                private readonly int _dummyPrimitive;
+                public System.Text.Rune Current { get { throw null; } }
+                public bool MoveNext() { throw null; }
+                void System.IDisposable.Dispose() { }
+                object System.Collections.IEnumerator.Current { get { throw null; } }
+                void System.Collections.IEnumerator.Reset() { }
+            }
+        }
     }
 }
 namespace System.Net.Http
