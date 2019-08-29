@@ -45,6 +45,9 @@ namespace System
         public CharEnumerable Chars { get { throw null; } }
         public int Length { get { throw null; } }
         public RuneEnumerable Runes { get { throw null; } }
+        public static bool AreEquivalent(System.Utf8String? utf8Text, string? utf16Text) { throw null; }
+        public static bool AreEquivalent(System.Text.Utf8Span utf8Text, System.ReadOnlySpan<char> utf16Text) { throw null; }
+        public static bool AreEquivalent(System.ReadOnlySpan<byte> utf8Text, System.ReadOnlySpan<char> utf16Text) { throw null; }
         public int CompareTo(System.Utf8String? other) { throw null; }
         public bool Contains(char value) { throw null; }
         public bool Contains(System.Text.Rune value) { throw null; }
