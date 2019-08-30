@@ -70,6 +70,12 @@ namespace System
         public static bool operator ==(System.Utf8String? left, System.Utf8String? right) { throw null; }
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
         public System.Utf8String Slice(int startIndex, int length) { throw null; }
+        public (System.Utf8String Before, System.Utf8String? After) SplitOn(char separator) { throw null; }
+        public (System.Utf8String Before, System.Utf8String? After) SplitOn(char separator, System.StringComparison comparisonType) { throw null; }
+        public (System.Utf8String Before, System.Utf8String? After) SplitOn(Rune separator) { throw null; }
+        public (System.Utf8String Before, System.Utf8String? After) SplitOn(Rune separator, System.StringComparison comparisonType) { throw null; }
+        public (System.Utf8String Before, System.Utf8String? After) SplitOn(System.Utf8String separator) { throw null; }
+        public (System.Utf8String Before, System.Utf8String? After) SplitOn(System.Utf8String separator, System.StringComparison comparisonType) { throw null; }
         public System.Utf8String this[System.Range range] { get { throw null; } }
         public bool StartsWith(char value) { throw null; }
         public bool StartsWith(System.Text.Rune value) { throw null; }
