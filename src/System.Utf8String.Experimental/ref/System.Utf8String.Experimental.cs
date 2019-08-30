@@ -65,13 +65,12 @@ namespace System
         public override int GetHashCode() { throw null; }
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
         public ref readonly byte GetPinnableReference() { throw null; }
-        public int IndexOf(char value) { throw null; }
-        public int IndexOf(System.Text.Rune value) { throw null; }
         public static bool IsNullOrEmpty([System.Diagnostics.CodeAnalysis.NotNullWhenAttribute(false)] System.Utf8String? value) { throw null; }
         public static bool operator !=(System.Utf8String? left, System.Utf8String? right) { throw null; }
         public static bool operator ==(System.Utf8String? left, System.Utf8String? right) { throw null; }
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
         public System.Utf8String Slice(int startIndex, int length) { throw null; }
+        public System.Utf8String this[System.Range range] { get { throw null; } }
         public bool StartsWith(char value) { throw null; }
         public bool StartsWith(System.Text.Rune value) { throw null; }
         public System.Utf8String Substring(System.Index startIndex) { throw null; }
@@ -82,6 +81,12 @@ namespace System
         public override string ToString() { throw null; }
         public static bool TryCreateFrom(System.ReadOnlySpan<byte> buffer, [System.Diagnostics.CodeAnalysis.NotNullWhenAttribute(true)] out System.Utf8String? value) { throw null; }
         public static bool TryCreateFrom(System.ReadOnlySpan<char> buffer, [System.Diagnostics.CodeAnalysis.NotNullWhenAttribute(true)] out System.Utf8String? value) { throw null; }
+        public bool TryFind(char value, out System.Range range) { throw null; }
+        public bool TryFind(char value, System.StringComparison comparisonType, out System.Range range) { throw null; }
+        public bool TryFind(System.Text.Rune value, out System.Range range) { throw null; }
+        public bool TryFind(System.Text.Rune value, System.StringComparison comparisonType, out System.Range range) { throw null; }
+        public bool TryFind(System.Utf8String value, out System.Range range) { throw null; }
+        public bool TryFind(System.Utf8String value, System.StringComparison comparisonType, out System.Range range) { throw null; }
         public static System.Utf8String UnsafeCreateWithoutValidation(System.ReadOnlySpan<byte> utf8Contents) { throw null; }
         public static System.Utf8String UnsafeCreateWithoutValidation<TState>(int length, TState state, System.Buffers.SpanAction<byte, TState> action) { throw null; }
         public readonly partial struct ByteEnumerable : System.Collections.Generic.IEnumerable<byte>
@@ -218,6 +223,7 @@ namespace System.Text
         public int Normalize(System.Span<byte> destination, System.Text.NormalizationForm normalizationForm = System.Text.NormalizationForm.FormC) { throw null; }
         public static bool operator !=(System.Text.Utf8Span left, System.Text.Utf8Span right) { throw null; }
         public static bool operator ==(System.Text.Utf8Span left, System.Text.Utf8Span right) { throw null; }
+        public System.Text.Utf8Span this[System.Range range] { get { throw null; } }
         public bool StartsWith(char value) { throw null; }
         public bool StartsWith(char value, System.StringComparison comparison) { throw null; }
         public bool StartsWith(System.Text.Rune value) { throw null; }
@@ -235,6 +241,12 @@ namespace System.Text
         public System.Utf8String ToUpperInvariant() { throw null; }
         public int ToUpperInvariant(System.Span<byte> destination) { throw null; }
         public System.Utf8String ToUtf8String() { throw null; }
+        public bool TryFind(char value, out System.Range range) { throw null; }
+        public bool TryFind(char value, System.StringComparison comparisonType, out System.Range range) { throw null; }
+        public bool TryFind(System.Text.Rune value, out System.Range range) { throw null; }
+        public bool TryFind(System.Text.Rune value, System.StringComparison comparisonType, out System.Range range) { throw null; }
+        public bool TryFind(System.Text.Utf8Span value, out System.Range range) { throw null; }
+        public bool TryFind(System.Text.Utf8Span value, System.StringComparison comparisonType, out System.Range range) { throw null; }
         [System.Runtime.CompilerServices.UnsafeMemberAttribute]
         public static System.Text.Utf8Span UnsafeCreateWithoutValidation(System.ReadOnlySpan<byte> buffer) { throw null; }
     }
