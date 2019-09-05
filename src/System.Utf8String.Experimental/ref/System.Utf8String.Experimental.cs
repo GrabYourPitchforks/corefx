@@ -40,7 +40,7 @@ namespace System
         public Utf8String(char[]? value, int startIndex, int length) { }
         public Utf8String(System.ReadOnlySpan<byte> value) { }
         public Utf8String(System.ReadOnlySpan<char> value) { }
-        public Utf8String(string? value) { }
+        public Utf8String(string value) { }
         public ByteEnumerable Bytes { get { throw null; } }
         public CharEnumerable Chars { get { throw null; } }
         public int Length { get { throw null; } }
@@ -72,8 +72,8 @@ namespace System
         public System.Utf8String Slice(int startIndex, int length) { throw null; }
         public (System.Utf8String Before, System.Utf8String? After) SplitOn(char separator) { throw null; }
         public (System.Utf8String Before, System.Utf8String? After) SplitOn(char separator, System.StringComparison comparisonType) { throw null; }
-        public (System.Utf8String Before, System.Utf8String? After) SplitOn(Rune separator) { throw null; }
-        public (System.Utf8String Before, System.Utf8String? After) SplitOn(Rune separator, System.StringComparison comparisonType) { throw null; }
+        public (System.Utf8String Before, System.Utf8String? After) SplitOn(System.Text.Rune separator) { throw null; }
+        public (System.Utf8String Before, System.Utf8String? After) SplitOn(System.Text.Rune separator, System.StringComparison comparisonType) { throw null; }
         public (System.Utf8String Before, System.Utf8String? After) SplitOn(System.Utf8String separator) { throw null; }
         public (System.Utf8String Before, System.Utf8String? After) SplitOn(System.Utf8String separator, System.StringComparison comparisonType) { throw null; }
         public System.Utf8String this[System.Range range] { get { throw null; } }
@@ -101,7 +101,7 @@ namespace System
             public Enumerator GetEnumerator() { throw null; }
             System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { throw null; }
             System.Collections.Generic.IEnumerator<byte> System.Collections.Generic.IEnumerable<byte>.GetEnumerator() { throw null; }
-            public struct Enumerator : System.Collections.Generic.IEnumerable<byte>
+            public struct Enumerator : System.Collections.Generic.IEnumerator<byte>
             {
                 private readonly object _dummy;
                 private readonly int _dummyPrimitive;
@@ -118,7 +118,7 @@ namespace System
             public Enumerator GetEnumerator() { throw null; }
             System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { throw null; }
             System.Collections.Generic.IEnumerator<char> System.Collections.Generic.IEnumerable<char>.GetEnumerator() { throw null; }
-            public struct Enumerator : System.Collections.Generic.IEnumerable<char>
+            public struct Enumerator : System.Collections.Generic.IEnumerator<char>
             {
                 private readonly object _dummy;
                 private readonly int _dummyPrimitive;
@@ -135,7 +135,7 @@ namespace System
             public Enumerator GetEnumerator() { throw null; }
             System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { throw null; }
             System.Collections.Generic.IEnumerator<System.Text.Rune> System.Collections.Generic.IEnumerable<System.Text.Rune>.GetEnumerator() { throw null; }
-            public struct Enumerator : System.Collections.Generic.IEnumerable<System.Text.Rune>
+            public struct Enumerator : System.Collections.Generic.IEnumerator<System.Text.Rune>
             {
                 private readonly object _dummy;
                 private readonly int _dummyPrimitive;
@@ -196,7 +196,9 @@ namespace System.Text
         private readonly int _dummyPrimitive;
         public Utf8Span(System.Utf8String? value) { throw null; }
         public System.ReadOnlySpan<byte> Bytes { get { throw null; } }
+        public CharEnumerable Chars { get { throw null; } }
         public bool IsEmpty { get { throw null; } }
+        public RuneEnumerable Runes { get { throw null; } }
         public int CompareTo(System.Text.Utf8Span other) { throw null; }
         public int CompareTo(System.Text.Utf8Span other, System.StringComparison comparison) { throw null; }
         public bool Contains(char value) { throw null; }
@@ -255,6 +257,32 @@ namespace System.Text
         public bool TryFind(System.Text.Utf8Span value, System.StringComparison comparisonType, out System.Range range) { throw null; }
         [System.Runtime.CompilerServices.UnsafeMemberAttribute]
         public static System.Text.Utf8Span UnsafeCreateWithoutValidation(System.ReadOnlySpan<byte> buffer) { throw null; }
+        public ref struct CharEnumerable
+        {
+            private readonly object _dummy;
+            private readonly int _dummyPrimitive;
+            public Enumerator GetEnumerator() { throw null; }
+            public ref struct Enumerator
+            {
+                private object _dummy;
+                private int _dummyPrimitive;
+                public char Current { get { throw null; } }
+                public bool MoveNext() { throw null; }
+            }
+        }
+        public readonly ref struct RuneEnumerable
+        {
+            private readonly object _dummy;
+            private readonly int _dummyPrimitive;
+            public Enumerator GetEnumerator() { throw null; }
+            public ref struct Enumerator
+            {
+                private object _dummy;
+                private int _dummyPrimitive;
+                public System.Text.Rune Current { get { throw null; } }
+                public bool MoveNext() { throw null; }
+            }
+        }
     }
     public abstract class Utf8StringComparer : System.Collections.Generic.IComparer<System.Text.Utf8Segment>, System.Collections.Generic.IComparer<System.Utf8String?>, System.Collections.Generic.IEqualityComparer<System.Text.Utf8Segment>, System.Collections.Generic.IEqualityComparer<System.Utf8String?>
     {
@@ -275,7 +303,9 @@ namespace System.Text
         public abstract bool Equals(System.Utf8String? x, System.Utf8String? y);
         public abstract bool Equals(System.Text.Utf8Span x, System.Text.Utf8Span y);
         public abstract int GetHashCode(System.Text.Utf8Segment obj);
+#pragma warning disable CS8614 // Remove warning disable when nullable attributes are respected
         public abstract int GetHashCode(System.Utf8String obj);
+#pragma warning restore CS8614
         public abstract int GetHashCode(System.Text.Utf8Span obj);
     }
 }
