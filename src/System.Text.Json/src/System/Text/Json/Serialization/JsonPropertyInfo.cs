@@ -114,8 +114,8 @@ namespace System.Text.Json
             // At this point propertyName is valid UTF16, so just call the simple UTF16->UTF8 encoder.
             Name = Encoding.UTF8.GetBytes(NameAsString);
 
-            // Cache the escaped name.
-            EscapedName = JsonEncodedText.Encode(Name);
+            // Cache the escaped property name.
+            EscapedName = JsonEncodedText.Encode(Name, Options.Encoder);
 
             ulong key = JsonClassInfo.GetKey(Name);
             PropertyNameKey = key;
@@ -178,9 +178,9 @@ namespace System.Text.Json
                         }
                         else if (ClassType == ClassType.Enumerable)
                         {
-                            // Else if it's an implementing type that is not assignable from IList.
+                            // Else if it's an implementing type whose runtime type is not assignable to IList.
                             if (DeclaredPropertyType != ImplementedPropertyType &&
-                                (!typeof(IList).IsAssignableFrom(DeclaredPropertyType) ||
+                                (!typeof(IList).IsAssignableFrom(RuntimePropertyType) ||
                                 ImplementedPropertyType == typeof(ArrayList) ||
                                 ImplementedPropertyType == typeof(IList)))
                             {
@@ -338,10 +338,10 @@ namespace System.Text.Json
         {
             Debug.Assert(ShouldDeserialize);
 
-            if (ElementClassInfo != null)
+            JsonPropertyInfo propertyInfo;
+            if (ElementClassInfo != null && (propertyInfo = ElementClassInfo.PolicyProperty) != null)
             {
                 // Forward the setter to the value-based JsonPropertyInfo.
-                JsonPropertyInfo propertyInfo = ElementClassInfo.PolicyProperty;
                 propertyInfo.ReadEnumerable(tokenType, ref state, ref reader);
             }
             else
