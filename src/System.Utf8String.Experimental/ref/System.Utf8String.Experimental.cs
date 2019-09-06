@@ -197,6 +197,7 @@ namespace System.Text
         public Utf8Span(System.Utf8String? value) { throw null; }
         public System.ReadOnlySpan<byte> Bytes { get { throw null; } }
         public CharEnumerable Chars { get { throw null; } }
+        public static System.Text.Utf8Span Empty { get { throw null; } }
         public bool IsEmpty { get { throw null; } }
         public RuneEnumerable Runes { get { throw null; } }
         public int CompareTo(System.Text.Utf8Span other) { throw null; }
@@ -250,6 +251,9 @@ namespace System.Text
         public bool StartsWith(System.Text.Rune value, System.StringComparison comparison) { throw null; }
         public bool StartsWith(System.Text.Utf8Span value) { throw null; }
         public bool StartsWith(System.Text.Utf8Span value, System.StringComparison comparison) { throw null; }
+        public System.Text.Utf8Span Trim() { throw null; }
+        public System.Text.Utf8Span TrimEnd() { throw null; }
+        public System.Text.Utf8Span TrimStart() { throw null; }
         public int ToChars(System.Span<char> destination) { throw null; }
         public System.Utf8String ToLower(System.Globalization.CultureInfo culture) { throw null; }
         public int ToLower(System.Span<byte> destination, System.Globalization.CultureInfo culture) { throw null; }
@@ -275,7 +279,7 @@ namespace System.Text
         public bool TryFindLast(System.Text.Utf8Span value, System.StringComparison comparisonType, out System.Range range) { throw null; }
         [System.Runtime.CompilerServices.UnsafeMemberAttribute]
         public static System.Text.Utf8Span UnsafeCreateWithoutValidation(System.ReadOnlySpan<byte> buffer) { throw null; }
-        public ref struct CharEnumerable
+        public readonly ref struct CharEnumerable
         {
             private readonly object _dummy;
             private readonly int _dummyPrimitive;
