@@ -232,6 +232,12 @@ namespace System.Text
         public static bool operator !=(System.Text.Utf8Span left, System.Text.Utf8Span right) { throw null; }
         public static bool operator ==(System.Text.Utf8Span left, System.Text.Utf8Span right) { throw null; }
         public System.Text.Utf8Span this[System.Range range] { get { throw null; } }
+        public SplitOnResult SplitOn(char separator) { throw null; }
+        public SplitOnResult SplitOn(char separator, System.StringComparison comparisonType) { throw null; }
+        public SplitOnResult SplitOn(System.Text.Rune separator) { throw null; }
+        public SplitOnResult SplitOn(System.Text.Rune separator, System.StringComparison comparisonType) { throw null; }
+        public SplitOnResult SplitOn(System.Utf8String separator) { throw null; }
+        public SplitOnResult SplitOn(System.Utf8String separator, System.StringComparison comparisonType) { throw null; }
         public bool StartsWith(char value) { throw null; }
         public bool StartsWith(char value, System.StringComparison comparison) { throw null; }
         public bool StartsWith(System.Text.Rune value) { throw null; }
@@ -282,6 +288,15 @@ namespace System.Text
                 public System.Text.Rune Current { get { throw null; } }
                 public bool MoveNext() { throw null; }
             }
+        }
+        public readonly ref struct SplitOnResult
+        {
+            private readonly object _dummy;
+            private readonly int _dummyPrimitive;
+            public Utf8Span After { get { throw null; } }
+            public Utf8Span Before { get { throw null; } }
+            [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
+            public void Deconstruct(out Utf8Span before, out Utf8Span after) { throw null; }
         }
     }
     public abstract class Utf8StringComparer : System.Collections.Generic.IComparer<System.Text.Utf8Segment>, System.Collections.Generic.IComparer<System.Utf8String?>, System.Collections.Generic.IEqualityComparer<System.Text.Utf8Segment>, System.Collections.Generic.IEqualityComparer<System.Utf8String?>
