@@ -238,6 +238,12 @@ namespace System.Text
         public SplitOnResult SplitOn(System.Text.Rune separator, System.StringComparison comparisonType) { throw null; }
         public SplitOnResult SplitOn(System.Utf8String separator) { throw null; }
         public SplitOnResult SplitOn(System.Utf8String separator, System.StringComparison comparisonType) { throw null; }
+        public SplitOnResult SplitOnLast(char separator) { throw null; }
+        public SplitOnResult SplitOnLast(char separator, System.StringComparison comparisonType) { throw null; }
+        public SplitOnResult SplitOnLast(System.Text.Rune separator) { throw null; }
+        public SplitOnResult SplitOnLast(System.Text.Rune separator, System.StringComparison comparisonType) { throw null; }
+        public SplitOnResult SplitOnLast(System.Utf8String separator) { throw null; }
+        public SplitOnResult SplitOnLast(System.Utf8String separator, System.StringComparison comparisonType) { throw null; }
         public bool StartsWith(char value) { throw null; }
         public bool StartsWith(char value, System.StringComparison comparison) { throw null; }
         public bool StartsWith(System.Text.Rune value) { throw null; }
@@ -261,6 +267,12 @@ namespace System.Text
         public bool TryFind(System.Text.Rune value, System.StringComparison comparisonType, out System.Range range) { throw null; }
         public bool TryFind(System.Text.Utf8Span value, out System.Range range) { throw null; }
         public bool TryFind(System.Text.Utf8Span value, System.StringComparison comparisonType, out System.Range range) { throw null; }
+        public bool TryFindLast(char value, out System.Range range) { throw null; }
+        public bool TryFindLast(char value, System.StringComparison comparisonType, out System.Range range) { throw null; }
+        public bool TryFindLast(System.Text.Rune value, out System.Range range) { throw null; }
+        public bool TryFindLast(System.Text.Rune value, System.StringComparison comparisonType, out System.Range range) { throw null; }
+        public bool TryFindLast(System.Text.Utf8Span value, out System.Range range) { throw null; }
+        public bool TryFindLast(System.Text.Utf8Span value, System.StringComparison comparisonType, out System.Range range) { throw null; }
         [System.Runtime.CompilerServices.UnsafeMemberAttribute]
         public static System.Text.Utf8Span UnsafeCreateWithoutValidation(System.ReadOnlySpan<byte> buffer) { throw null; }
         public ref struct CharEnumerable
