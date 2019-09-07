@@ -4,12 +4,31 @@
 
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 
 namespace System.Text.Tests
 {
     public static partial class RuneTests
     {
+        private static IEnumerable<Rune> AllPossibleScalars
+        {
+            get
+            {
+                // BMP before surrogate range
+                for (uint i = 0; i < 0xD800; i++)
+                {
+                    yield return new Rune(i);
+                }
+
+                // BMP after surrogate range, plus astral planes
+                for (uint i = 0xE000; i <= 0x10FFFF; i++)
+                {
+                    yield return new Rune(i);
+                }
+            }
+        }
+
         public static IEnumerable<object[]> GeneralTestData_BmpCodePoints_NoSurrogates()
         {
             yield return new object[]
@@ -511,6 +530,65 @@ namespace System.Text.Tests
             // U+10177 GREEK TWO THIRDS SIGN
             yield return new object[] { new UnicodeInfoTestData { ScalarValue = (Rune)(0x10177), UnicodeCategory = UnicodeCategory.OtherNumber, NumericValue = 2.0 / 3, IsControl = false, IsDigit = false, IsLetter = false, IsLetterOrDigit = false, IsLower = false, IsNumber = true, IsPunctuation = false, IsSeparator = false, IsSymbol = false, IsUpper = false, IsWhiteSpace = false } };
 
+        }
+
+        private static HashSet<Rune> ReadListOfWhiteSpaceScalarsFromUnicodeDataFile()
+        {
+            // The full list of whitespace characters can be found at:
+            // https://unicode.org/cldr/utility/list-unicodeset.jsp?a=%5Cp%7Bwhitespace%7D
+            // https://www.unicode.org/Public/UCD/latest/ucd/PropList.txt (top of file)
+
+            using var reader = new StreamReader(typeof(RuneTests).Assembly.GetManifestResourceStream("PropList-12.1.0.txt"));
+            HashSet<Rune> whiteSpaceRunes = new HashSet<Rune>();
+
+            string thisLine;
+            while ((thisLine = reader.ReadLine()) != null)
+            {
+                // Strip off the comment (starts with '#') if it exists
+
+                int idxOfComment = thisLine.IndexOf('#');
+                if (idxOfComment >= 0)
+                {
+                    thisLine = thisLine.Substring(0, idxOfComment);
+                }
+
+                // Split the string on the ';' separator
+
+                string[] split = thisLine.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                if (split.Length != 2)
+                {
+                    continue; // There's no data in this line
+                }
+
+                if (split[1].Trim() != "White_Space")
+                {
+                    continue; // This line isn't denoting a white space scalar
+                }
+
+                string scalarAsString = split[0];
+
+                // At this point, scalarAsString will be "XXXX" for a single scalar or "XXXX..YYYY" for a scalar range.
+
+                int idxOfDot = scalarAsString.IndexOf("..", StringComparison.Ordinal);
+
+                if (idxOfDot < 0)
+                {
+                    // Add a single scalar
+                    whiteSpaceRunes.Add(new Rune(uint.Parse(scalarAsString, NumberStyles.HexNumber, CultureInfo.InvariantCulture)));
+                }
+                else
+                {
+                    // Add a range of scalars
+                    uint rangeStartInclusive = uint.Parse(scalarAsString.Substring(0, idxOfDot), NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+                    uint rangeEndInclusive = uint.Parse(scalarAsString.Substring(idxOfDot + 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+                    for (uint i = rangeStartInclusive; i <= rangeEndInclusive; i++)
+                    {
+                        whiteSpaceRunes.Add(new Rune(i));
+                    }
+                }
+            }
+
+            return whiteSpaceRunes;
         }
 
         public class UnicodeInfoTestData

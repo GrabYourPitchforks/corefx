@@ -3,8 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Buffers;
+using System.Collections.Generic;
 using System.Globalization;
 using Xunit;
+using Xunit.Sdk;
 
 namespace System.Text.Tests
 {
@@ -417,11 +419,27 @@ namespace System.Text.Tests
             Assert.Equal(expectedIsValid, Rune.IsValid((uint)scalarValue));
         }
 
-        [Theory]
-        [MemberData(nameof(UnicodeInfoTestData_Latin1AndSelectOthers))]
-        public static void IsWhiteSpace(UnicodeInfoTestData testData)
+        [Fact]
+        public static void IsWhiteSpace()
         {
-            Assert.Equal(testData.IsWhiteSpace, Rune.IsWhiteSpace(testData.ScalarValue));
+            // Parse the Unicode data file for the list of all white space scalar values, then
+            // check IsWhiteSpace for all possible scalars to make sure our logic matches what's
+            // in the Unicode data file.
+
+            HashSet<Rune> whiteSpaceRunes = ReadListOfWhiteSpaceScalarsFromUnicodeDataFile();
+
+            foreach (Rune testRune in AllPossibleScalars)
+            {
+                bool expected = whiteSpaceRunes.Contains(testRune);
+                bool actual = Rune.IsWhiteSpace(testRune);
+
+                if (expected != actual)
+                {
+                    // Throw a custom exception rather than using Assert.Equal so that we can display an appropriate error message.
+                    throw new AssertActualExpectedException(expected, actual,
+                        FormattableString.Invariant($"Rune.IsWhiteSpace(U+{testRune.Value:X4}) returned a value inconsistent with the local UCD file."));
+                }
+            }
         }
 
         [Theory]
