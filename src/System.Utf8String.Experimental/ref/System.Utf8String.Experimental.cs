@@ -25,6 +25,7 @@ namespace System
         public static System.Text.Utf8Span AsSpan(this System.Utf8String? text) { throw null; }
         public static System.Text.Utf8Span AsSpan(this System.Utf8String? text, int start) { throw null; }
         public static System.Text.Utf8Span AsSpan(this System.Utf8String? text, int start, int length) { throw null; }
+        public static System.Utf8String ToUtf8String(this System.Text.Rune rune) { throw null; }
     }
     public sealed partial class Utf8String : System.IComparable<System.Utf8String?>,
 #nullable disable

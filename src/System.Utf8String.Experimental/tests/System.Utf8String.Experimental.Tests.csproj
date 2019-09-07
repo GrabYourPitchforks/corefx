@@ -17,7 +17,10 @@
     <Compile Include="System\Net\Http\Utf8StringContentTests.cs" />
     <Compile Include="System\ReflectionTests.cs" />
     <Compile Include="System\Utf8ExtensionsTests.cs" />-->
+    <Compile Include="System\Utf8SpanTests.cs" />
     <Compile Include="System\Utf8SpanTests.Ctor.cs" />
+    <Compile Include="System\Utf8SpanTests.Manipulation.cs" />
+    <Compile Include="System\Utf8SpanTests.TestData.cs" />
     <!--<Compile Include="System\Utf8StringTests.cs" />
     <Compile Include="System\Utf8StringTests.Ctor.cs" />
     <Compile Include="System\Utf8StringTests.Searching.cs" />
