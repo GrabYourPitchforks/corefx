@@ -148,6 +148,13 @@ namespace System
             }
         }
     }
+    [System.FlagsAttribute]
+    public enum Utf8StringSplitOptions
+    {
+        None = 0,
+        RemoveEmptyEntries = 1,
+        TrimEntries = 2
+    }
 }
 namespace System.Net.Http
 {
@@ -234,18 +241,21 @@ namespace System.Text
         public static bool operator !=(System.Text.Utf8Span left, System.Text.Utf8Span right) { throw null; }
         public static bool operator ==(System.Text.Utf8Span left, System.Text.Utf8Span right) { throw null; }
         public System.Text.Utf8Span this[System.Range range] { get { throw null; } }
+        public SplitResult Split(char separator, System.Utf8StringSplitOptions options = System.Utf8StringSplitOptions.None) { throw null; }
+        public SplitResult Split(System.Text.Rune separator, System.Utf8StringSplitOptions options = System.Utf8StringSplitOptions.None) { throw null; }
+        public SplitResult Split(System.Text.Utf8Span separator, System.Utf8StringSplitOptions options = System.Utf8StringSplitOptions.None) { throw null; }
         public SplitOnResult SplitOn(char separator) { throw null; }
         public SplitOnResult SplitOn(char separator, System.StringComparison comparisonType) { throw null; }
         public SplitOnResult SplitOn(System.Text.Rune separator) { throw null; }
         public SplitOnResult SplitOn(System.Text.Rune separator, System.StringComparison comparisonType) { throw null; }
-        public SplitOnResult SplitOn(System.Utf8String separator) { throw null; }
-        public SplitOnResult SplitOn(System.Utf8String separator, System.StringComparison comparisonType) { throw null; }
+        public SplitOnResult SplitOn(System.Text.Utf8Span separator) { throw null; }
+        public SplitOnResult SplitOn(System.Text.Utf8Span separator, System.StringComparison comparisonType) { throw null; }
         public SplitOnResult SplitOnLast(char separator) { throw null; }
         public SplitOnResult SplitOnLast(char separator, System.StringComparison comparisonType) { throw null; }
         public SplitOnResult SplitOnLast(System.Text.Rune separator) { throw null; }
         public SplitOnResult SplitOnLast(System.Text.Rune separator, System.StringComparison comparisonType) { throw null; }
-        public SplitOnResult SplitOnLast(System.Utf8String separator) { throw null; }
-        public SplitOnResult SplitOnLast(System.Utf8String separator, System.StringComparison comparisonType) { throw null; }
+        public SplitOnResult SplitOnLast(System.Text.Utf8Span separator) { throw null; }
+        public SplitOnResult SplitOnLast(System.Text.Utf8Span separator, System.StringComparison comparisonType) { throw null; }
         public bool StartsWith(char value) { throw null; }
         public bool StartsWith(char value, System.StringComparison comparison) { throw null; }
         public bool StartsWith(System.Text.Rune value) { throw null; }
@@ -306,6 +316,32 @@ namespace System.Text
                 public bool MoveNext() { throw null; }
             }
         }
+        public readonly ref struct SplitResult
+        {
+            private readonly object _dummy;
+            private readonly int _dummyPrimitive;
+            [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
+            public void Deconstruct(out System.Text.Utf8Span item1, out System.Text.Utf8Span item2) { throw null; }
+            [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
+            public void Deconstruct(out System.Text.Utf8Span item1, out System.Text.Utf8Span item2, out System.Text.Utf8Span item3) { throw null; }
+            [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
+            public void Deconstruct(out System.Text.Utf8Span item1, out System.Text.Utf8Span item2, out System.Text.Utf8Span item3, out System.Text.Utf8Span item4) { throw null; }
+            [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
+            public void Deconstruct(out System.Text.Utf8Span item1, out System.Text.Utf8Span item2, out System.Text.Utf8Span item3, out System.Text.Utf8Span item4, out System.Text.Utf8Span item5) { throw null; }
+            [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
+            public void Deconstruct(out System.Text.Utf8Span item1, out System.Text.Utf8Span item2, out System.Text.Utf8Span item3, out System.Text.Utf8Span item4, out System.Text.Utf8Span item5, out System.Text.Utf8Span item6) { throw null; }
+            [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
+            public void Deconstruct(out System.Text.Utf8Span item1, out System.Text.Utf8Span item2, out System.Text.Utf8Span item3, out System.Text.Utf8Span item4, out System.Text.Utf8Span item5, out System.Text.Utf8Span item6, out System.Text.Utf8Span item7) { throw null; }
+            [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
+            public void Deconstruct(out System.Text.Utf8Span item1, out System.Text.Utf8Span item2, out System.Text.Utf8Span item3, out System.Text.Utf8Span item4, out System.Text.Utf8Span item5, out System.Text.Utf8Span item6, out System.Text.Utf8Span item7, out System.Text.Utf8Span item8) { throw null; }
+            public ref struct Enumerator
+            {
+                private readonly object _dummy;
+                private readonly int _dummyPrimitive;
+                public System.Text.Utf8Span Current { get { throw null; } }
+                public bool MoveNext() { throw null; }
+            }
+        }
         public readonly ref struct SplitOnResult
         {
             private readonly object _dummy;
@@ -313,7 +349,7 @@ namespace System.Text
             public Utf8Span After { get { throw null; } }
             public Utf8Span Before { get { throw null; } }
             [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
-            public void Deconstruct(out Utf8Span before, out Utf8Span after) { throw null; }
+            public void Deconstruct(out System.Text.Utf8Span before, out System.Text.Utf8Span after) { throw null; }
         }
     }
     public abstract class Utf8StringComparer : System.Collections.Generic.IComparer<System.Text.Utf8Segment>, System.Collections.Generic.IComparer<System.Utf8String?>, System.Collections.Generic.IEqualityComparer<System.Text.Utf8Segment>, System.Collections.Generic.IEqualityComparer<System.Utf8String?>
