@@ -17,6 +17,8 @@
     <Compile Include="System\Net\Http\Utf8StringContentTests.cs" />
     <Compile Include="System\ReflectionTests.cs" />
     <Compile Include="System\Utf8ExtensionsTests.cs" />-->
+    <Compile Include="System\TR29UtilityTests.cs" />
+    <Compile Include="System\TR29UtilityTests.TestData.cs" />
     <Compile Include="System\Utf8SpanTests.cs" />
     <Compile Include="System\Utf8SpanTests.Ctor.cs" />
     <Compile Include="System\Utf8SpanTests.Manipulation.cs" />
@@ -27,5 +29,16 @@
     <Compile Include="System\Utf8StringTests.Substring.cs" />
     <Compile Include="Xunit\SpanAssert.cs" />-->
     <Compile Include="System\Utf8TestUtilities.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(CommonTestPath)\Data\emoji-data-12.0.txt">
+      <LogicalName>emoji-data-12.0.txt</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(CommonTestPath)\Data\GraphemeBreakProperty-12.1.0.txt">
+      <LogicalName>GraphemeBreakProperty-12.1.0.txt</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(CommonTestPath)\Data\GraphemeBreakTest-12.1.0.txt">
+      <LogicalName>GraphemeBreakTest-12.1.0.txt</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

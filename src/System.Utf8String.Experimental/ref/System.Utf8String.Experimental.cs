@@ -377,3 +377,11 @@ namespace System.Text
         public abstract int GetHashCode(System.Text.Utf8Span obj);
     }
 }
+namespace System.Text.Unicode
+{
+    public static partial class TR29Utility
+    {
+        public static int GetLengthOfFirstUtf16ExtendedGraphemeCluster(System.ReadOnlySpan<char> input) { throw null; }
+        public static int GetLengthOfFirstUtf8ExtendedGraphemeCluster(System.ReadOnlySpan<byte> input) { throw null; }
+    }
+}
