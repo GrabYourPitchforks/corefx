@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -21,6 +22,65 @@ namespace System.Tests
                 Assert.NotNull(fastAllocateMethod);
                 return (Func<int, Utf8String>)fastAllocateMethod.CreateDelegate(typeof(Func<int, Utf8String>));
             });
+        }
+
+        /// <summary>
+        /// Parses an expression of the form "a..b" and returns a <see cref="Range"/>.
+        /// </summary>
+        public static Range ParseRangeExpr(ReadOnlySpan<char> expression)
+        {
+            int idxOfDots = expression.IndexOf("..", StringComparison.Ordinal);
+            if (idxOfDots < 0)
+            {
+                goto Error;
+            }
+
+            ReadOnlySpan<char> firstPart = expression[..idxOfDots].Trim();
+            Index firstIndex = Index.Start;
+
+            if (!firstPart.IsWhiteSpace())
+            {
+                bool fromEnd = false;
+
+                if (!firstPart.IsEmpty && firstPart[0] == '^')
+                {
+                    fromEnd = true;
+                    firstPart = firstPart[1..];
+                }
+
+                if (!int.TryParse(firstPart, NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, CultureInfo.InvariantCulture, out int startIndex))
+                {
+                    goto Error;
+                }
+
+                firstIndex = new Index(startIndex, fromEnd);
+            }
+
+            ReadOnlySpan<char> secondPart = expression[(idxOfDots + 2)..].Trim();
+            Index secondIndex = Index.End;
+
+            if (!secondPart.IsWhiteSpace())
+            {
+                bool fromEnd = false;
+
+                if (!secondPart.IsEmpty && secondPart[0] == '^')
+                {
+                    fromEnd = true;
+                    secondPart = secondPart[1..];
+                }
+
+                if (!int.TryParse(secondPart, NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, CultureInfo.InvariantCulture, out int endIndex))
+                {
+                    goto Error;
+                }
+
+                secondIndex = new Index(endIndex, fromEnd);
+            }
+
+            return new Range(firstIndex, secondIndex);
+
+        Error:
+            throw new ArgumentException($"Range expression '{expression.ToString()}' is invalid.");
         }
 
         /// <summary>

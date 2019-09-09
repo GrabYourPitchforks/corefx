@@ -1,8 +1,7 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Tests;
@@ -63,6 +62,45 @@ namespace System.Text.Tests
             using BoundedUtf8Span boundedSpan = new BoundedUtf8Span(input);
 
             Assert.Equal(expected, boundedSpan.Span.IsAscii());
+        }
+
+        [Theory]
+        [InlineData("", "..")]
+        [InlineData("Hello", "1..")]
+        [InlineData("Hello", "1..2")]
+        [InlineData("Hello", "1..^2")]
+        [InlineData("Hello", "^2..")]
+        [InlineData("Hello", "^0..")]
+        [InlineData("résumé", "1..^2")] // include first 'é', exclude last 'é'
+        [InlineData("résumé", "^2..")] // include only last 'é'
+        public static void Indexer_Success(string input, string rangeExpression)
+        {
+            Range range = ParseRangeExpr(rangeExpression);
+
+            using BoundedUtf8Span boundedSpan = new BoundedUtf8Span(input);
+            Utf8Span originalSpan = boundedSpan.Span;
+            Utf8Span slicedSpan = originalSpan[range]; // shouldn't throw
+
+            ref byte startOfOriginalSpan = ref MemoryMarshal.GetReference(originalSpan.Bytes);
+            ref byte startOfSlicedSpan = ref MemoryMarshal.GetReference(slicedSpan.Bytes);
+
+            // Now ensure the slice was correctly produced by comparing the references directly.
+
+            (int offset, int length) = range.GetOffsetAndLength(originalSpan.Bytes.Length);
+            Assert.True(Unsafe.AreSame(ref startOfSlicedSpan, ref Unsafe.Add(ref startOfOriginalSpan, offset)));
+            Assert.Equal(length, slicedSpan.Bytes.Length);
+        }
+
+        [Theory]
+        [InlineData("résumé", "2..")] // try to split the first 'é'
+        [InlineData("résumé", "..^1")] // try to split the last 'é'
+        public static void Indexer_ThrowsIfTryToSplitMultiByteSubsequence(string input, string rangeExpression)
+        {
+            Range range = ParseRangeExpr(rangeExpression);
+
+            using BoundedUtf8Span boundedSpan = new BoundedUtf8Span(input);
+
+            Assert.Throws<InvalidOperationException>(() => { var _ = boundedSpan.Span[range]; });
         }
 
         [Theory]
