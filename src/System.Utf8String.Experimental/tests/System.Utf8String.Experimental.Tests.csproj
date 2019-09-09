@@ -18,6 +18,7 @@
     <Compile Include="System\Net\Http\Utf8StringContentTests.cs" />
     <Compile Include="System\ReflectionTests.cs" />
     <Compile Include="System\Utf8ExtensionsTests.cs" />-->
+    <Compile Include="System\BoundedUtf8Span.cs" />
     <Compile Include="System\TR29UtilityTests.cs" />
     <Compile Include="System\TR29UtilityTests.TestData.cs" />
     <Compile Include="System\Utf8SpanTests.cs" />

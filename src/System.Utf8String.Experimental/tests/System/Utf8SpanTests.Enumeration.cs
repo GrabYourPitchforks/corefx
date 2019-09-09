@@ -2,11 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Tests;
 using Xunit;
-
-using static System.Tests.Utf8TestUtilities;
-
-using ustring = System.Utf8String;
 
 namespace System.Text.Tests
 {
@@ -15,8 +12,10 @@ namespace System.Text.Tests
         [Fact]
         public static void CharsProperty_FromData()
         {
-            ustring ustr = u8("\U00000012\U00000123\U00001234\U00101234\U00000012\U00000123\U00001234\U00101234");
-            var charsEnumerator = ustr.Chars.GetEnumerator();
+            using BoundedUtf8Span boundedSpan = new BoundedUtf8Span("\U00000012\U00000123\U00001234\U00101234\U00000012\U00000123\U00001234\U00101234");
+            Utf8Span span = boundedSpan.Span;
+
+            var charsEnumerator = span.Chars.GetEnumerator();
 
             Assert.True(charsEnumerator.MoveNext());
             Assert.Equal('\U00000012', charsEnumerator.Current);
@@ -56,8 +55,10 @@ namespace System.Text.Tests
         [Fact]
         public static void RunesProperty_FromData()
         {
-            ustring ustr = u8("\U00000012\U00000123\U00001234\U00101234\U00000012\U00000123\U00001234\U00101234");
-            var runesEnumerator = ustr.Runes.GetEnumerator();
+            using BoundedUtf8Span boundedSpan = new BoundedUtf8Span("\U00000012\U00000123\U00001234\U00101234\U00000012\U00000123\U00001234\U00101234");
+            Utf8Span span = boundedSpan.Span;
+
+            var runesEnumerator = span.Runes.GetEnumerator();
 
             Assert.True(runesEnumerator.MoveNext());
             Assert.Equal(new Rune(0x0012), runesEnumerator.Current);

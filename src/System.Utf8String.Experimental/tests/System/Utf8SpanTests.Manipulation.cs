@@ -2,16 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using Xunit;
-using System.Linq;
-
-using static System.Tests.Utf8TestUtilities;
-
-using ustring = System.Utf8String;
 using System.Buffers;
+using System.Tests;
+using Xunit;
 
 namespace System.Text.Tests
 {
@@ -23,7 +16,8 @@ namespace System.Text.Tests
         {
             // Arrange
 
-            Utf8Span span = u8(input);
+            using BoundedUtf8Span boundedSpan = new BoundedUtf8Span(input);
+            Utf8Span span = boundedSpan.Span;
 
             // Act
 
@@ -67,7 +61,8 @@ namespace System.Text.Tests
         {
             // Arrange
 
-            Utf8Span span = u8(input);
+            using BoundedUtf8Span boundedSpan = new BoundedUtf8Span(input);
+            Utf8Span span = boundedSpan.Span;
 
             // Act
 
@@ -99,7 +94,8 @@ namespace System.Text.Tests
         {
             // Arrange
 
-            Utf8Span span = u8(input);
+            using BoundedUtf8Span boundedSpan = new BoundedUtf8Span(input);
+            Utf8Span span = boundedSpan.Span;
 
             // Act
 

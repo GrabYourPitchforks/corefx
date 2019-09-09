@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Tests;
 using Xunit;
 
 using static System.Tests.Utf8TestUtilities;
@@ -53,6 +55,17 @@ namespace System.Text.Tests
         }
 
         [Theory]
+        [InlineData("", true)]
+        [InlineData("Hello", true)]
+        [InlineData("\u1234", false)]
+        public static void IsAscii(string input, bool expected)
+        {
+            using BoundedUtf8Span boundedSpan = new BoundedUtf8Span(input);
+
+            Assert.Equal(expected, boundedSpan.Span.IsAscii());
+        }
+
+        [Theory]
         [InlineData("")]
         [InlineData("Hello")]
         [InlineData("\U00000123\U00001234\U00101234")]
@@ -60,7 +73,8 @@ namespace System.Text.Tests
         {
             // Arrange
 
-            Utf8Span span = Utf8Span.UnsafeCreateWithoutValidation(Encoding.UTF8.GetBytes(expected));
+            using BoundedUtf8Span boundedSpan = new BoundedUtf8Span(expected);
+            Utf8Span span = boundedSpan.Span;
 
             // Act & assert
 
@@ -82,7 +96,9 @@ namespace System.Text.Tests
             // Arrange
 
             ustring utf8 = u8(expected);
-            Utf8Span span = Utf8Span.UnsafeCreateWithoutValidation(utf8.AsBytes());
+
+            using BoundedUtf8Span boundedSpan = new BoundedUtf8Span(expected);
+            Utf8Span span = boundedSpan.Span;
 
             // Act & assert
 

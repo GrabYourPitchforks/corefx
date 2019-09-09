@@ -3,14 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Globalization;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using System.Tests;
 using Microsoft.DotNet.RemoteExecutor;
 using Xunit;
 
 using static System.Tests.Utf8TestUtilities;
-
-using ustring = System.Utf8String;
 
 namespace System.Text.Tests
 {
@@ -74,8 +71,11 @@ namespace System.Text.Tests
                     CultureInfo.CurrentCulture = new CultureInfo(culture);
                 }
 
-                Utf8Span span1 = u8(str1);
-                Utf8Span span2 = u8(str2);
+                using BoundedUtf8Span boundedSpan1 = new BoundedUtf8Span(str1);
+                using BoundedUtf8Span boundedSpan2 = new BoundedUtf8Span(str2);
+
+                Utf8Span span1 = boundedSpan1.Span;
+                Utf8Span span2 = boundedSpan2.Span;
 
                 StringComparison comparisonType = Enum.Parse<StringComparison>(comparison);
                 bool expected = bool.Parse(shouldCompareAsEqual);
