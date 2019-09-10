@@ -11,7 +11,7 @@ using static System.Tests.Utf8TestUtilities;
 
 namespace System.Text.Tests
 {
-    public unsafe partial class Utf8SpanTests
+    public partial class Utf8SpanTests
     {
         [Fact]
         public static void Equals_Object_ThrowsNotSupported()
@@ -62,7 +62,7 @@ namespace System.Text.Tests
         [InlineData("ıI", "iI", StringComparison.CurrentCulture, "tr-TR", false)]
         [InlineData("ıI", "iI", StringComparison.CurrentCultureIgnoreCase, "tr-TR", false)]
         [InlineData("İI", "iI", StringComparison.CurrentCultureIgnoreCase, "tr-TR", true)]
-        public static void Equals_WithStringComparison(string str1, string str2, StringComparison comparison, string culture, bool shouldCompareAsEqual)
+        public static void Equals_NonOrdinal(string str1, string str2, StringComparison comparison, string culture, bool shouldCompareAsEqual)
         {
             Func<string, string, string, string, string, int> action = (str1, str2, comparison, culture, shouldCompareAsEqual) =>
             {

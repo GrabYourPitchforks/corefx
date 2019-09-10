@@ -8,7 +8,7 @@ using Xunit;
 
 namespace System.Text.Tests
 {
-    public unsafe partial class Utf8SpanTests
+    public partial class Utf8SpanTests
     {
         [Theory]
         [MemberData(nameof(Trim_TestData))]
