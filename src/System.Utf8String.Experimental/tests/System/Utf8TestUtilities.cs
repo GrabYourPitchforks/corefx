@@ -5,6 +5,8 @@
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using Xunit;
 
@@ -22,6 +24,11 @@ namespace System.Tests
                 Assert.NotNull(fastAllocateMethod);
                 return (Func<int, Utf8String>)fastAllocateMethod.CreateDelegate(typeof(Func<int, Utf8String>));
             });
+        }
+
+        public unsafe static bool IsNull(this Utf8Span span)
+        {
+            return Unsafe.AreSame(ref Unsafe.AsRef<byte>(null), ref MemoryMarshal.GetReference(span.Bytes));
         }
 
         /// <summary>
