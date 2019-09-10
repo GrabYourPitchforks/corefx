@@ -26,6 +26,7 @@
     <Compile Include="System\Utf8SpanTests.Ctor.cs" />
     <Compile Include="System\Utf8SpanTests.Enumeration.cs" />
     <Compile Include="System\Utf8SpanTests.Manipulation.cs" />
+    <Compile Include="System\Utf8SpanTests.Searching.cs" />
     <Compile Include="System\Utf8SpanTests.TestData.cs" />
     <!--<Compile Include="System\Utf8StringTests.cs" />
     <Compile Include="System\Utf8StringTests.Ctor.cs" />
