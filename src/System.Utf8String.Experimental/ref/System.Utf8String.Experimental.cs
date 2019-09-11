@@ -44,7 +44,6 @@ namespace System
         public Utf8String(string value) { }
         public ByteEnumerable Bytes { get { throw null; } }
         public CharEnumerable Chars { get { throw null; } }
-        public int Length { get { throw null; } }
         public RuneEnumerable Runes { get { throw null; } }
         public static bool AreEquivalent(System.Utf8String? utf8Text, string? utf16Text) { throw null; }
         public static bool AreEquivalent(System.Text.Utf8Span utf8Text, System.ReadOnlySpan<char> utf16Text) { throw null; }
@@ -80,9 +79,6 @@ namespace System
         public System.Utf8String this[System.Range range] { get { throw null; } }
         public bool StartsWith(char value) { throw null; }
         public bool StartsWith(System.Text.Rune value) { throw null; }
-        public System.Utf8String Substring(System.Index startIndex) { throw null; }
-        public System.Utf8String Substring(int startIndex) { throw null; }
-        public System.Utf8String Substring(int startIndex, int length) { throw null; }
         public byte[] ToByteArray() { throw null; }
         public byte[] ToByteArray(int startIndex, int length) { throw null; }
         public override string ToString() { throw null; }

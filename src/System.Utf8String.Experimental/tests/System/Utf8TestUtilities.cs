@@ -26,6 +26,11 @@ namespace System.Tests
             });
         }
 
+        public static int GetByteLength(this Utf8String value)
+        {
+            return value.AsBytes().Length;
+        }
+
         public unsafe static bool IsNull(this Utf8Span span)
         {
             return Unsafe.AreSame(ref Unsafe.AsRef<byte>(null), ref MemoryMarshal.GetReference(span.Bytes));
@@ -135,7 +140,7 @@ namespace System.Tests
             Utf8String newUtf8String = _utf8StringFactory.Value(buffer.Count);
             fixed (byte* pNewUtf8String = newUtf8String)
             {
-                buffer.AsSpan().CopyTo(new Span<byte>(pNewUtf8String, newUtf8String.Length));
+                buffer.AsSpan().CopyTo(new Span<byte>(pNewUtf8String, newUtf8String.GetByteLength()));
             }
 
             return newUtf8String;

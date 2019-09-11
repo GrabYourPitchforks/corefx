@@ -22,7 +22,7 @@ namespace System.Tests
         {
         }
 
-        public BoundedUtf8Span(ReadOnlySpan<byte> utf8Data, PoisonPagePlacement placement)
+        public BoundedUtf8Span(ReadOnlySpan<byte> utf8Data, PoisonPagePlacement placement = PoisonPagePlacement.After)
         {
             _boundedMemory = BoundedMemory.AllocateFromExistingData(utf8Data, placement);
         }
