@@ -2,10 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Buffers;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using Xunit;
 using System.Linq;
 
 using static System.Tests.Utf8TestUtilities;
@@ -72,6 +70,110 @@ namespace System.Text.Tests
             }
 
             yield return new object[] { builder.ToString() };
+        }
+
+        private static bool TryParseSearchTermAsChar(object searchTerm, out char parsed)
+        {
+            if (searchTerm is char ch)
+            {
+                parsed = ch;
+                return true;
+            }
+            else if (searchTerm is Rune r)
+            {
+                if (r.IsBmp)
+                {
+                    parsed = (char)r.Value;
+                    return true;
+                }
+            }
+            else if (searchTerm is string str)
+            {
+                if (str.Length == 1)
+                {
+                    parsed = str[0];
+                    return true;
+                }
+            }
+            else if (searchTerm is ustring ustr)
+            {
+                var enumerator = ustr.Chars.GetEnumerator();
+                if (enumerator.MoveNext())
+                {
+                    parsed = enumerator.Current;
+                    if (!enumerator.MoveNext())
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            parsed = default; // failed to turn the search term into a single char
+            return false;
+        }
+
+        private static bool TryParseSearchTermAsRune(object searchTerm, out Rune parsed)
+        {
+            if (searchTerm is char ch)
+            {
+                return Rune.TryCreate(ch, out parsed);
+            }
+            else if (searchTerm is Rune r)
+            {
+                parsed = r;
+                return true;
+            }
+            else if (searchTerm is string str)
+            {
+                if (Rune.DecodeFromUtf16(str, out parsed, out int charsConsumed) == OperationStatus.Done
+                    && charsConsumed == str.Length)
+                {
+                    return true;
+                }
+            }
+            else if (searchTerm is ustring ustr)
+            {
+                if (Rune.DecodeFromUtf8(ustr.AsBytes(), out parsed, out int bytesConsumed) == OperationStatus.Done
+                    && bytesConsumed == ustr.GetByteLength())
+                {
+                    return true;
+                }
+            }
+
+            parsed = default; // failed to turn the search term into a single Rune
+            return false;
+        }
+
+        private static bool TryParseSearchTermAsUtf8String(object searchTerm, out ustring parsed)
+        {
+            if (searchTerm is char ch)
+            {
+                if (Rune.TryCreate(ch, out Rune rune))
+                {
+                    parsed = rune.ToUtf8String();
+                    return true;
+                }
+            }
+            else if (searchTerm is Rune r)
+            {
+                parsed = r.ToUtf8String();
+                return true;
+            }
+            else if (searchTerm is string str)
+            {
+                if (ustring.TryCreateFrom(str, out parsed))
+                {
+                    return true;
+                }
+            }
+            else if (searchTerm is ustring ustr)
+            {
+                parsed = ustr;
+                return true;
+            }
+
+            parsed = default; // failed to turn the search term into a ustring
+            return false;
         }
     }
 }

@@ -99,11 +99,7 @@ namespace System.Tests
 
         public static void AssertRangesEqual(int originalLength, Range expected, Range actual)
         {
-            (int expectedOffset, int expectedLength) = expected.GetOffsetAndLength(originalLength);
-            (int actualOffset, int actualLength) = actual.GetOffsetAndLength(originalLength);
-
-            Assert.Equal(expectedOffset, actualOffset);
-            Assert.Equal(expectedLength, actualLength);
+            Assert.Equal(expected, actual, new RangeEqualityComparer(originalLength));
         }
 
         /// <summary>
@@ -185,6 +181,32 @@ namespace System.Tests
             }
 
             return newUtf8String;
+        }
+
+        public unsafe static Range GetRangeOfSubspan<T>(ReadOnlySpan<T> outerSpan, ReadOnlySpan<T> innerSpan)
+        {
+            ulong byteOffset = (ulong)(void*)Unsafe.ByteOffset(ref MemoryMarshal.GetReference(outerSpan), ref MemoryMarshal.GetReference(innerSpan));
+            ulong elementOffset = byteOffset / (uint)Unsafe.SizeOf<T>();
+
+            checked
+            {
+                int elementOffsetAsInt = (int)elementOffset;
+                Range retVal = elementOffsetAsInt..(elementOffsetAsInt + innerSpan.Length);
+
+                _ = outerSpan[retVal]; // call the real slice logic to make sure we're really within the outer span
+                return retVal;
+            }
+        }
+
+        public static Range GetRangeOfSubspan(Utf8Span outerSpan, Utf8Span innerSpan)
+        {
+            return GetRangeOfSubspan(outerSpan.Bytes, innerSpan.Bytes);
+        }
+
+        public static bool IsEmpty(this Range range, int length)
+        {
+            (_, int actualLength) = range.GetOffsetAndLength(length);
+            return (actualLength == 0);
         }
     }
 }

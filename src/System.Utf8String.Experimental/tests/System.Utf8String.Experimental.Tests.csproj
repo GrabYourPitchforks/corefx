@@ -18,6 +18,7 @@
     <Compile Include="System\ReflectionTests.cs" />
     <Compile Include="System\Utf8ExtensionsTests.cs" />-->
     <Compile Include="System\BoundedUtf8Span.cs" />
+    <Compile Include="System\RangeEqualityComparer.cs" />
     <Compile Include="System\TR29UtilityTests.cs" />
     <Compile Include="System\TR29UtilityTests.TestData.cs" />
     <Compile Include="System\Utf8SpanTests.cs" />
@@ -26,6 +27,7 @@
     <Compile Include="System\Utf8SpanTests.Ctor.cs" />
     <Compile Include="System\Utf8SpanTests.Enumeration.cs" />
     <Compile Include="System\Utf8SpanTests.Manipulation.cs" />
+    <Compile Include="System\Utf8SpanTests.Manipulation.TestData.cs" />
     <Compile Include="System\Utf8SpanTests.Searching.cs" />
     <Compile Include="System\Utf8SpanTests.Searching.TestData.cs" />
     <Compile Include="System\Utf8SpanTests.TestData.cs" />

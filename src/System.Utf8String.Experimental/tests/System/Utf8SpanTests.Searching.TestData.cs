@@ -2,16 +2,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Buffers;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Tests;
+
 using static System.Tests.Utf8TestUtilities;
+
 using ustring = System.Utf8String;
 
 namespace System.Text.Tests
 {
-    public unsafe partial class Utf8SpanTests
+    public partial class Utf8SpanTests
     {
         public static IEnumerable<object[]> TryFindData_Char_Ordinal()
         {
@@ -22,30 +22,7 @@ namespace System.Text.Tests
                     continue;
                 }
 
-                char searchChar = default;
-
-                if (entry.SearchTerm is char ch)
-                {
-                    searchChar = ch;
-                }
-                else if (entry.SearchTerm is Rune r)
-                {
-                    if (!r.IsBmp) { continue; }
-                    searchChar = (char)r.Value;
-                }
-                else if (entry.SearchTerm is string str)
-                {
-                    if (str.Length != 1) { continue; }
-                    searchChar = str[0];
-                }
-                else if (entry.SearchTerm is ustring ustr)
-                {
-                    var enumerator = ustr.Chars.GetEnumerator();
-                    if (!enumerator.MoveNext()) { continue; }
-                    searchChar = enumerator.Current;
-                    if (enumerator.MoveNext()) { continue; }
-                }
-                else
+                if (!TryParseSearchTermAsChar(entry.SearchTerm, out char searchChar))
                 {
                     continue;
                 }
@@ -64,30 +41,7 @@ namespace System.Text.Tests
         {
             foreach (TryFindTestData entry in TryFindData_All())
             {
-                char searchChar = default;
-
-                if (entry.SearchTerm is char ch)
-                {
-                    searchChar = ch;
-                }
-                else if (entry.SearchTerm is Rune r)
-                {
-                    if (!r.IsBmp) { continue; }
-                    searchChar = (char)r.Value;
-                }
-                else if (entry.SearchTerm is string str)
-                {
-                    if (str.Length != 1) { continue; }
-                    searchChar = str[0];
-                }
-                else if (entry.SearchTerm is ustring ustr)
-                {
-                    var enumerator = ustr.Chars.GetEnumerator();
-                    if (!enumerator.MoveNext()) { continue; }
-                    searchChar = enumerator.Current;
-                    if (enumerator.MoveNext()) { continue; }
-                }
-                else
+                if (!TryParseSearchTermAsChar(entry.SearchTerm, out char searchChar))
                 {
                     continue;
                 }
@@ -187,33 +141,7 @@ namespace System.Text.Tests
                     continue;
                 }
 
-                Rune searchRune = default;
-
-                if (entry.SearchTerm is char ch)
-                {
-                    if (!Rune.TryCreate(ch, out searchRune)) { continue; }
-                }
-                else if (entry.SearchTerm is Rune r)
-                {
-                    searchRune = r;
-                }
-                else if (entry.SearchTerm is string str)
-                {
-                    if (Rune.DecodeFromUtf16(str, out searchRune, out int charsConsumed) != OperationStatus.Done
-                        || charsConsumed != str.Length)
-                    {
-                        continue;
-                    }
-                }
-                else if (entry.SearchTerm is ustring ustr)
-                {
-                    if (Rune.DecodeFromUtf8(ustr.AsBytes(), out searchRune, out int bytesConsumed) != OperationStatus.Done
-                        || bytesConsumed != ustr.GetByteLength())
-                    {
-                        continue;
-                    }
-                }
-                else
+                if (!TryParseSearchTermAsRune(entry.SearchTerm, out Rune searchRune))
                 {
                     continue;
                 }
@@ -232,33 +160,7 @@ namespace System.Text.Tests
         {
             foreach (TryFindTestData entry in TryFindData_All())
             {
-                Rune searchRune = default;
-
-                if (entry.SearchTerm is char ch)
-                {
-                    if (!Rune.TryCreate(ch, out searchRune)) { continue; }
-                }
-                else if (entry.SearchTerm is Rune r)
-                {
-                    searchRune = r;
-                }
-                else if (entry.SearchTerm is string str)
-                {
-                    if (Rune.DecodeFromUtf16(str, out searchRune, out int charsConsumed) != OperationStatus.Done
-                        || charsConsumed != str.Length)
-                    {
-                        continue;
-                    }
-                }
-                else if (entry.SearchTerm is ustring ustr)
-                {
-                    if (Rune.DecodeFromUtf8(ustr.AsBytes(), out searchRune, out int bytesConsumed) != OperationStatus.Done
-                        || bytesConsumed != ustr.GetByteLength())
-                    {
-                        continue;
-                    }
-                }
-                else
+                if (!TryParseSearchTermAsRune(entry.SearchTerm, out Rune searchRune))
                 {
                     continue;
                 }
@@ -358,30 +260,7 @@ namespace System.Text.Tests
                     continue;
                 }
 
-                ustring searchTerm = default;
-
-                if (entry.SearchTerm is char ch)
-                {
-                    if (!Rune.TryCreate(ch, out Rune rune)) { continue; }
-                    searchTerm = rune.ToUtf8String();
-                }
-                else if (entry.SearchTerm is Rune r)
-                {
-                    searchTerm = r.ToUtf8String();
-                }
-                else if (entry.SearchTerm is string str)
-                {
-                    if (!ustring.TryCreateFrom(str, out searchTerm)) { continue; }
-                }
-                else if (entry.SearchTerm is ustring ustr)
-                {
-                    searchTerm = ustr;
-                }
-                else if (entry.SearchTerm is null)
-                {
-                    searchTerm = null;
-                }
-                else
+                if (!TryParseSearchTermAsUtf8String(entry.SearchTerm, out ustring searchTerm))
                 {
                     continue;
                 }
@@ -400,30 +279,7 @@ namespace System.Text.Tests
         {
             foreach (TryFindTestData entry in TryFindData_All())
             {
-                ustring searchTerm = default;
-
-                if (entry.SearchTerm is char ch)
-                {
-                    if (!Rune.TryCreate(ch, out Rune rune)) { continue; }
-                    searchTerm = rune.ToUtf8String();
-                }
-                else if (entry.SearchTerm is Rune r)
-                {
-                    searchTerm = r.ToUtf8String();
-                }
-                else if (entry.SearchTerm is string str)
-                {
-                    if (!ustring.TryCreateFrom(str, out searchTerm)) { continue; }
-                }
-                else if (entry.SearchTerm is ustring ustr)
-                {
-                    searchTerm = ustr;
-                }
-                else if (entry.SearchTerm is null)
-                {
-                    searchTerm = null;
-                }
-                else
+                if (!TryParseSearchTermAsUtf8String(entry.SearchTerm, out ustring searchTerm))
                 {
                     continue;
                 }
@@ -695,11 +551,7 @@ namespace System.Text.Tests
                 },
             };
 
-            foreach (TryFindTestData entry in testDataEntries)
-            {
-                // yield return new object[] { entry };
-                yield return entry;
-            }
+            return testDataEntries;
         }
 
         public class TryFindTestData
