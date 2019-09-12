@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Tests;
@@ -51,6 +52,25 @@ namespace System.Text.Tests
             Assert.Equal(IntPtr.Zero, (IntPtr)(void*)Unsafe.AsPointer(ref Unsafe.AsRef(in span.GetPinnableReference())));
             Assert.Equal(IntPtr.Zero, (IntPtr)(void*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(span.Bytes)));
             Assert.Equal(0, span.Bytes.Length);
+        }
+
+        [Fact]
+        public static void GetHashCode_Ordinal()
+        {
+            // Generate 17 all-null strings and make sure they have unique hash codes.
+            // Assuming Marvin32 is a good PRF and has a full 32-bit output domain, we should
+            // expect this test to fail only once every ~30 million runs due to the birthday paradox.
+            // That should be good enough for inclusion as a unit test.
+
+            HashSet<int> seenHashCodes = new HashSet<int>();
+
+            for (int i = 0; i <= 16; i++)
+            {
+                using BoundedUtf8Span boundedSpan = new BoundedUtf8Span(new byte[i]);
+                Utf8Span span = boundedSpan.Span;
+
+                Assert.True(seenHashCodes.Add(span.GetHashCode()), "This hash code was previously seen.");
+            }
         }
 
         [Theory]
