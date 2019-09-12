@@ -663,6 +663,36 @@ namespace System.Text.Tests
                     ExpectedFirstMatch = 0..1,
                     ExpectedLastMatch = 1..3,
                 },
+                new TryFindTestData
+                {
+                    // denormalized forms, no match
+                    Source = u8("a\u0308e\u0308A\u0308E\u0308"), // äëÄË (denormalized)
+                    SearchTerm = 'e', // shouldn't match letter paired with diacritic
+                    Options = TryFindTestDataOptions.None,
+                    AdditionalCultures = new CultureInfo[] { inv },
+                    ExpectedFirstMatch = null,
+                    ExpectedLastMatch = null,
+                },
+                new TryFindTestData
+                {
+                    // denormalized forms, case-sensitive
+                    Source = u8("a\u0308e\u0308A\u0308E\u0308"), // äëÄË (denormalized)
+                    SearchTerm = '\u00eb', // ë, normalized form
+                    Options = TryFindTestDataOptions.TestCaseSensitiveOnly,
+                    AdditionalCultures = new CultureInfo[] { inv },
+                    ExpectedFirstMatch = 3..6,
+                    ExpectedLastMatch = 3..6,
+                },
+                new TryFindTestData
+                {
+                    // denormalized forms, case-insensitive
+                    Source = u8("a\u0308e\u0308A\u0308E\u0308"), // äëÄË (denormalized)
+                    SearchTerm = '\u00eb', // ë, normalized form
+                    Options = TryFindTestDataOptions.TestIgnoreCaseOnly,
+                    AdditionalCultures = new CultureInfo[] { inv },
+                    ExpectedFirstMatch = 3..6,
+                    ExpectedLastMatch = ^3..,
+                },
             };
 
             foreach (TryFindTestData entry in testDataEntries)
