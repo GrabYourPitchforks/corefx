@@ -6,8 +6,10 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using Xunit;
 
 namespace System.Tests
@@ -93,6 +95,45 @@ namespace System.Tests
 
         Error:
             throw new ArgumentException($"Range expression '{expression.ToString()}' is invalid.");
+        }
+
+        public static void AssertRangesEqual(int originalLength, Range expected, Range actual)
+        {
+            (int expectedOffset, int expectedLength) = expected.GetOffsetAndLength(originalLength);
+            (int actualOffset, int actualLength) = actual.GetOffsetAndLength(originalLength);
+
+            Assert.Equal(expectedOffset, actualOffset);
+            Assert.Equal(expectedLength, actualLength);
+        }
+
+        /// <summary>
+        /// Runs this test on its own dedicated thread; allows for setting CurrentCulture and other thread-statics.
+        /// </summary>
+        /// <param name="testCode"></param>
+        public static void RunOnDedicatedThread(Action testCode)
+        {
+            Assert.NotNull(testCode);
+
+            ExceptionDispatchInfo edi = default;
+            Thread newThread = new Thread(() =>
+            {
+                try
+                {
+                    testCode();
+                }
+                catch (Exception ex)
+                {
+                    edi = ExceptionDispatchInfo.Capture(ex);
+                }
+            });
+
+            newThread.Start();
+            newThread.Join();
+
+            if (edi != null)
+            {
+                edi.Throw();
+            }
         }
 
         /// <summary>
