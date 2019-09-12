@@ -15,6 +15,7 @@ using static System.Tests.Utf8TestUtilities;
 using ustring = System.Utf8String;
 using System.Security.Policy;
 using System.Buffers;
+using System.Threading;
 
 namespace System.Text.Tests
 {
@@ -80,6 +81,109 @@ namespace System.Text.Tests
                 Assert.True(searchSpan.Bytes == before.Bytes); // check for reference equality
                 Assert.True(after.IsNull());
             }
+        }
+
+        [Theory]
+        [MemberData(nameof(TryFindData_Char_WithComparison))]
+        public static void TryFind_Char_WithComparison(ustring source, char searchTerm, StringComparison comparison, CultureInfo currentCulture, Range? expectedForwardMatch, Range? expectedBackwardMatch)
+        {
+            RemoteExecutor.Invoke((smuggledSource, smuggledSearchTerm, comparisonString, currentCultureName, expectedRangesString) =>
+            {
+                using BoundedUtf8Span boundedSpan = new BoundedUtf8Span(Convert.FromBase64String(smuggledSource));
+                Utf8Span searchSpan = boundedSpan.Span;
+                smuggledSource = null; // to avoid accidentally using this for the remainder of the test
+
+                char searchTerm = (char)int.Parse(smuggledSearchTerm, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+                StringComparison comparison = Enum.Parse<StringComparison>(comparisonString);
+
+                Range? expectedForwardMatch = default;
+                Range? expectedBackwardMatch = default;
+
+                string[] rangeStrings = expectedRangesString.Split(';');
+                if (!string.IsNullOrWhiteSpace(rangeStrings[0]))
+                {
+                    expectedForwardMatch = ParseRangeExpr(rangeStrings[0]);
+                }
+                if (!string.IsNullOrWhiteSpace(rangeStrings[1]))
+                {
+                    expectedBackwardMatch = ParseRangeExpr(rangeStrings[1]);
+                }
+
+                if (!string.IsNullOrEmpty(currentCultureName))
+                {
+                    // caller asked us to perform the test under a specific culture
+
+                    if (currentCultureName == "inv")
+                    {
+                        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+                    }
+                    else
+                    {
+                        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(currentCultureName);
+                    }
+                }
+
+                // First, search forward
+
+                bool wasFound = searchSpan.TryFind(searchTerm, comparison, out Range actualForwardMatch);
+                Assert.Equal(expectedForwardMatch.HasValue, wasFound);
+
+                if (wasFound)
+                {
+                    AssertRangesEqual(searchSpan.Bytes.Length, expectedForwardMatch.Value, actualForwardMatch);
+                }
+
+                // Also check Contains / StartsWith / SplitOn
+
+                Assert.Equal(wasFound, searchSpan.Contains(searchTerm, comparison));
+                Assert.Equal(wasFound && searchSpan.Bytes[..actualForwardMatch.Start].IsEmpty, searchSpan.StartsWith(searchTerm, comparison));
+
+                (var before, var after) = searchSpan.SplitOn(searchTerm, comparison);
+                if (wasFound)
+                {
+                    Assert.True(searchSpan.Bytes[..actualForwardMatch.Start] == before.Bytes); // check for referential equality
+                    Assert.True(searchSpan.Bytes[actualForwardMatch.End..] == after.Bytes); // check for referential equality
+                }
+                else
+                {
+                    Assert.True(searchSpan.Bytes == before.Bytes); // check for reference equality
+                    Assert.True(after.IsNull());
+                }
+
+                // Now search backward
+
+                wasFound = searchSpan.TryFindLast(searchTerm, comparison, out Range actualBackwardMatch);
+                Assert.Equal(expectedBackwardMatch.HasValue, wasFound);
+
+                if (wasFound)
+                {
+                    AssertRangesEqual(searchSpan.Bytes.Length, expectedBackwardMatch.Value, actualBackwardMatch);
+                }
+
+                // Also check EndsWith / SplitOnLast
+
+                Assert.Equal(wasFound && searchSpan.Bytes[actualBackwardMatch.End..].IsEmpty, searchSpan.EndsWith(searchTerm, comparison));
+
+                (before, after) = searchSpan.SplitOnLast(searchTerm, comparison);
+                if (wasFound)
+                {
+                    Assert.True(searchSpan.Bytes[..actualBackwardMatch.Start] == before.Bytes); // check for referential equality
+                    Assert.True(searchSpan.Bytes[actualBackwardMatch.End..] == after.Bytes); // check for referential equality
+                }
+                else
+                {
+                    Assert.True(searchSpan.Bytes == before.Bytes); // check for reference equality
+                    Assert.True(after.IsNull());
+                }
+
+                return RemoteExecutor.SuccessExitCode;
+            },
+            Convert.ToBase64String(source.AsBytes()), // smuggle as base64 to avoid null chars interfering with the remote executor
+            ((int)searchTerm).ToString("X4", CultureInfo.InvariantCulture), // smuggle as hex to avoid replacing standalone surrogate chars
+            comparison.ToString(),
+            currentCulture?.Name ?? string.Empty,
+            expectedForwardMatch?.ToString() + ";" + expectedBackwardMatch?.ToString()
+            ).Dispose();
         }
 
         [Theory]
@@ -578,6 +682,124 @@ namespace System.Text.Tests
             }
         }
 
+        public static IEnumerable<object[]> TryFindData_Char_WithComparison()
+        {
+            foreach (TryFindTestData entry in TryFindData_All())
+            {
+                char searchChar = default;
+
+                if (entry.SearchTerm is char ch)
+                {
+                    searchChar = ch;
+                }
+                else if (entry.SearchTerm is Rune r)
+                {
+                    if (!r.IsBmp) { continue; }
+                    searchChar = (char)r.Value;
+                }
+                else if (entry.SearchTerm is string str)
+                {
+                    if (str.Length != 1) { continue; }
+                    searchChar = str[0];
+                }
+                else if (entry.SearchTerm is ustring ustr)
+                {
+                    var enumerator = ustr.Chars.GetEnumerator();
+                    if (!enumerator.MoveNext()) { continue; }
+                    searchChar = enumerator.Current;
+                    if (enumerator.MoveNext()) { continue; }
+                }
+                else
+                {
+                    continue;
+                }
+
+                if (entry.Options.HasFlag(TryFindTestDataOptions.TestOrdinal))
+                {
+                    if (!entry.Options.HasFlag(TryFindTestDataOptions.TestIgnoreCaseOnly))
+                    {
+                        yield return new object[]
+                        {
+                            entry.Source,
+                            searchChar,
+                            StringComparison.Ordinal,
+                            null /* culture */,
+                            entry.ExpectedFirstMatch,
+                            entry.ExpectedLastMatch,
+                        };
+                    }
+                    if (!entry.Options.HasFlag(TryFindTestDataOptions.TestCaseSensitiveOnly))
+                    {
+                        yield return new object[]
+                        {
+                            entry.Source,
+                            searchChar,
+                            StringComparison.OrdinalIgnoreCase,
+                            null /* culture */,
+                            entry.ExpectedFirstMatch,
+                            entry.ExpectedLastMatch,
+                        };
+                    }
+                }
+
+                foreach (CultureInfo culture in entry.AdditionalCultures ?? Array.Empty<CultureInfo>())
+                {
+                    if (culture == CultureInfo.InvariantCulture)
+                    {
+                        if (!entry.Options.HasFlag(TryFindTestDataOptions.TestIgnoreCaseOnly))
+                        {
+                            yield return new object[]
+                            {
+                            entry.Source,
+                            searchChar,
+                            StringComparison.InvariantCulture,
+                            null /* culture */,
+                            entry.ExpectedFirstMatch,
+                            entry.ExpectedLastMatch,
+                            };
+                        }
+                        if (!entry.Options.HasFlag(TryFindTestDataOptions.TestCaseSensitiveOnly))
+                        {
+                            yield return new object[]
+                            {
+                            entry.Source,
+                            searchChar,
+                            StringComparison.InvariantCultureIgnoreCase,
+                            null /* culture */,
+                            entry.ExpectedFirstMatch,
+                            entry.ExpectedLastMatch,
+                            };
+                        }
+                    }
+
+                    if (!entry.Options.HasFlag(TryFindTestDataOptions.TestIgnoreCaseOnly))
+                    {
+                        yield return new object[]
+                        {
+                            entry.Source,
+                            searchChar,
+                            StringComparison.CurrentCulture,
+                            culture,
+                            entry.ExpectedFirstMatch,
+                            entry.ExpectedLastMatch,
+                        };
+                    }
+                    if (!entry.Options.HasFlag(TryFindTestDataOptions.TestCaseSensitiveOnly))
+                    {
+                        yield return new object[]
+                        {
+                            entry.Source,
+                            searchChar,
+                            StringComparison.CurrentCultureIgnoreCase,
+                            culture,
+                            entry.ExpectedFirstMatch,
+                            entry.ExpectedLastMatch,
+                        };
+                    }
+                }
+            }
+        }
+
         public static IEnumerable<object[]> TryFindData_Rune_Ordinal()
         {
             foreach (TryFindTestData entry in TryFindData_All())
@@ -677,10 +899,10 @@ namespace System.Text.Tests
 
         public static IEnumerable<TryFindTestData> TryFindData_All()
         {
-            const string inv = "inv";
-            const string en_US = "en-US";
-            const string tr_TR = "tr-TR";
-            const string hu_HU = "hu-HU";
+            CultureInfo inv = CultureInfo.InvariantCulture;
+            CultureInfo en_US = CultureInfo.GetCultureInfo("en-US");
+            CultureInfo tr_TR = CultureInfo.GetCultureInfo("tr-TR");
+            CultureInfo hu_HU = CultureInfo.GetCultureInfo("hu-HU");
 
             TryFindTestData[] testDataEntries = new TryFindTestData[]
             {
@@ -690,7 +912,7 @@ namespace System.Text.Tests
                     Source = null,
                     SearchTerm = null,
                     Options = TryFindTestDataOptions.TestOrdinal,
-                    AdditionalCultures = new string[] { inv, en_US, tr_TR, hu_HU },
+                    AdditionalCultures = new CultureInfo[] { inv, en_US, tr_TR, hu_HU },
                     ExpectedFirstMatch = 0..0,
                     ExpectedLastMatch = ^0..^0,
                 },
@@ -700,7 +922,7 @@ namespace System.Text.Tests
                     Source = u8("Hello"),
                     SearchTerm = null,
                     Options = TryFindTestDataOptions.TestOrdinal,
-                    AdditionalCultures = new string[] { inv, en_US, tr_TR, hu_HU },
+                    AdditionalCultures = new CultureInfo[] { inv, en_US, tr_TR, hu_HU },
                     ExpectedFirstMatch = 0..0,
                     ExpectedLastMatch = ^0..^0,
                 },
@@ -710,7 +932,7 @@ namespace System.Text.Tests
                     Source = null,
                     SearchTerm = u8("Hello"),
                     Options = TryFindTestDataOptions.TestOrdinal,
-                    AdditionalCultures = new string[] { inv, en_US, tr_TR, hu_HU },
+                    AdditionalCultures = new CultureInfo[] { inv, en_US, tr_TR, hu_HU },
                     ExpectedFirstMatch = null,
                     ExpectedLastMatch = null,
                 },
@@ -740,7 +962,7 @@ namespace System.Text.Tests
                     Source = u8("Hello"),
                     SearchTerm = 'l',
                     Options = TryFindTestDataOptions.TestOrdinal | TryFindTestDataOptions.TestCaseSensitiveOnly,
-                    AdditionalCultures = new string[] { inv },
+                    AdditionalCultures = new CultureInfo[] { inv },
                     ExpectedFirstMatch = 2..3,
                     ExpectedLastMatch = 3..4,
                 },
@@ -750,7 +972,7 @@ namespace System.Text.Tests
                     Source = u8("Hello"),
                     SearchTerm = 'L',
                     Options = TryFindTestDataOptions.TestOrdinal | TryFindTestDataOptions.TestCaseSensitiveOnly,
-                    AdditionalCultures = new string[] { inv },
+                    AdditionalCultures = new CultureInfo[] { inv },
                     ExpectedFirstMatch = null,
                     ExpectedLastMatch = null,
                 },
@@ -760,7 +982,7 @@ namespace System.Text.Tests
                     Source = u8("Hello"),
                     SearchTerm = 'L',
                     Options = TryFindTestDataOptions.TestOrdinal | TryFindTestDataOptions.TestIgnoreCaseOnly,
-                    AdditionalCultures = new string[] { inv },
+                    AdditionalCultures = new CultureInfo[] { inv },
                     ExpectedFirstMatch = 2..3,
                     ExpectedLastMatch = 3..4,
                 },
@@ -770,7 +992,7 @@ namespace System.Text.Tests
                     Source = u8("x\U0001F600y"),
                     SearchTerm = new Rune(0x1F600),
                     Options = TryFindTestDataOptions.TestOrdinal,
-                    AdditionalCultures = new string[] { inv },
+                    AdditionalCultures = new CultureInfo[] { inv },
                     ExpectedFirstMatch = 1..5,
                     ExpectedLastMatch = 1..5,
                 },
@@ -780,7 +1002,7 @@ namespace System.Text.Tests
                     Source = u8("x\ud83d\ude00y"),
                     SearchTerm = '\ud83d',
                     Options = TryFindTestDataOptions.TestOrdinal,
-                    AdditionalCultures = new string[] { inv },
+                    AdditionalCultures = new CultureInfo[] { inv },
                     ExpectedFirstMatch = null,
                     ExpectedLastMatch = null,
                 },
@@ -790,7 +1012,7 @@ namespace System.Text.Tests
                     Source = u8("x\ud83d\ude00y"),
                     SearchTerm = '\u00f0',
                     Options = TryFindTestDataOptions.TestOrdinal,
-                    AdditionalCultures = new string[] { inv },
+                    AdditionalCultures = new CultureInfo[] { inv },
                     ExpectedFirstMatch = null,
                     ExpectedLastMatch = null,
                 },
@@ -800,7 +1022,7 @@ namespace System.Text.Tests
                     Source = u8("ab_dz_ba"),
                     SearchTerm = 'd',
                     Options = TryFindTestDataOptions.None,
-                    AdditionalCultures = new string[] { hu_HU },
+                    AdditionalCultures = new CultureInfo[] { hu_HU },
                     ExpectedFirstMatch = null,
                     ExpectedLastMatch = null,
                 },
@@ -810,7 +1032,7 @@ namespace System.Text.Tests
                     Source = u8("\u0069\u0130\u0131\u0049"), // iİıI
                     SearchTerm = 'i',
                     Options = TryFindTestDataOptions.TestCaseSensitiveOnly,
-                    AdditionalCultures = new string[] { tr_TR },
+                    AdditionalCultures = new CultureInfo[] { tr_TR },
                     ExpectedFirstMatch = 0..1,
                     ExpectedLastMatch = 0..1,
                 },
@@ -820,7 +1042,7 @@ namespace System.Text.Tests
                     Source = u8("\u0069\u0130\u0131\u0049"), // iİıI
                     SearchTerm = 'i',
                     Options = TryFindTestDataOptions.TestIgnoreCaseOnly,
-                    AdditionalCultures = new string[] { tr_TR },
+                    AdditionalCultures = new CultureInfo[] { tr_TR },
                     ExpectedFirstMatch = 0..1,
                     ExpectedLastMatch = 1..3,
                 },
@@ -838,7 +1060,7 @@ namespace System.Text.Tests
             public ustring Source;
             public object SearchTerm;
             public TryFindTestDataOptions Options;
-            public string[] AdditionalCultures;
+            public CultureInfo[] AdditionalCultures;
             public Range? ExpectedFirstMatch;
             public Range? ExpectedLastMatch;
         }
