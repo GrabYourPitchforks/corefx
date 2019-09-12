@@ -13,14 +13,16 @@ using Xunit;
 using static System.Tests.Utf8TestUtilities;
 
 using ustring = System.Utf8String;
+using System.Security.Policy;
+using System.Buffers;
 
 namespace System.Text.Tests
 {
     public unsafe partial class Utf8SpanTests
     {
         [Theory]
-        [MemberData(nameof(TryFindData_First_Char_Ordinal))]
-        public static void TryFind_Char_Ordinal(ustring source, char searchTerm, Range? expectedMatch)
+        [MemberData(nameof(TryFindData_Char_Ordinal))]
+        public static void TryFind_Char_Ordinal(ustring source, char searchTerm, Range? expectedForwardMatch, Range? expectedBackwardMatch)
         {
             using BoundedUtf8Span boundedSpan = new BoundedUtf8Span(source.AsBytes());
             Utf8Span searchSpan = boundedSpan.Span;
@@ -28,11 +30,11 @@ namespace System.Text.Tests
             // First, search forward
 
             bool wasFound = searchSpan.TryFind(searchTerm, out Range actualForwardMatch);
-            Assert.Equal(expectedMatch.HasValue, wasFound);
+            Assert.Equal(expectedForwardMatch.HasValue, wasFound);
 
             if (wasFound)
             {
-                AssertRangesEqual(searchSpan.Bytes.Length, expectedMatch.Value, actualForwardMatch);
+                AssertRangesEqual(searchSpan.Bytes.Length, expectedForwardMatch.Value, actualForwardMatch);
             }
 
             // Also check Contains / StartsWith / SplitOn
@@ -45,6 +47,93 @@ namespace System.Text.Tests
             {
                 Assert.True(searchSpan.Bytes[..actualForwardMatch.Start] == before.Bytes); // check for referential equality
                 Assert.True(searchSpan.Bytes[actualForwardMatch.End..] == after.Bytes); // check for referential equality
+            }
+            else
+            {
+                Assert.True(searchSpan.Bytes == before.Bytes); // check for reference equality
+                Assert.True(after.IsNull());
+            }
+
+            // Now search backward
+
+            wasFound = searchSpan.TryFindLast(searchTerm, out Range actualBackwardMatch);
+            Assert.Equal(expectedBackwardMatch.HasValue, wasFound);
+
+            if (wasFound)
+            {
+                AssertRangesEqual(searchSpan.Bytes.Length, expectedBackwardMatch.Value, actualBackwardMatch);
+            }
+
+            // Also check EndsWith / SplitOnLast
+
+            Assert.Equal(wasFound && searchSpan.Bytes[actualBackwardMatch.End..].IsEmpty, searchSpan.EndsWith(searchTerm));
+
+            (before, after) = searchSpan.SplitOnLast(searchTerm);
+            if (wasFound)
+            {
+                Assert.True(searchSpan.Bytes[..actualBackwardMatch.Start] == before.Bytes); // check for referential equality
+                Assert.True(searchSpan.Bytes[actualBackwardMatch.End..] == after.Bytes); // check for referential equality
+            }
+            else
+            {
+                Assert.True(searchSpan.Bytes == before.Bytes); // check for reference equality
+                Assert.True(after.IsNull());
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(TryFindData_Rune_Ordinal))]
+        public static void TryFind_Rune_Ordinal(ustring source, Rune searchTerm, Range? expectedForwardMatch, Range? expectedBackwardMatch)
+        {
+            using BoundedUtf8Span boundedSpan = new BoundedUtf8Span(source.AsBytes());
+            Utf8Span searchSpan = boundedSpan.Span;
+
+            // First, search forward
+
+            bool wasFound = searchSpan.TryFind(searchTerm, out Range actualForwardMatch);
+            Assert.Equal(expectedForwardMatch.HasValue, wasFound);
+
+            if (wasFound)
+            {
+                AssertRangesEqual(searchSpan.Bytes.Length, expectedForwardMatch.Value, actualForwardMatch);
+            }
+
+            // Also check Contains / StartsWith / SplitOn
+
+            Assert.Equal(wasFound, source.Contains(searchTerm));
+            Assert.Equal(wasFound && searchSpan.Bytes[..actualForwardMatch.Start].IsEmpty, searchSpan.StartsWith(searchTerm));
+
+            (var before, var after) = searchSpan.SplitOn(searchTerm);
+            if (wasFound)
+            {
+                Assert.True(searchSpan.Bytes[..actualForwardMatch.Start] == before.Bytes); // check for referential equality
+                Assert.True(searchSpan.Bytes[actualForwardMatch.End..] == after.Bytes); // check for referential equality
+            }
+            else
+            {
+                Assert.True(searchSpan.Bytes == before.Bytes); // check for reference equality
+                Assert.True(after.IsNull());
+            }
+
+            // Now search backward
+
+            wasFound = searchSpan.TryFindLast(searchTerm, out Range actualBackwardMatch);
+            Assert.Equal(expectedBackwardMatch.HasValue, wasFound);
+
+            if (wasFound)
+            {
+                AssertRangesEqual(searchSpan.Bytes.Length, expectedBackwardMatch.Value, actualBackwardMatch);
+            }
+
+            // Also check EndsWith / SplitOnLast
+
+            Assert.Equal(wasFound && searchSpan.Bytes[actualBackwardMatch.End..].IsEmpty, searchSpan.EndsWith(searchTerm));
+
+            (before, after) = searchSpan.SplitOnLast(searchTerm);
+            if (wasFound)
+            {
+                Assert.True(searchSpan.Bytes[..actualBackwardMatch.Start] == before.Bytes); // check for referential equality
+                Assert.True(searchSpan.Bytes[actualBackwardMatch.End..] == after.Bytes); // check for referential equality
             }
             else
             {
@@ -378,7 +467,7 @@ namespace System.Text.Tests
         //            ).Dispose();
         //        }
 
-        public static IEnumerable<object[]> TryFindData_First_Char_Ordinal()
+        public static IEnumerable<object[]> TryFindData_Char_Ordinal()
         {
             foreach (TryFindTestData entry in TryFindData_All())
             {
@@ -419,7 +508,58 @@ namespace System.Text.Tests
                 {
                     entry.Source,
                     searchChar,
-                    entry.ExpectedFirstMatch
+                    entry.ExpectedFirstMatch,
+                    entry.ExpectedLastMatch,
+                };
+            }
+        }
+
+        public static IEnumerable<object[]> TryFindData_Rune_Ordinal()
+        {
+            foreach (TryFindTestData entry in TryFindData_All())
+            {
+                if (!entry.Options.HasFlag(TryFindTestDataOptions.TestOrdinal) || entry.Options.HasFlag(TryFindTestDataOptions.TestIgnoreCaseOnly))
+                {
+                    continue;
+                }
+
+                Rune searchRune = default;
+
+                if (entry.SearchTerm is char ch)
+                {
+                    if (!Rune.TryCreate(ch, out searchRune)) { continue; }
+                }
+                else if (entry.SearchTerm is Rune r)
+                {
+                    searchRune = r;
+                }
+                else if (entry.SearchTerm is string str)
+                {
+                    if (Rune.DecodeFromUtf16(str, out searchRune, out int charsConsumed) != OperationStatus.Done
+                        || charsConsumed != str.Length)
+                    {
+                        continue;
+                    }
+                }
+                else if (entry.SearchTerm is ustring ustr)
+                {
+                    if (Rune.DecodeFromUtf8(ustr.AsBytes(), out searchRune, out int bytesConsumed) != OperationStatus.Done
+                        || bytesConsumed != ustr.GetByteLength())
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    continue;
+                }
+
+                yield return new object[]
+                {
+                    entry.Source,
+                    searchRune,
+                    entry.ExpectedFirstMatch,
+                    entry.ExpectedLastMatch,
                 };
             }
         }
