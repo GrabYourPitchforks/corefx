@@ -19,11 +19,98 @@ namespace System.Text.Tests
     {
         private delegate Utf8Span.SplitResult Utf8SpanSplitDelegate(Utf8Span span, Utf8StringSplitOptions splitOptions);
 
+        [Fact]
+        public static void Split_InvalidChar_Throws()
+        {
+            // Shouldn't be able to split on a standalone surrogate char
+            // Other search methods (TryFind) return false when given a standalone surrogate char as input,
+            // but the Split methods returns a complex data structure instead of a simple bool. So to keep
+            // the logic of that data structure relatively simple we'll forbid the bad char at the call site.
+
+            var ex = Assert.Throws<ArgumentOutOfRangeException>(() => { u8("Hello").AsSpan().Split('\ud800'); });
+            Assert.Equal("separator", ex.ParamName);
+        }
+
         [Theory]
         [MemberData(nameof(SplitData_CharSeparator))]
         public static void Split_Char(ustring source, char separator, Range[] expectedRanges)
         {
             SplitTest_Common(source, (span, splitOptions) => span.Split(separator, splitOptions), expectedRanges);
+        }
+
+        [Fact]
+        public static void Split_Deconstruct()
+        {
+            using BoundedUtf8Span boundedSpan = new BoundedUtf8Span("a,b,c,d,e");
+            Utf8Span span = boundedSpan.Span;
+
+            {
+                (Utf8Span a, Utf8Span b) = span.Split('x'); // not found
+                Assert.True(a.Bytes == span.Bytes, "Expected referential equality of input.");
+                Assert.True(b.IsNull());
+            }
+
+            {
+                (Utf8Span a, Utf8Span b) = span.Split(',');
+                AssertRangesEqual(span.Bytes.Length, ..1, GetRangeOfSubspan(span, a)); // "a"
+                AssertRangesEqual(span.Bytes.Length, 2.., GetRangeOfSubspan(span, b)); // "b,c,d,e"
+            }
+
+            {
+                (Utf8Span a, Utf8Span b, Utf8Span c, Utf8Span d, Utf8Span e) = span.Split(',');
+                AssertRangesEqual(span.Bytes.Length, 0..1, GetRangeOfSubspan(span, a)); // "a"
+                AssertRangesEqual(span.Bytes.Length, 2..3, GetRangeOfSubspan(span, b)); // "b"
+                AssertRangesEqual(span.Bytes.Length, 4..5, GetRangeOfSubspan(span, c)); // "c"
+                AssertRangesEqual(span.Bytes.Length, 6..7, GetRangeOfSubspan(span, d)); // "d"
+                AssertRangesEqual(span.Bytes.Length, 8..9, GetRangeOfSubspan(span, e)); // "e"
+            }
+
+            {
+                (Utf8Span a, Utf8Span b, Utf8Span c, Utf8Span d, Utf8Span e, Utf8Span f, Utf8Span g, Utf8Span h) = span.Split(',');
+                AssertRangesEqual(span.Bytes.Length, 0..1, GetRangeOfSubspan(span, a)); // "a"
+                AssertRangesEqual(span.Bytes.Length, 2..3, GetRangeOfSubspan(span, b)); // "b"
+                AssertRangesEqual(span.Bytes.Length, 4..5, GetRangeOfSubspan(span, c)); // "c"
+                AssertRangesEqual(span.Bytes.Length, 6..7, GetRangeOfSubspan(span, d)); // "d"
+                AssertRangesEqual(span.Bytes.Length, 8..9, GetRangeOfSubspan(span, e)); // "e"
+                Assert.True(f.IsNull());
+                Assert.True(g.IsNull());
+                Assert.True(h.IsNull());
+            }
+        }
+
+        [Fact]
+        public static void Split_Deconstruct_WithOptions()
+        {
+            using BoundedUtf8Span boundedSpan = new BoundedUtf8Span("a, , b, c,, d, e");
+            Utf8Span span = boundedSpan.Span;
+
+            {
+                (Utf8Span a, Utf8Span b) = span.Split(',', Utf8StringSplitOptions.RemoveEmptyEntries);
+                AssertRangesEqual(span.Bytes.Length, ..1, GetRangeOfSubspan(span, a)); // "a"
+                AssertRangesEqual(span.Bytes.Length, 2.., GetRangeOfSubspan(span, b)); // " , b, c,, d, e"
+            }
+
+            {
+                (Utf8Span a, Utf8Span x, Utf8Span b, Utf8Span c, Utf8Span d, Utf8Span e) = span.Split(',', Utf8StringSplitOptions.RemoveEmptyEntries);
+                AssertRangesEqual(span.Bytes.Length, 0..1, GetRangeOfSubspan(span, a)); // "a"
+                AssertRangesEqual(span.Bytes.Length, 2..3, GetRangeOfSubspan(span, x)); // " "
+                AssertRangesEqual(span.Bytes.Length, 4..6, GetRangeOfSubspan(span, b)); // " b"
+                AssertRangesEqual(span.Bytes.Length, 7..9, GetRangeOfSubspan(span, c)); // " c"
+                AssertRangesEqual(span.Bytes.Length, 11..13, GetRangeOfSubspan(span, d)); // " d"
+                AssertRangesEqual(span.Bytes.Length, 14.., GetRangeOfSubspan(span, e)); // " e"
+            }
+
+            {
+                (Utf8Span a, Utf8Span b, Utf8Span c, Utf8Span d, Utf8Span e, Utf8Span f, Utf8Span g, Utf8Span h) = span.Split(',', Utf8StringSplitOptions.RemoveEmptyEntries | Utf8StringSplitOptions.TrimEntries);
+                AssertRangesEqual(span.Bytes.Length, 0..1, GetRangeOfSubspan(span, a)); // "a"
+                AssertRangesEqual(span.Bytes.Length, 5..6, GetRangeOfSubspan(span, b)); // "b"
+                AssertRangesEqual(span.Bytes.Length, 8..9, GetRangeOfSubspan(span, c)); // "c"
+                AssertRangesEqual(span.Bytes.Length, 12..13, GetRangeOfSubspan(span, d)); // "d"
+                AssertRangesEqual(span.Bytes.Length, 15.., GetRangeOfSubspan(span, e)); // "e"
+                Assert.True(f.IsNull());
+                Assert.True(g.IsNull());
+                Assert.True(h.IsNull());
+            }
         }
 
         [Theory]
@@ -73,6 +160,17 @@ namespace System.Text.Tests
             for (int i = 0; i < expectedRanges.Length; i++)
             {
                 expectedRanges[i] = GetRangeOfSubspan(span, span[expectedRanges[i]].Trim());
+            }
+
+            // If we expect a zero-length substring at the end of the original span, change our expectation
+            // to be zero-length substring at the end of the trimmed span. The reason for this is that
+            // internally the iterator will call the Trim method as it inspects the input, and the overall
+            // span length might shrink if there was whitespace at the end.
+
+            if (expectedRanges.Length > 0 && new RangeEqualityComparer(span.Bytes.Length).Equals(expectedRanges.Last(), Index.End..Index.End))
+            {
+                int trimEndResultingLength = span.TrimEnd().Bytes.Length;
+                expectedRanges[expectedRanges.Length - 1] = trimEndResultingLength..trimEndResultingLength;
             }
 
             actualRanges = new List<Range>();
