@@ -16,6 +16,39 @@ namespace System.Text.Tests
     public partial class Utf8SpanTests
     {
         [Theory]
+        [MemberData(nameof(NormalizationData))]
+        public static void Normalize(string utf16Source, string utf16Expected, NormalizationForm normalizationForm)
+        {
+            using BoundedUtf8Span boundedSpan = new BoundedUtf8Span(utf16Source);
+            Utf8Span utf8Source = boundedSpan.Span;
+
+            // Quick IsNormalized tests
+
+            Assert.Equal(utf16Source == utf16Expected, utf8Source.IsNormalized(normalizationForm));
+
+            // Normalize and return new Utf8String instances
+
+            ustring utf8Normalized = utf8Source.Normalize(normalizationForm);
+            Assert.True(ustring.AreEquivalent(utf8Normalized, utf16Expected));
+
+            // Normalize to byte arrays which are too small, expect -1 (failure)
+
+            Assert.Equal(-1, utf8Source.Normalize(new byte[utf8Normalized.GetByteLength() - 1], normalizationForm));
+
+            // Normalize to byte arrays which are the correct length, expect success,
+            // then compare buffer contents for ordinal equality.
+
+            foreach (int bufferLength in new int[] { utf8Normalized.GetByteLength() /* just right */, utf8Normalized.GetByteLength() + 1 /* with extra room */})
+            {
+                byte[] dest = new byte[bufferLength];
+                Assert.Equal(utf8Normalized.GetByteLength(), utf8Source.Normalize(dest, normalizationForm));
+                Utf8Span normalizedSpan = Utf8Span.UnsafeCreateWithoutValidation(dest[..utf8Normalized.GetByteLength()]);
+                Assert.True(utf8Normalized.AsSpan() == normalizedSpan); // ordinal equality
+                Assert.True(normalizedSpan.IsNormalized(normalizationForm));
+            }
+        }
+
+        [Theory]
         [MemberData(nameof(CaseConversionData))]
         public static void ToLower(string testData)
         {
@@ -161,6 +194,48 @@ namespace System.Text.Tests
             foreach (string testCase in testCases)
             {
                 yield return new object[] { testCase };
+            }
+        }
+
+        public static IEnumerable<object[]> NormalizationData()
+        {
+            // These test cases are from the Unicode Standard Annex #15, Figure 6
+            // https://unicode.org/reports/tr15/
+
+            var testCases = new[]
+            {
+                new
+                {
+                    Source = "\ufb01", // "ﬁ" (LATIN SMALL LIGATURE FI)
+                    NFD = "\ufb01", // same as source
+                    NFC = "\ufb01", // same as source
+                    NFKD = "fi", // compatibility decomposed into ASCII chars
+                    NFKC = "fi", // compatibility decomposed into ASCII chars
+                },
+                new
+                {
+                    Source = "2\u2075", // "2⁵" (SUPERSCRIPT FIVE)
+                    NFD = "2\u2075", // same as source
+                    NFC = "2\u2075", // same as source
+                    NFKD = "25", // compatibility decomposed into ASCII chars
+                    NFKC = "25", // compatibility decomposed into ASCII chars
+                },
+                new
+                {
+                    Source = "\u1e9b\u0323", // 'ẛ' (LATIN SMALL LETTER LONG S WITH DOT ABOVE) + COMBINING DOT BELOW
+                    NFD = "\u017f\u0323\u0307", // 'ſ' (LATIN SMALL LETTER LONG S) + COMBINING DOT BELOW + COMBINING DOT ABOVE
+                    NFC = "\u1e9b\u0323", // same as source
+                    NFKD = "s\u0323\u0307", // ASCII 's' + COMBINING DOT BELOW + COMBINING DOT ABOVE
+                    NFKC = "\u1e69", // "ṩ" (LATIN SMALL LETTER S WITH DOT BELOW AND DOT ABOVE)
+                }
+            };
+
+            foreach (var testCase in testCases)
+            {
+                yield return new object[] { testCase.Source, testCase.NFD, NormalizationForm.FormD };
+                yield return new object[] { testCase.Source, testCase.NFC, NormalizationForm.FormC };
+                yield return new object[] { testCase.Source, testCase.NFKD, NormalizationForm.FormKD };
+                yield return new object[] { testCase.Source, testCase.NFKC, NormalizationForm.FormKC };
             }
         }
     }
