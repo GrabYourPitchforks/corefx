@@ -65,6 +65,7 @@ namespace System
         public override int GetHashCode() { throw null; }
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
         public ref readonly byte GetPinnableReference() { throw null; }
+        public bool IsAscii() { throw null; }
         public static bool IsNullOrEmpty([System.Diagnostics.CodeAnalysis.NotNullWhenAttribute(false)] System.Utf8String? value) { throw null; }
         public static bool operator !=(System.Utf8String? left, System.Utf8String? right) { throw null; }
         public static bool operator ==(System.Utf8String? left, System.Utf8String? right) { throw null; }
@@ -82,6 +83,9 @@ namespace System
         public byte[] ToByteArray() { throw null; }
         public byte[] ToByteArray(int startIndex, int length) { throw null; }
         public override string ToString() { throw null; }
+        public System.Utf8String Trim() { throw null; }
+        public System.Utf8String TrimEnd() { throw null; }
+        public System.Utf8String TrimStart() { throw null; }
         public static bool TryCreateFrom(System.ReadOnlySpan<byte> buffer, [System.Diagnostics.CodeAnalysis.NotNullWhenAttribute(true)] out System.Utf8String? value) { throw null; }
         public static bool TryCreateFrom(System.ReadOnlySpan<char> buffer, [System.Diagnostics.CodeAnalysis.NotNullWhenAttribute(true)] out System.Utf8String? value) { throw null; }
         public bool TryFind(char value, out System.Range range) { throw null; }
@@ -330,6 +334,7 @@ namespace System.Text
             public void Deconstruct(out System.Text.Utf8Span item1, out System.Text.Utf8Span item2, out System.Text.Utf8Span item3, out System.Text.Utf8Span item4, out System.Text.Utf8Span item5, out System.Text.Utf8Span item6, out System.Text.Utf8Span item7) { throw null; }
             [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
             public void Deconstruct(out System.Text.Utf8Span item1, out System.Text.Utf8Span item2, out System.Text.Utf8Span item3, out System.Text.Utf8Span item4, out System.Text.Utf8Span item5, out System.Text.Utf8Span item6, out System.Text.Utf8Span item7, out System.Text.Utf8Span item8) { throw null; }
+            public Enumerator GetEnumerator() { throw null; }
             public ref struct Enumerator
             {
                 private readonly object _dummy;
