@@ -183,6 +183,21 @@ namespace System.Text.Tests
         }
 
         [Theory]
+        [InlineData(null, true)]
+        [InlineData("", true)]
+        [InlineData(" \u2028\u2029\t\v", true)]
+        [InlineData(" x\r\n", false)]
+        [InlineData("\r\nhello\r\n", false)]
+        [InlineData("\r\n\0\r\n", false)]
+        [InlineData("\r\n\r\n", true)]
+        public static void IsEmptyOrWhiteSpace(string input, bool expected)
+        {
+            using BoundedUtf8Span boundedSpan = new BoundedUtf8Span(input);
+
+            Assert.Equal(expected, boundedSpan.Span.IsEmptyOrWhiteSpace());
+        }
+
+        [Theory]
         [InlineData("", "..")]
         [InlineData("Hello", "1..")]
         [InlineData("Hello", "1..2")]
