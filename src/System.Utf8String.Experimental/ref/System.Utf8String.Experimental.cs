@@ -265,6 +265,7 @@ namespace System.Text
         public System.Text.Utf8Span Trim() { throw null; }
         public System.Text.Utf8Span TrimEnd() { throw null; }
         public System.Text.Utf8Span TrimStart() { throw null; }
+        public char[] ToCharArray() { throw null; }
         public int ToChars(System.Span<char> destination) { throw null; }
         public System.Utf8String ToLower(System.Globalization.CultureInfo culture) { throw null; }
         public int ToLower(System.Span<byte> destination, System.Globalization.CultureInfo culture) { throw null; }

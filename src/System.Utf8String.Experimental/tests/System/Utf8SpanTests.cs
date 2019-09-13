@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Buffers;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -236,10 +237,70 @@ namespace System.Text.Tests
             Assert.Throws<InvalidOperationException>(() => { var _ = boundedSpan.Span[range]; });
         }
 
+
         [Theory]
-        [InlineData("")]
-        [InlineData("Hello")]
-        [InlineData("\U00000123\U00001234\U00101234")]
+        [MemberData(nameof(TranscodingTestData))]
+        public static void ToCharArrayTest(string expected)
+        {
+            // Arrange
+
+            using BoundedUtf8Span boundedSpan = new BoundedUtf8Span(expected);
+            Utf8Span span = boundedSpan.Span;
+
+            // Act
+
+            char[] returned = span.ToCharArray();
+
+            // Assert
+
+            Assert.Equal(expected, returned); // IEnumerable<char>
+        }
+
+        [Fact]
+        public static void ToCharArrayTest_Null()
+        {
+            Assert.Same(Array.Empty<char>(), Utf8Span.Empty.ToCharArray());
+        }
+
+        [Theory]
+        [MemberData(nameof(TranscodingTestData))]
+        public static void ToCharsTest(string expected)
+        {
+            // Arrange
+
+            using BoundedUtf8Span boundedSpan = new BoundedUtf8Span(expected);
+            Utf8Span span = boundedSpan.Span;
+
+            // Act & assert, first with improperly-sized buffer
+
+            if (expected.Length > 0)
+            {
+                using BoundedMemory<char> boundedMemory = BoundedMemory.Allocate<char>(expected.Length - 1);
+                Assert.Equal(-1, span.ToChars(boundedMemory.Span));
+            }
+
+            // Then with properly-sized buffer and too-large buffer
+
+            for (int i = expected.Length; i <= expected.Length + 1; i++)
+            {
+                using BoundedMemory<char> boundedMemory = BoundedMemory.Allocate<char>(i);
+                Assert.Equal(expected.Length, span.ToChars(boundedMemory.Span));
+                Assert.True(boundedMemory.Span.Slice(0, expected.Length).SequenceEqual(expected));
+            }
+        }
+
+        [Fact]
+        public static void ToCharsTest_Null()
+        {
+            for (int i = 0; i <= 1; i++) // test both with properly-sized buffer and with too-large buffer
+            {
+                using BoundedMemory<char> boundedMemory = BoundedMemory.Allocate<char>(i);
+                Assert.Equal(0, Utf8Span.Empty.ToChars(boundedMemory.Span));
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(TranscodingTestData))]
         public static void ToStringTest(string expected)
         {
             // Arrange
@@ -259,9 +320,7 @@ namespace System.Text.Tests
         }
 
         [Theory]
-        [InlineData("")]
-        [InlineData("Hello")]
-        [InlineData("\U00000123\U00001234\U00101234")]
+        [MemberData(nameof(TranscodingTestData))]
         public static void ToUtf8StringTest(string expected)
         {
             // Arrange
@@ -280,6 +339,14 @@ namespace System.Text.Tests
         public static void ToUtf8StringTest_Null()
         {
             Assert.Same(ustring.Empty, Utf8Span.Empty.ToUtf8String());
+        }
+
+        public static IEnumerable<object[]> TranscodingTestData()
+        {
+            yield return new object[] { "" }; // empty
+            yield return new object[] { "Hello" }; // simple ASCII
+            yield return new object[] { "a\U00000123b\U00001234c\U00101234d" }; // with multi-byte sequences of varying lengths
+            yield return new object[] { "\uF8FF\uE000\U000FFFFF" }; // with scalars from the private use areas
         }
     }
 }
