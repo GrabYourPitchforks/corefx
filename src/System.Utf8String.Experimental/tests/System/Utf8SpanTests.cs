@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Tests;
@@ -71,6 +72,103 @@ namespace System.Text.Tests
 
                 Assert.True(seenHashCodes.Add(span.GetHashCode()), "This hash code was previously seen.");
             }
+        }
+
+        [Fact]
+        public static void GetHashCode_WithComparison()
+        {
+            // Since hash code generation is randomized, it's possible (though unlikely) that
+            // we might see unanticipated collisions. It's ok if this unit test fails once in
+            // every few million runs, but if the unit test becomes truly flaky then that would
+            // be indicative of a larger problem with hash code generation.
+            //
+            // These tests also make sure that the hash code is computed over the buffer rather
+            // than over the reference.
+
+            // Ordinal
+
+            {
+                using BoundedUtf8Span boundedSpan = new BoundedUtf8Span("ababaaAA");
+                Utf8Span span = boundedSpan.Span;
+
+                Assert.Equal(span[0..2].GetHashCode(StringComparison.Ordinal), span[2..4].GetHashCode(StringComparison.Ordinal));
+                Assert.NotEqual(span[4..6].GetHashCode(StringComparison.Ordinal), span[6..8].GetHashCode(StringComparison.Ordinal));
+                Assert.Equal(Utf8Span.Empty.GetHashCode(StringComparison.Ordinal), span[^0..].GetHashCode(StringComparison.Ordinal)); // null should equal empty
+            }
+
+            // OrdinalIgnoreCase
+
+            {
+                using BoundedUtf8Span boundedSpan = new BoundedUtf8Span("ababaaAA");
+                Utf8Span span = boundedSpan.Span;
+
+                Assert.Equal(span[0..2].GetHashCode(StringComparison.OrdinalIgnoreCase), span[2..4].GetHashCode(StringComparison.OrdinalIgnoreCase));
+                Assert.Equal(span[4..6].GetHashCode(StringComparison.OrdinalIgnoreCase), span[6..8].GetHashCode(StringComparison.OrdinalIgnoreCase));
+                Assert.NotEqual(span[0..2].GetHashCode(StringComparison.OrdinalIgnoreCase), span[6..8].GetHashCode(StringComparison.OrdinalIgnoreCase));
+                Assert.Equal(Utf8Span.Empty.GetHashCode(StringComparison.OrdinalIgnoreCase), span[^0..].GetHashCode(StringComparison.OrdinalIgnoreCase)); // null should equal empty
+            }
+
+            // InvariantCulture
+
+            {
+                using BoundedUtf8Span boundedSpan = new BoundedUtf8Span("ae\u00e6AE\u00c6"); // U+00E6 = 'æ' LATIN SMALL LETTER AE, U+00E6 = 'Æ' LATIN CAPITAL LETTER AE
+                Utf8Span span = boundedSpan.Span;
+
+                Assert.Equal(span[0..2].GetHashCode(StringComparison.InvariantCulture), span[2..4].GetHashCode(StringComparison.InvariantCulture));
+                Assert.NotEqual(span[0..2].GetHashCode(StringComparison.InvariantCulture), span[4..6].GetHashCode(StringComparison.InvariantCulture));
+                Assert.Equal(Utf8Span.Empty.GetHashCode(StringComparison.InvariantCulture), span[^0..].GetHashCode(StringComparison.InvariantCulture)); // null should equal empty
+            }
+
+            // InvariantCultureIgnoreCase
+
+            {
+                using BoundedUtf8Span boundedSpan = new BoundedUtf8Span("ae\u00e6AE\u00c6EA");
+                Utf8Span span = boundedSpan.Span;
+
+                Assert.Equal(span[0..2].GetHashCode(StringComparison.InvariantCultureIgnoreCase), span[2..4].GetHashCode(StringComparison.InvariantCultureIgnoreCase));
+                Assert.Equal(span[0..2].GetHashCode(StringComparison.InvariantCultureIgnoreCase), span[6..8].GetHashCode(StringComparison.InvariantCultureIgnoreCase));
+                Assert.NotEqual(span[0..2].GetHashCode(StringComparison.InvariantCultureIgnoreCase), span[8..10].GetHashCode(StringComparison.InvariantCultureIgnoreCase));
+                Assert.Equal(Utf8Span.Empty.GetHashCode(StringComparison.InvariantCultureIgnoreCase), span[^0..].GetHashCode(StringComparison.InvariantCultureIgnoreCase)); // null should equal empty
+            }
+
+            // Invariant culture should not match Turkish I case conversion
+
+            {
+                using BoundedUtf8Span boundedSpan = new BoundedUtf8Span("i\u0130"); // U+0130 = 'İ' LATIN CAPITAL LETTER I WITH DOT ABOVE
+                Utf8Span span = boundedSpan.Span;
+
+                Assert.NotEqual(span[0..1].GetHashCode(StringComparison.InvariantCultureIgnoreCase), span[1..3].GetHashCode(StringComparison.InvariantCultureIgnoreCase));
+            }
+
+            // CurrentCulture (we'll use tr-TR)
+
+            RunOnDedicatedThread(() =>
+            {
+                using BoundedUtf8Span boundedSpan = new BoundedUtf8Span("i\u0131\u0130Ii\u0131\u0130I"); // U+0131 = 'ı' LATIN SMALL LETTER DOTLESS I
+                Utf8Span span = boundedSpan.Span;
+
+                CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("tr-TR");
+
+                Assert.Equal(span[0..6].GetHashCode(StringComparison.CurrentCulture), span[6..12].GetHashCode(StringComparison.CurrentCulture));
+                Assert.NotEqual(span[0..1].GetHashCode(StringComparison.CurrentCulture), span[1..3].GetHashCode(StringComparison.CurrentCulture));
+                Assert.Equal(Utf8Span.Empty.GetHashCode(StringComparison.CurrentCulture), span[^0..].GetHashCode(StringComparison.CurrentCulture)); // null should equal empty
+            });
+
+            // CurrentCultureIgnoreCase (we'll use tr-TR)
+
+            RunOnDedicatedThread(() =>
+            {
+                using BoundedUtf8Span boundedSpan = new BoundedUtf8Span("i\u0131\u0130Ii\u0131\u0130I");
+                Utf8Span span = boundedSpan.Span;
+
+                CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("tr-TR");
+
+                Assert.Equal(span[0..6].GetHashCode(StringComparison.CurrentCultureIgnoreCase), span[6..12].GetHashCode(StringComparison.CurrentCultureIgnoreCase));
+                Assert.NotEqual(span[0..1].GetHashCode(StringComparison.CurrentCultureIgnoreCase), span[1..3].GetHashCode(StringComparison.CurrentCultureIgnoreCase)); // 'i' shouldn't match 'ı'
+                Assert.NotEqual(span[0..1].GetHashCode(StringComparison.CurrentCultureIgnoreCase), span[3..5].GetHashCode(StringComparison.CurrentCultureIgnoreCase)); // 'i' should match 'İ'
+                Assert.NotEqual(span[0..1].GetHashCode(StringComparison.CurrentCultureIgnoreCase), span[5..6].GetHashCode(StringComparison.CurrentCultureIgnoreCase)); // 'i' shouldn't match 'I'
+                Assert.Equal(Utf8Span.Empty.GetHashCode(StringComparison.CurrentCultureIgnoreCase), span[^0..].GetHashCode(StringComparison.CurrentCultureIgnoreCase)); // null should equal empty
+            });
         }
 
         [Theory]
