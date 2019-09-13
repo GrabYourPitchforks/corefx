@@ -165,7 +165,7 @@ namespace System.Text.Tests
 
                 Assert.Equal(span[0..6].GetHashCode(StringComparison.CurrentCultureIgnoreCase), span[6..12].GetHashCode(StringComparison.CurrentCultureIgnoreCase));
                 Assert.NotEqual(span[0..1].GetHashCode(StringComparison.CurrentCultureIgnoreCase), span[1..3].GetHashCode(StringComparison.CurrentCultureIgnoreCase)); // 'i' shouldn't match 'ı'
-                Assert.NotEqual(span[0..1].GetHashCode(StringComparison.CurrentCultureIgnoreCase), span[3..5].GetHashCode(StringComparison.CurrentCultureIgnoreCase)); // 'i' should match 'İ'
+                Assert.Equal(span[0..1].GetHashCode(StringComparison.CurrentCultureIgnoreCase), span[3..5].GetHashCode(StringComparison.CurrentCultureIgnoreCase)); // 'i' should match 'İ'
                 Assert.NotEqual(span[0..1].GetHashCode(StringComparison.CurrentCultureIgnoreCase), span[5..6].GetHashCode(StringComparison.CurrentCultureIgnoreCase)); // 'i' shouldn't match 'I'
                 Assert.Equal(Utf8Span.Empty.GetHashCode(StringComparison.CurrentCultureIgnoreCase), span[^0..].GetHashCode(StringComparison.CurrentCultureIgnoreCase)); // null should equal empty
             });
