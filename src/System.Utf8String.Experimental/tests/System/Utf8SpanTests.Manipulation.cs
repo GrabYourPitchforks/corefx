@@ -72,37 +72,40 @@ namespace System.Text.Tests
             using BoundedUtf8Span boundedSpan = new BoundedUtf8Span("a,b,c,d,e");
             Utf8Span span = boundedSpan.Span;
 
+            // Note referential equality checks below (since we want to know exact slices
+            // into the original buffer), not deep (textual) equality checks.
+
             {
                 (Utf8Span a, Utf8Span b) = span.Split('x'); // not found
                 Assert.True(a.Bytes == span.Bytes, "Expected referential equality of input.");
-                Assert.True(b.IsNull());
+                Assert.True(b.Bytes == default);
             }
 
             {
                 (Utf8Span a, Utf8Span b) = span.Split(',');
-                AssertRangesEqual(span.Bytes.Length, ..1, GetRangeOfSubspan(span, a)); // "a"
-                AssertRangesEqual(span.Bytes.Length, 2.., GetRangeOfSubspan(span, b)); // "b,c,d,e"
+                Assert.True(a.Bytes == span.Bytes[..1]); // "a"
+                Assert.True(b.Bytes == span.Bytes[2..]); // "b,c,d,e"
             }
 
             {
                 (Utf8Span a, Utf8Span b, Utf8Span c, Utf8Span d, Utf8Span e) = span.Split(',');
-                AssertRangesEqual(span.Bytes.Length, 0..1, GetRangeOfSubspan(span, a)); // "a"
-                AssertRangesEqual(span.Bytes.Length, 2..3, GetRangeOfSubspan(span, b)); // "b"
-                AssertRangesEqual(span.Bytes.Length, 4..5, GetRangeOfSubspan(span, c)); // "c"
-                AssertRangesEqual(span.Bytes.Length, 6..7, GetRangeOfSubspan(span, d)); // "d"
-                AssertRangesEqual(span.Bytes.Length, 8..9, GetRangeOfSubspan(span, e)); // "e"
+                Assert.True(a.Bytes == span.Bytes[0..1]); // "a"
+                Assert.True(b.Bytes == span.Bytes[2..3]); // "b"
+                Assert.True(c.Bytes == span.Bytes[4..5]); // "c"
+                Assert.True(d.Bytes == span.Bytes[6..7]); // "d"
+                Assert.True(e.Bytes == span.Bytes[8..9]); // "e"
             }
 
             {
                 (Utf8Span a, Utf8Span b, Utf8Span c, Utf8Span d, Utf8Span e, Utf8Span f, Utf8Span g, Utf8Span h) = span.Split(',');
-                AssertRangesEqual(span.Bytes.Length, 0..1, GetRangeOfSubspan(span, a)); // "a"
-                AssertRangesEqual(span.Bytes.Length, 2..3, GetRangeOfSubspan(span, b)); // "b"
-                AssertRangesEqual(span.Bytes.Length, 4..5, GetRangeOfSubspan(span, c)); // "c"
-                AssertRangesEqual(span.Bytes.Length, 6..7, GetRangeOfSubspan(span, d)); // "d"
-                AssertRangesEqual(span.Bytes.Length, 8..9, GetRangeOfSubspan(span, e)); // "e"
-                Assert.True(f.IsNull());
-                Assert.True(g.IsNull());
-                Assert.True(h.IsNull());
+                Assert.True(a.Bytes == span.Bytes[0..1]); // "a"
+                Assert.True(b.Bytes == span.Bytes[2..3]); // "b"
+                Assert.True(c.Bytes == span.Bytes[4..5]); // "c"
+                Assert.True(d.Bytes == span.Bytes[6..7]); // "d"
+                Assert.True(e.Bytes == span.Bytes[8..9]); // "e"
+                Assert.True(f.Bytes == default);
+                Assert.True(g.Bytes == default);
+                Assert.True(h.Bytes == default);
             }
         }
 
@@ -112,32 +115,35 @@ namespace System.Text.Tests
             using BoundedUtf8Span boundedSpan = new BoundedUtf8Span("a, , b, c,, d, e");
             Utf8Span span = boundedSpan.Span;
 
+            // Note referential equality checks below (since we want to know exact slices
+            // into the original buffer), not deep (textual) equality checks.
+
             {
                 (Utf8Span a, Utf8Span b) = span.Split(',', Utf8StringSplitOptions.RemoveEmptyEntries);
-                AssertRangesEqual(span.Bytes.Length, ..1, GetRangeOfSubspan(span, a)); // "a"
-                AssertRangesEqual(span.Bytes.Length, 2.., GetRangeOfSubspan(span, b)); // " , b, c,, d, e"
+                Assert.True(a.Bytes == span.Bytes[..1]); // "a"
+                Assert.True(b.Bytes == span.Bytes[2..]); // " , b, c,, d, e"
             }
 
             {
                 (Utf8Span a, Utf8Span x, Utf8Span b, Utf8Span c, Utf8Span d, Utf8Span e) = span.Split(',', Utf8StringSplitOptions.RemoveEmptyEntries);
-                AssertRangesEqual(span.Bytes.Length, 0..1, GetRangeOfSubspan(span, a)); // "a"
-                AssertRangesEqual(span.Bytes.Length, 2..3, GetRangeOfSubspan(span, x)); // " "
-                AssertRangesEqual(span.Bytes.Length, 4..6, GetRangeOfSubspan(span, b)); // " b"
-                AssertRangesEqual(span.Bytes.Length, 7..9, GetRangeOfSubspan(span, c)); // " c"
-                AssertRangesEqual(span.Bytes.Length, 11..13, GetRangeOfSubspan(span, d)); // " d"
-                AssertRangesEqual(span.Bytes.Length, 14.., GetRangeOfSubspan(span, e)); // " e"
+                Assert.True(a.Bytes == span.Bytes[0..1]); // "a"
+                Assert.True(x.Bytes == span.Bytes[2..3]); // " "
+                Assert.True(b.Bytes == span.Bytes[4..6]); // " b"
+                Assert.True(c.Bytes == span.Bytes[7..9]); // " c"
+                Assert.True(d.Bytes == span.Bytes[11..13]); // " d"
+                Assert.True(e.Bytes == span.Bytes[14..]); // " e"
             }
 
             {
                 (Utf8Span a, Utf8Span b, Utf8Span c, Utf8Span d, Utf8Span e, Utf8Span f, Utf8Span g, Utf8Span h) = span.Split(',', Utf8StringSplitOptions.RemoveEmptyEntries | Utf8StringSplitOptions.TrimEntries);
-                AssertRangesEqual(span.Bytes.Length, 0..1, GetRangeOfSubspan(span, a)); // "a"
-                AssertRangesEqual(span.Bytes.Length, 5..6, GetRangeOfSubspan(span, b)); // "b"
-                AssertRangesEqual(span.Bytes.Length, 8..9, GetRangeOfSubspan(span, c)); // "c"
-                AssertRangesEqual(span.Bytes.Length, 12..13, GetRangeOfSubspan(span, d)); // "d"
-                AssertRangesEqual(span.Bytes.Length, 15.., GetRangeOfSubspan(span, e)); // "e"
-                Assert.True(f.IsNull());
-                Assert.True(g.IsNull());
-                Assert.True(h.IsNull());
+                Assert.True(a.Bytes == span.Bytes[0..1]); // "a"
+                Assert.True(b.Bytes == span.Bytes[5..6]); // "b"
+                Assert.True(c.Bytes == span.Bytes[8..9]); // "c"
+                Assert.True(d.Bytes == span.Bytes[12..13]); // "d"
+                Assert.True(e.Bytes == span.Bytes[15..]); // "e"
+                Assert.True(f.Bytes == default);
+                Assert.True(g.Bytes == default);
+                Assert.True(h.Bytes == default);
             }
         }
 
