@@ -20,6 +20,16 @@ namespace System.Text.Tests
         private delegate Utf8Span.SplitResult Utf8SpanSplitDelegate(Utf8Span span, Utf8StringSplitOptions splitOptions);
 
         [Fact]
+        public static void Split_EmptySearchSpan_Throws()
+        {
+            // Shouldn't be able to split on an empty UTF-8 span.
+            // Such an enumerator would iterate forever, so we forbid it.
+
+            var ex = Assert.Throws<ArgumentException>(() => { u8("Hello").AsSpan().Split(Utf8Span.Empty); });
+            Assert.Equal("separator", ex.ParamName);
+        }
+
+        [Fact]
         public static void Split_InvalidChar_Throws()
         {
             // Shouldn't be able to split on a standalone surrogate char
@@ -29,6 +39,24 @@ namespace System.Text.Tests
 
             var ex = Assert.Throws<ArgumentOutOfRangeException>(() => { u8("Hello").AsSpan().Split('\ud800'); });
             Assert.Equal("separator", ex.ParamName);
+        }
+
+        [Fact]
+        public static void Split_Char_NullInput()
+        {
+            // First, make sure that <null>.Split(',') yields a single-element [ <null> ].
+
+            Utf8Span source = Utf8Span.Empty;
+
+            var enumerator = source.Split(',').GetEnumerator();
+            Assert.True(enumerator.MoveNext());
+            Assert.True(source.Bytes == enumerator.Current.Bytes); // referential equality
+            Assert.False(enumerator.MoveNext());
+
+            // Next, make sure that if "remove empty entries" is specified, yields the empty set [ ].
+
+            enumerator = source.Split(',', Utf8StringSplitOptions.RemoveEmptyEntries).GetEnumerator();
+            Assert.False(enumerator.MoveNext());
         }
 
         [Theory]
@@ -160,17 +188,6 @@ namespace System.Text.Tests
             for (int i = 0; i < expectedRanges.Length; i++)
             {
                 expectedRanges[i] = GetRangeOfSubspan(span, span[expectedRanges[i]].Trim());
-            }
-
-            // If we expect a zero-length substring at the end of the original span, change our expectation
-            // to be zero-length substring at the end of the trimmed span. The reason for this is that
-            // internally the iterator will call the Trim method as it inspects the input, and the overall
-            // span length might shrink if there was whitespace at the end.
-
-            if (expectedRanges.Length > 0 && new RangeEqualityComparer(span.Bytes.Length).Equals(expectedRanges.Last(), Index.End..Index.End))
-            {
-                int trimEndResultingLength = span.TrimEnd().Bytes.Length;
-                expectedRanges[expectedRanges.Length - 1] = trimEndResultingLength..trimEndResultingLength;
             }
 
             actualRanges = new List<Range>();
