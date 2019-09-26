@@ -7,6 +7,47 @@
 
 namespace System
 {
+    public readonly partial struct Char8 : System.IComparable<System.Char8>, System.IEquatable<System.Char8>
+    {
+        private readonly int _dummyPrimitive;
+        public int CompareTo(System.Char8 other) { throw null; }
+        public bool Equals(System.Char8 other) { throw null; }
+        public override bool Equals(object? obj) { throw null; }
+        public override int GetHashCode() { throw null; }
+        public static bool operator ==(System.Char8 left, System.Char8 right) { throw null; }
+        public static explicit operator System.Char8(char value) { throw null; }
+        public static explicit operator char(System.Char8 value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator sbyte(System.Char8 value) { throw null; }
+        public static explicit operator System.Char8(short value) { throw null; }
+        public static explicit operator System.Char8(int value) { throw null; }
+        public static explicit operator System.Char8(long value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator System.Char8(sbyte value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator System.Char8(ushort value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator System.Char8(uint value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static explicit operator System.Char8(ulong value) { throw null; }
+        public static bool operator >(System.Char8 left, System.Char8 right) { throw null; }
+        public static bool operator >=(System.Char8 left, System.Char8 right) { throw null; }
+        public static implicit operator System.Char8(byte value) { throw null; }
+        public static implicit operator byte(System.Char8 value) { throw null; }
+        public static implicit operator short(System.Char8 value) { throw null; }
+        public static implicit operator int(System.Char8 value) { throw null; }
+        public static implicit operator long(System.Char8 value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static implicit operator ushort(System.Char8 value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static implicit operator uint(System.Char8 value) { throw null; }
+        [System.CLSCompliantAttribute(false)]
+        public static implicit operator ulong(System.Char8 value) { throw null; }
+        public static bool operator !=(System.Char8 left, System.Char8 right) { throw null; }
+        public static bool operator <(System.Char8 left, System.Char8 right) { throw null; }
+        public static bool operator <=(System.Char8 left, System.Char8 right) { throw null; }
+        public override string ToString() { throw null; }
+    }
     public static partial class Utf8Extensions
     {
         public static System.ReadOnlySpan<byte> AsBytes(this System.Utf8String? text) { throw null; }
