@@ -5,6 +5,7 @@
 using System.Buffers;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text.Unicode.Tests;
 using Xunit;
 using Xunit.Sdk;
 
@@ -341,6 +342,26 @@ namespace System.Text.Tests
             Assert.Equal(testData.UnicodeCategory, Rune.GetUnicodeCategory(testData.ScalarValue));
         }
 
+        [OuterLoop]
+        [Fact]
+        public static void GetUnicodeCategory_AllInputs()
+        {
+            // This tests calls Rune.GetUnicodeCategory for every possible input, ensuring that
+            // the runtime agrees with the data in the core Unicode files.
+
+            foreach (Rune rune in AllRunes())
+            {
+                if (UnicodeData.GetUnicodeCategory((uint)rune.Value) != Rune.GetUnicodeCategory(rune))
+                {
+                    // We'll build up the exception message ourselves so the dev knows what code point failed.
+                    throw new AssertActualExpectedException(
+                        expected: UnicodeData.GetUnicodeCategory((uint)rune.Value),
+                        actual: Rune.GetUnicodeCategory(rune),
+                        userMessage: FormattableString.Invariant($@"Rune.GetUnicodeCategory(U+{rune.Value:X4}) returned wrong value."));
+                }
+            }
+        }
+
         [Theory]
         [MemberData(nameof(UnicodeInfoTestData_Latin1AndSelectOthers))]
         public static void IsControl(UnicodeInfoTestData testData)
@@ -439,6 +460,19 @@ namespace System.Text.Tests
                     throw new AssertActualExpectedException(expected, actual,
                         FormattableString.Invariant($"Rune.IsWhiteSpace(U+{testRune.Value:X4}) returned a value inconsistent with the local UCD file."));
                 }
+            }
+        }
+
+        [OuterLoop]
+        [Fact]
+        public static void IsWhiteSpace_AllInputs()
+        {
+            // This tests calls Rune.IsWhiteSpace for every possible input, ensuring that
+            // the runtime agrees with the data in the core Unicode files.
+
+            foreach (Rune rune in AllRunes())
+            {
+                Assert.Equal(UnicodeData.IsWhiteSpace((uint)rune.Value), Rune.IsWhiteSpace(rune));
             }
         }
 

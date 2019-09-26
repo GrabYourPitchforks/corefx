@@ -11,21 +11,16 @@ namespace System.Text.Tests
 {
     public static partial class RuneTests
     {
-        private static IEnumerable<Rune> AllPossibleScalars
+        public static IEnumerable<Rune> AllRunes()
         {
-            get
+            for (uint i = 0; i < 0xD800; i++)
             {
-                // BMP before surrogate range
-                for (uint i = 0; i < 0xD800; i++)
-                {
-                    yield return new Rune(i);
-                }
+                yield return new Rune(i);
+            }
 
-                // BMP after surrogate range, plus astral planes
-                for (uint i = 0xE000; i <= 0x10FFFF; i++)
-                {
-                    yield return new Rune(i);
-                }
+            for (uint i = 0xE000; i <= 0x10FFFF; i++)
+            {
+                yield return new Rune(i);
             }
         }
 
