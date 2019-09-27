@@ -316,9 +316,6 @@
     <EmbeddedResource Include="System\Reflection\EmbeddedTextFile.txt">
       <LogicalName>System.Reflection.Tests.EmbeddedTextFile.txt</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(CommonTestPath)\Data\PropList-12.1.0.txt">
-      <LogicalName>PropList-12.1.0.txt</LogicalName>
-    </EmbeddedResource>
     <Compile Include="$(CommonTestPath)\System\Runtime\Serialization\Formatters\BinaryFormatterHelpers.cs">
       <Link>Common\System\Runtime\Serialization\Formatters\BinaryFormatterHelpers.cs</Link>
     </Compile>
