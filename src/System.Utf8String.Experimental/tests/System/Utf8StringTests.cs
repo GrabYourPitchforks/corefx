@@ -45,13 +45,15 @@ namespace System.Tests
             // Static methods
 
             Assert.Equal(expected, Utf8String.Equals(a, b));
+            Assert.Equal(expected, Utf8String.Equals(a, b, StringComparison.Ordinal));
 
             // Instance methods
 
             if (a != null)
             {
-                Assert.Equal(expected, a.Equals(b));
                 Assert.Equal(expected, a.Equals((object)b));
+                Assert.Equal(expected, a.Equals(b));
+                Assert.Equal(expected, a.Equals(b, StringComparison.Ordinal));
             }
         }
 
@@ -130,28 +132,12 @@ namespace System.Tests
         public static void ToByteArray_Empty()
         {
             Assert.Same(Array.Empty<byte>(), Utf8String.Empty.ToByteArray());
-            Assert.Same(Array.Empty<byte>(), u8("Hello!").ToByteArray(0, 0));
-            Assert.Same(Array.Empty<byte>(), u8("Hello!").ToByteArray(3, 0));
-            Assert.Same(Array.Empty<byte>(), u8("Hello!").ToByteArray(6, 0));
         }
 
         [Fact]
         public static void ToByteArray_NotEmpty()
         {
             Assert.Equal(new byte[] { (byte)'H', (byte)'i' }, u8("Hi").ToByteArray());
-            Assert.Equal(new byte[] { (byte)'l', (byte)'l', (byte)'o' }, u8("Hello!").ToByteArray(2, 3));
-        }
-
-        [Theory]
-        [InlineData("", 1, 0, "startIndex")]
-        [InlineData("", 0, 1, "length")]
-        [InlineData("Hello", 5, 2, "length")]
-        [InlineData("Hello", 5, -1, "length")]
-        [InlineData("Hello", -1, 4, "startIndex")]
-        public static void ToByteArray_Invalid(string value, int startIndex, int length, string exceptionParamName)
-        {
-            Utf8String utf8String = u8(value);
-            Assert.Throws<ArgumentOutOfRangeException>(exceptionParamName, () => utf8String.ToByteArray(startIndex, length));
         }
 
         [Theory]
@@ -160,19 +146,6 @@ namespace System.Tests
         public static void ToString_ReturnsUtf16(string value)
         {
             Assert.Equal(value, u8(value).ToString());
-        }
-
-        [Fact]
-        public static void ToString_ReturnsUtf16_WithFixups()
-        {
-            Utf8String newString = new Utf8String("Hello");
-
-            fixed (byte* pNewString = newString)
-            {
-                pNewString[2] = 0xFF; // corrupt this data
-            }
-
-            Assert.Equal("He\uFFFDlo", newString.ToString());
         }
     }
 }
