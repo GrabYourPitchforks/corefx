@@ -12,6 +12,10 @@ using ustring = System.Utf8String;
 
 namespace System.Text.Tests
 {
+    /*
+     * Please keep these tests in sync with those in Utf8StringTests.Searching.cs.
+     */
+
     public unsafe partial class Utf8SpanTests
     {
         [Theory]
