@@ -48,6 +48,7 @@ namespace System.Text.Tests
         }
 
         [Theory]
+        [PlatformSpecific(TestPlatforms.Windows)]
         [InlineData(null, null, StringComparison.OrdinalIgnoreCase, null, true)]
         [InlineData("encyclopaedia", "encyclopædia", StringComparison.OrdinalIgnoreCase, null, false)]
         [InlineData("encyclopaedia", "encyclopædia", StringComparison.InvariantCulture, null, true)]
@@ -59,6 +60,7 @@ namespace System.Text.Tests
         [InlineData("Weiß", "WEISS", StringComparison.InvariantCultureIgnoreCase, null, true)]
         [InlineData("Weiß", "WEISS", StringComparison.CurrentCulture, "de-DE", false)]
         [InlineData("Weiß", "WEISS", StringComparison.CurrentCultureIgnoreCase, "de-DE", true)]
+        [InlineData("γένεσις", "ΓΈΝΕΣΙΣ", StringComparison.InvariantCultureIgnoreCase, null, true)]
         [InlineData("ıI", "iI", StringComparison.CurrentCulture, "tr-TR", false)]
         [InlineData("ıI", "iI", StringComparison.CurrentCultureIgnoreCase, "tr-TR", false)]
         [InlineData("İI", "iI", StringComparison.CurrentCultureIgnoreCase, "tr-TR", true)]

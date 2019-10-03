@@ -76,6 +76,7 @@ namespace System.Text.Tests
         }
 
         [Fact]
+        [PlatformSpecific(TestPlatforms.Windows)]
         public static void GetHashCode_WithComparison()
         {
             // Since hash code generation is randomized, it's possible (though unlikely) that
