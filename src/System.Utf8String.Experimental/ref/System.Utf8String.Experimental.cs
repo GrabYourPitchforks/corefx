@@ -91,6 +91,7 @@ namespace System
         public Utf8String(string value) { }
         public ByteEnumerable Bytes { get { throw null; } }
         public CharEnumerable Chars { get { throw null; } }
+        public int Length { get { throw null; } }
         public RuneEnumerable Runes { get { throw null; } }
         public static bool AreEquivalent(System.Utf8String? utf8Text, string? utf16Text) { throw null; }
         public static bool AreEquivalent(System.Text.Utf8Span utf8Text, System.ReadOnlySpan<char> utf16Text) { throw null; }
@@ -318,6 +319,7 @@ namespace System.Text
         public CharEnumerable Chars { get { throw null; } }
         public static System.Text.Utf8Span Empty { get { throw null; } }
         public bool IsEmpty { get { throw null; } }
+        public int Length { get { throw null; } }
         public RuneEnumerable Runes { get { throw null; } }
         public int CompareTo(System.Text.Utf8Span other) { throw null; }
         public int CompareTo(System.Text.Utf8Span other, System.StringComparison comparison) { throw null; }

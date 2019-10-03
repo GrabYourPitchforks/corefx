@@ -170,7 +170,7 @@ namespace System.Tests
             Utf8String theString = u8("Hello");
 
             Assert.True(Unsafe.AreSame(ref Unsafe.AsRef(in theString.GetPinnableReference()), ref Unsafe.AsRef(in theString.AsSpan().GetPinnableReference())));
-            Assert.Equal(5, theString.AsSpan().Bytes.Length);
+            Assert.Equal(5, theString.AsSpan().Length);
         }
 
         [Fact]
