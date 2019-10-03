@@ -140,12 +140,48 @@ namespace System.Tests
             Assert.Equal(new byte[] { (byte)'H', (byte)'i' }, u8("Hi").ToByteArray());
         }
 
+        [Fact]
+        public static void ToCharArray_NotEmpty()
+        {
+            Assert.Equal("Hi".ToCharArray(), u8("Hi").ToCharArray());
+        }
+
+        [Fact]
+        public static void ToCharArray_Empty()
+        {
+            Assert.Same(Array.Empty<char>(), Utf8String.Empty.ToCharArray());
+        }
+
         [Theory]
         [InlineData("")]
         [InlineData("Hello!")]
         public static void ToString_ReturnsUtf16(string value)
         {
             Assert.Equal(value, u8(value).ToString());
+        }
+
+        [Fact]
+        public static void Indexer_Range_Success()
+        {
+            Utf8String utf8String = u8("Hello\u0800world.");
+
+            Assert.Equal(u8("Hello"), utf8String[..5]);
+            Assert.Equal(u8("world."), utf8String[^6..]);
+            Assert.Equal(u8("o\u0800w"), utf8String[4..9]);
+
+            Assert.Same(utf8String, utf8String[..]); // don't allocate new instance if slicing to entire string
+            Assert.Same(Utf8String.Empty, utf8String[1..1]); // don't allocare new zero-length string instane
+            Assert.Same(Utf8String.Empty, utf8String[6..6]); // ok to have a zero-length slice within a multi-byte sequence
+        }
+
+        [Fact]
+        public static void Indexer_Range_TriesToSplitMultiByteSequence_Throws()
+        {
+            Utf8String utf8String = u8("Hello\u0800world.");
+
+            Assert.Throws<InvalidOperationException>(() => utf8String[..6]);
+            Assert.Throws<InvalidOperationException>(() => utf8String[6..]);
+            Assert.Throws<InvalidOperationException>(() => utf8String[7..8]);
         }
     }
 }
