@@ -82,10 +82,10 @@ namespace System
         public static readonly System.Utf8String Empty;
         [System.CLSCompliantAttribute(false)]
         public unsafe Utf8String(byte* value) { }
-        public Utf8String(byte[]? value, int startIndex, int length) { }
+        public Utf8String(byte[] value, int startIndex, int length) { }
         [System.CLSCompliantAttribute(false)]
         public unsafe Utf8String(char* value) { }
-        public Utf8String(char[]? value, int startIndex, int length) { }
+        public Utf8String(char[] value, int startIndex, int length) { }
         public Utf8String(System.ReadOnlySpan<byte> value) { }
         public Utf8String(System.ReadOnlySpan<char> value) { }
         public Utf8String(string value) { }
