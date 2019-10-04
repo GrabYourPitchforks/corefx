@@ -21,7 +21,6 @@ namespace System.Tests
         public static void Normalize(string utf16Source, string utf16Expected, NormalizationForm normalizationForm)
         {
             Utf8String utf8Source = u8(utf16Source);
-            Utf8String utf8Expected = u8(utf16Expected);
 
             // Quick IsNormalized tests
 

@@ -26,6 +26,11 @@ namespace System.Tests
         [MemberData(nameof(TryFindData_Char_Ordinal))]
         public static void TryFind_Char_Ordinal(ustring source, char searchTerm, Range? expectedForwardMatch, Range? expectedBackwardMatch)
         {
+            if (source is null)
+            {
+                return; // don't null ref
+            }
+
             // First, search forward
 
             bool wasFound = source.TryFind(searchTerm, out Range actualForwardMatch);
@@ -87,6 +92,11 @@ namespace System.Tests
         [MemberData(nameof(TryFindData_Char_WithComparison))]
         public static void TryFind_Char_WithComparison(ustring source, char searchTerm, StringComparison comparison, CultureInfo currentCulture, Range? expectedForwardMatch, Range? expectedBackwardMatch)
         {
+            if (source is null)
+            {
+                return; // don't null ref
+            }
+
             RunOnDedicatedThread(() =>
             {
                 if (currentCulture != null)
@@ -155,6 +165,11 @@ namespace System.Tests
         [MemberData(nameof(TryFindData_Rune_Ordinal))]
         public static void TryFind_Rune_Ordinal(ustring source, Rune searchTerm, Range? expectedForwardMatch, Range? expectedBackwardMatch)
         {
+            if (source is null)
+            {
+                return; // don't null ref
+            }
+
             // First, search forward
 
             bool wasFound = source.TryFind(searchTerm, out Range actualForwardMatch);
@@ -216,6 +231,11 @@ namespace System.Tests
         [MemberData(nameof(TryFindData_Rune_WithComparison))]
         public static void TryFind_Rune_WithComparison(ustring source, Rune searchTerm, StringComparison comparison, CultureInfo currentCulture, Range? expectedForwardMatch, Range? expectedBackwardMatch)
         {
+            if (source is null)
+            {
+                return; // don't null ref
+            }
+
             RunOnDedicatedThread(() =>
             {
                 if (currentCulture != null)
@@ -284,6 +304,11 @@ namespace System.Tests
         [MemberData(nameof(TryFindData_Utf8String_Ordinal))]
         public static void TryFind_Utf8String_Ordinal(ustring source, ustring searchTerm, Range? expectedForwardMatch, Range? expectedBackwardMatch)
         {
+            if (source is null)
+            {
+                return; // don't null ref
+            }
+
             // First, search forward
 
             bool wasFound = source.TryFind(searchTerm, out Range actualForwardMatch);
@@ -345,6 +370,11 @@ namespace System.Tests
         [MemberData(nameof(TryFindData_Utf8String_WithComparison))]
         public static void TryFind_Utf8String_WithComparison(ustring source, ustring searchTerm, StringComparison comparison, CultureInfo currentCulture, Range? expectedForwardMatch, Range? expectedBackwardMatch)
         {
+            if (source is null)
+            {
+                return; // don't null ref
+            }
+
             RunOnDedicatedThread(() =>
             {
                 if (currentCulture != null)

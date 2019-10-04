@@ -2,11 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Xunit;
 
 using static System.Tests.Utf8TestUtilities;
 
-namespace System.Text.Tests
+namespace System.Tests
 {
     public unsafe partial class Utf8StringTests
     {

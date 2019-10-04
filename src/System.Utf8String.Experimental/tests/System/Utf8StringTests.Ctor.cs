@@ -120,7 +120,7 @@ namespace System.Tests
         [Fact]
         public static void Ctor_CharArrayOffset_Empty_ReturnsEmpty()
         {
-            char[] inputData = "H\U00012345ello".ToCharArray();
+            char[] inputData = "H\U00012345ello".ToCharArray(); // ok to have an empty slice in the middle of a multi-byte subsequence
             Assert.Same(Utf8String.Empty, new Utf8String(inputData, 3, 0));
         }
 
@@ -128,7 +128,7 @@ namespace System.Tests
         public static void Ctor_CharArrayOffset_ValidData_ReturnsAsUtf8()
         {
             char[] inputData = "H\U00012345\u07ffello".ToCharArray();
-            Utf8String expected = u8("\u07ffell");
+            Utf8String expected = u8("\u07ffello");
 
             var actual = new Utf8String(inputData, 3, 5);
             Assert.Equal(expected, actual);
@@ -178,7 +178,7 @@ namespace System.Tests
         [Fact]
         public static void Ctor_CharPointer_ValidData_ReturnsOriginalContents()
         {
-            char[] inputData = "Hello".ToCharArray();
+            char[] inputData = "Hello\0".ToCharArray(); // need to manually null-terminate
 
             using (BoundedMemory<char> boundedMemory = BoundedMemory.AllocateFromExistingData(inputData))
             {
@@ -189,7 +189,7 @@ namespace System.Tests
         [Fact]
         public static void Ctor_CharPointer_InvalidData_Throws()
         {
-            char[] inputData = "He\ud800llo".ToCharArray();
+            char[] inputData = "He\ud800llo\0".ToCharArray(); // need to manually null-terminate
 
             using (BoundedMemory<char> boundedMemory = BoundedMemory.AllocateFromExistingData(inputData))
             {
