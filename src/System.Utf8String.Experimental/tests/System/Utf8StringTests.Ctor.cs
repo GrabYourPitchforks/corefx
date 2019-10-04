@@ -360,5 +360,57 @@ namespace System.Tests
 
             Assert.Equal(u8("\uFFFD\uFFFD"), Utf8String.CreateRelaxed(2, expectedState, spanAction));
         }
+
+        [Fact]
+        public static void Ctor_TryCreateFrom_Utf8()
+        {
+            Utf8String value;
+
+            // Empty string
+
+            Assert.True(Utf8String.TryCreateFrom(ReadOnlySpan<byte>.Empty, out value));
+            Assert.Same(Utf8String.Empty, value);
+
+            // Well-formed ASCII contents
+
+            Assert.True(Utf8String.TryCreateFrom(new byte[] { (byte)'H', (byte)'e', (byte)'l', (byte)'l', (byte)'o' }, out value));
+            Assert.Equal(u8("Hello"), value);
+
+            // Well-formed non-ASCII contents
+
+            Assert.True(Utf8String.TryCreateFrom(new byte[] { 0xF0, 0x9F, 0x91, 0xBD }, out value)); // U+1F47D EXTRATERRESTRIAL ALIEN
+            Assert.Equal(u8("\U0001F47D"), value);
+
+            // Ill-formed contents
+
+            Assert.False(Utf8String.TryCreateFrom(new byte[] { 0xF0, 0x9F, 0x91, (byte)'x' }, out value));
+            Assert.Null(value);
+        }
+
+        [Fact]
+        public static void Ctor_TryCreateFrom_Utf16()
+        {
+            Utf8String value;
+
+            // Empty string
+
+            Assert.True(Utf8String.TryCreateFrom(ReadOnlySpan<char>.Empty, out value));
+            Assert.Same(Utf8String.Empty, value);
+
+            // Well-formed ASCII contents
+
+            Assert.True(Utf8String.TryCreateFrom("Hello", out value));
+            Assert.Equal(u8("Hello"), value);
+
+            // Well-formed non-ASCII contents
+
+            Assert.True(Utf8String.TryCreateFrom("\U0001F47D", out value)); // U+1F47D EXTRATERRESTRIAL ALIEN
+            Assert.Equal(u8("\U0001F47D"), value);
+
+            // Ill-formed contents
+
+            Assert.False(Utf8String.TryCreateFrom("\uD800x", out value));
+            Assert.Null(value);
+        }
     }
 }
