@@ -28,11 +28,6 @@ namespace System.Tests
             });
         }
 
-        public static int GetByteLength(this Utf8String value)
-        {
-            return value.AsBytes().Length;
-        }
-
         public unsafe static bool IsNull(this Utf8Span span)
         {
             return Unsafe.AreSame(ref Unsafe.AsRef<byte>(null), ref MemoryMarshal.GetReference(span.Bytes));
