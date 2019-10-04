@@ -1,7 +1,9 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Generic;
+using System.Globalization;
 using Xunit;
 
 using static System.Tests.Utf8TestUtilities;
@@ -58,21 +60,112 @@ namespace System.Tests
         }
 
         [Fact]
-        public static void GetHashCode_ReturnsRandomized()
+        public static void GetHashCode_Ordinal()
         {
-            Utf8String a = u8("Hello");
-            Utf8String b = new Utf8String(a.AsBytes());
+            // Generate 17 all-null strings and make sure they have unique hash codes.
+            // Assuming Marvin32 is a good PRF and has a full 32-bit output domain, we should
+            // expect this test to fail only once every ~30 million runs due to the birthday paradox.
+            // That should be good enough for inclusion as a unit test.
 
-            Assert.NotSame(a, b);
-            Assert.Equal(a.GetHashCode(), b.GetHashCode());
+            HashSet<int> seenHashCodes = new HashSet<int>();
 
-            Utf8String c = u8("Goodbye");
-            Utf8String d = new Utf8String(c.AsBytes());
+            for (int i = 0; i <= 16; i++)
+            {
+                Utf8String ustr = new Utf8String(new byte[i]);
 
-            Assert.NotSame(c, d);
-            Assert.Equal(c.GetHashCode(), d.GetHashCode());
+                Assert.True(seenHashCodes.Add(ustr.GetHashCode()), "This hash code was previously seen.");
+            }
+        }
 
-            Assert.NotEqual(a.GetHashCode(), c.GetHashCode());
+        [Fact]
+        [PlatformSpecific(TestPlatforms.Windows)]
+        public static void GetHashCode_WithComparison()
+        {
+            // Since hash code generation is randomized, it's possible (though unlikely) that
+            // we might see unanticipated collisions. It's ok if this unit test fails once in
+            // every few million runs, but if the unit test becomes truly flaky then that would
+            // be indicative of a larger problem with hash code generation.
+            //
+            // These tests also make sure that the hash code is computed over the buffer rather
+            // than over the reference.
+
+            // Ordinal
+
+            {
+                Utf8String ustr = u8("ababaaAA");
+
+                Assert.Equal(ustr[0..2].GetHashCode(StringComparison.Ordinal), ustr[2..4].GetHashCode(StringComparison.Ordinal));
+                Assert.NotEqual(ustr[4..6].GetHashCode(StringComparison.Ordinal), ustr[6..8].GetHashCode(StringComparison.Ordinal));
+                Assert.Equal(Utf8String.Empty.GetHashCode(StringComparison.Ordinal), ustr[^0..].GetHashCode(StringComparison.Ordinal));
+            }
+
+            // OrdinalIgnoreCase
+
+            {
+                Utf8String ustr = u8("ababaaAA");
+
+                Assert.Equal(ustr[0..2].GetHashCode(StringComparison.OrdinalIgnoreCase), ustr[2..4].GetHashCode(StringComparison.OrdinalIgnoreCase));
+                Assert.Equal(ustr[4..6].GetHashCode(StringComparison.OrdinalIgnoreCase), ustr[6..8].GetHashCode(StringComparison.OrdinalIgnoreCase));
+                Assert.NotEqual(ustr[0..2].GetHashCode(StringComparison.OrdinalIgnoreCase), ustr[6..8].GetHashCode(StringComparison.OrdinalIgnoreCase));
+                Assert.Equal(Utf8String.Empty.GetHashCode(StringComparison.OrdinalIgnoreCase), ustr[^0..].GetHashCode(StringComparison.OrdinalIgnoreCase));
+            }
+
+            // InvariantCulture
+
+            {
+                Utf8String ustr = u8("ae\u00e6AE\u00c6"); // U+00E6 = 'æ' LATIN SMALL LETTER AE, U+00E6 = 'Æ' LATIN CAPITAL LETTER AE
+
+                Assert.Equal(ustr[0..2].GetHashCode(StringComparison.InvariantCulture), ustr[2..4].GetHashCode(StringComparison.InvariantCulture));
+                Assert.NotEqual(ustr[0..2].GetHashCode(StringComparison.InvariantCulture), ustr[4..6].GetHashCode(StringComparison.InvariantCulture));
+                Assert.Equal(Utf8String.Empty.GetHashCode(StringComparison.InvariantCulture), ustr[^0..].GetHashCode(StringComparison.InvariantCulture));
+            }
+
+            // InvariantCultureIgnoreCase
+
+            {
+                Utf8String ustr = u8("ae\u00e6AE\u00c6EA");
+
+                Assert.Equal(ustr[0..2].GetHashCode(StringComparison.InvariantCultureIgnoreCase), ustr[2..4].GetHashCode(StringComparison.InvariantCultureIgnoreCase));
+                Assert.Equal(ustr[0..2].GetHashCode(StringComparison.InvariantCultureIgnoreCase), ustr[6..8].GetHashCode(StringComparison.InvariantCultureIgnoreCase));
+                Assert.NotEqual(ustr[0..2].GetHashCode(StringComparison.InvariantCultureIgnoreCase), ustr[8..10].GetHashCode(StringComparison.InvariantCultureIgnoreCase));
+                Assert.Equal(Utf8String.Empty.GetHashCode(StringComparison.InvariantCultureIgnoreCase), ustr[^0..].GetHashCode(StringComparison.InvariantCultureIgnoreCase));
+            }
+
+            // Invariant culture should not match Turkish I case conversion
+
+            {
+                Utf8String ustr = u8("i\u0130"); // U+0130 = 'İ' LATIN CAPITAL LETTER I WITH DOT ABOVE
+
+                Assert.NotEqual(ustr[0..1].GetHashCode(StringComparison.InvariantCultureIgnoreCase), ustr[1..3].GetHashCode(StringComparison.InvariantCultureIgnoreCase));
+            }
+
+            // CurrentCulture (we'll use tr-TR)
+
+            RunOnDedicatedThread(() =>
+            {
+                Utf8String ustr = u8("i\u0131\u0130Ii\u0131\u0130I"); // U+0131 = 'ı' LATIN SMALL LETTER DOTLESS I
+
+                CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("tr-TR");
+
+                Assert.Equal(ustr[0..6].GetHashCode(StringComparison.CurrentCulture), ustr[6..12].GetHashCode(StringComparison.CurrentCulture));
+                Assert.NotEqual(ustr[0..1].GetHashCode(StringComparison.CurrentCulture), ustr[1..3].GetHashCode(StringComparison.CurrentCulture));
+                Assert.Equal(Utf8String.Empty.GetHashCode(StringComparison.CurrentCulture), ustr[^0..].GetHashCode(StringComparison.CurrentCulture));
+            });
+
+            // CurrentCultureIgnoreCase (we'll use tr-TR)
+
+            RunOnDedicatedThread(() =>
+            {
+                Utf8String ustr = u8("i\u0131\u0130Ii\u0131\u0130I");
+
+                CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("tr-TR");
+
+                Assert.Equal(ustr[0..6].GetHashCode(StringComparison.CurrentCultureIgnoreCase), ustr[6..12].GetHashCode(StringComparison.CurrentCultureIgnoreCase));
+                Assert.NotEqual(ustr[0..1].GetHashCode(StringComparison.CurrentCultureIgnoreCase), ustr[1..3].GetHashCode(StringComparison.CurrentCultureIgnoreCase)); // 'i' shouldn't match 'ı'
+                Assert.Equal(ustr[0..1].GetHashCode(StringComparison.CurrentCultureIgnoreCase), ustr[3..5].GetHashCode(StringComparison.CurrentCultureIgnoreCase)); // 'i' should match 'İ'
+                Assert.NotEqual(ustr[0..1].GetHashCode(StringComparison.CurrentCultureIgnoreCase), ustr[5..6].GetHashCode(StringComparison.CurrentCultureIgnoreCase)); // 'i' shouldn't match 'I'
+                Assert.Equal(Utf8String.Empty.GetHashCode(StringComparison.CurrentCultureIgnoreCase), ustr[^0..].GetHashCode(StringComparison.CurrentCultureIgnoreCase));
+            });
         }
 
         [Fact]
