@@ -33,6 +33,7 @@
     <Compile Include="System\Utf8SpanTests.TestData.cs" />
     <Compile Include="System\Utf8StringTests.cs" />
     <Compile Include="System\Utf8StringTests.Comparison.cs" />
+    <Compile Include="System\Utf8StringTests.Conversion.cs" />
     <Compile Include="System\Utf8StringTests.Ctor.cs" />
     <Compile Include="System\Utf8StringTests.Enumeration.cs" />
     <Compile Include="System\Utf8StringTests.Searching.cs" />
