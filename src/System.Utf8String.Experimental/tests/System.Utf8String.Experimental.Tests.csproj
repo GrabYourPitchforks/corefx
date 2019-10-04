@@ -35,7 +35,6 @@
     <Compile Include="System\Utf8StringTests.Comparison.cs" />
     <Compile Include="System\Utf8StringTests.Ctor.cs" />
     <Compile Include="System\Utf8StringTests.Searching.cs" />
-    <Compile Include="System\Utf8StringTests.Substring.cs" />
     <Compile Include="Xunit\SpanAssert.cs" />
     <Compile Include="System\Utf8TestUtilities.cs" />
   </ItemGroup>

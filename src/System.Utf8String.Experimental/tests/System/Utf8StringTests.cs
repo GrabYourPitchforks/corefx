@@ -160,6 +160,19 @@ namespace System.Tests
             Assert.Equal(value, u8(value).ToString());
         }
 
+        [Theory]
+        [InlineData("Hello", "6..")]
+        [InlineData("Hello", "3..7")]
+        [InlineData("Hello", "2..1")]
+        [InlineData("Hello", "^10..")]
+        public static void Indexer_Range_ArgOutOfRange_Throws(string strAsUtf16, string rangeAsString)
+        {
+            Utf8String utf8String = u8(strAsUtf16);
+            Range range = ParseRangeExpr(rangeAsString);
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => utf8String[range]);
+        }
+
         [Fact]
         public static void Indexer_Range_Success()
         {

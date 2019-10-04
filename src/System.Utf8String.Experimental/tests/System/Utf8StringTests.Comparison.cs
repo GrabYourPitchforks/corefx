@@ -39,8 +39,8 @@ namespace System.Tests
         }
 
         [Theory]
-        [InlineData(new byte[] { 0xED, 0xA0, 0x80 }, new char[] { '\uD800' })] // don't support "wobbly"
-        [InlineData(new byte[] { 0xED, 0xA0, 0x80, 0xED, 0xBF, 0xBF }, new char[] { '\uD800', '\uDFFF' })] // don't support "wobbly"
+        [InlineData(new byte[] { 0xED, 0xA0, 0x80 }, new char[] { '\uD800' })] // don't support "wobbly" UTF-8
+        [InlineData(new byte[] { 0xED, 0xA0, 0x80, 0xED, 0xBF, 0xBF }, new char[] { '\uD800', '\uDFFF' })] // don't support "wobbly" UTF-8
         [InlineData(new byte[] { 0xED }, new char[] { '\uD800' })] // don't support partials
         public static void AreEquivalent_IllFormedData_AlwaysReturnsFalse(byte[] asUtf8, char[] asUtf16)
         {
