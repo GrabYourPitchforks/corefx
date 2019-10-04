@@ -134,7 +134,7 @@ namespace System.Text.Tests
             else if (searchTerm is ustring ustr)
             {
                 if (Rune.DecodeFromUtf8(ustr.AsBytes(), out parsed, out int bytesConsumed) == OperationStatus.Done
-                    && bytesConsumed == ustr.GetByteLength())
+                    && bytesConsumed == ustr.Length)
                 {
                     return true;
                 }

@@ -4,11 +4,13 @@
 
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
+using System.Text.Tests;
 using Xunit;
 
 using static System.Tests.Utf8TestUtilities;
 
-namespace System.Text.Tests
+namespace System.Tests
 {
     public unsafe partial class Utf8StringTests
     {

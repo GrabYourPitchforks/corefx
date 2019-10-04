@@ -208,17 +208,26 @@ namespace System.Tests
         }
 
         [Theory]
+        [InlineData(null, true)]
         [InlineData("", true)]
+        [InlineData("\r\n", false)]
         [InlineData("not empty", false)]
         public static void IsNullOrEmpty(string value, bool expectedIsNullOrEmpty)
         {
-            Assert.Equal(expectedIsNullOrEmpty, Utf8String.IsNullOrEmpty(new Utf8String(value)));
+            Assert.Equal(expectedIsNullOrEmpty, Utf8String.IsNullOrEmpty(u8(value)));
         }
 
-        [Fact]
-        public static void IsNullOrEmpty_Null_ReturnsTrue()
+        [Theory]
+        [InlineData(null, true)]
+        [InlineData("", true)]
+        [InlineData(" \u2028\u2029\t\v", true)]
+        [InlineData(" x\r\n", false)]
+        [InlineData("\r\nhello\r\n", false)]
+        [InlineData("\r\n\0\r\n", false)]
+        [InlineData("\r\n\r\n", true)]
+        public static void IsNullOrWhiteSpace(string input, bool expected)
         {
-            Assert.True(Utf8String.IsNullOrEmpty(null));
+            Assert.Equal(expected, Utf8String.IsNullOrWhiteSpace(u8(input)));
         }
 
         [Fact]
