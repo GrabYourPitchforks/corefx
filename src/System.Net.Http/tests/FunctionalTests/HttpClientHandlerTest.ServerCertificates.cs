@@ -318,7 +318,6 @@ namespace System.Net.Http.Functional.Tests
             }
         }
 
-        [ActiveIssue(41108)]
         [SkipOnTargetFramework(TargetFrameworkMonikers.Uap, "UAP doesn't allow revocation checking to be turned off")]
         [OuterLoop("Uses external server")]
         [ConditionalFact(nameof(ClientSupportsDHECipherSuites))]
@@ -426,8 +425,6 @@ namespace System.Net.Http.Functional.Tests
                             useSocketsHttpHandlerString,
                             useHttp2String,
                             (SslPolicyErrors)Enum.Parse(typeof(SslPolicyErrors), remoteExpectedErrors)).Wait();
-
-                        return RemoteExecutor.SuccessExitCode;
                     }, url, expectedErrors.ToString(), UseSocketsHttpHandler.ToString(), UseHttp2.ToString()).Dispose();
                 }
                 else
