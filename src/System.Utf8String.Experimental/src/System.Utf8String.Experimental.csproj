@@ -4,13 +4,16 @@
     <IsPartialFacadeAssembly>true</IsPartialFacadeAssembly>
     <Configurations>netcoreapp-Unix-Debug;netcoreapp-Unix-Release;netcoreapp-Windows_NT-Debug;netcoreapp-Windows_NT-Release</Configurations>
     <RootNamespace>System</RootNamespace>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup Condition="'$(IsPrerelease)' != 'false'">
+    <Compile Include="System\Utf8StringFactory.cs" />
     <Compile Include="System\IO\Utf8StringStream.cs" />
     <Compile Include="System\Net\Http\Utf8StringContent.cs" />
   </ItemGroup>
   <ItemGroup>
     <ReferenceFromRuntime Include="System.Private.CoreLib" />
+    <Reference Include="System.Memory" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Primitives" />
     <ProjectReference Include="..\..\System.Runtime\src\System.Runtime.csproj" />

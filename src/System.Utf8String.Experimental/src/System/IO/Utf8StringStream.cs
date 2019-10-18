@@ -5,6 +5,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+// TODO_UTF8STRING: Re-enable nullable
+#nullable disable
+
 namespace System.IO
 {
     internal sealed class Utf8StringStream : Stream

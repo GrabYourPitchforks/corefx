@@ -269,6 +269,15 @@ namespace System
             public void Deconstruct(out System.Utf8String before, out System.Utf8String? after) { throw null; }
         }
     }
+    public static partial class Utf8StringFactory
+    {
+        public static System.Utf8String Create(System.Buffers.ReadOnlySequence<byte> buffer) { throw null; }
+        public static System.Utf8String CreateFromFile(string path) { throw null; }
+        public static System.Utf8String CreateFromFileRelaxed(string path) { throw null; }
+        public static System.Utf8String CreateRelaxed(System.Buffers.ReadOnlySequence<byte> buffer) { throw null; }
+        public static System.Utf8String UnsafeCreateFromFileWithoutValidation(string path) { throw null; }
+        public static System.Utf8String UnsafeCreateWithoutValidation(System.Buffers.ReadOnlySequence<byte> buffer) { throw null; }
+    }
     [System.FlagsAttribute]
     public enum Utf8StringSplitOptions
     {

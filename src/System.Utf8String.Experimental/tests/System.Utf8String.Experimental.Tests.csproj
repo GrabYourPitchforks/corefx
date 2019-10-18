@@ -31,6 +31,8 @@
     <Compile Include="System\Utf8SpanTests.Searching.cs" />
     <Compile Include="System\Utf8SpanTests.Searching.TestData.cs" />
     <Compile Include="System\Utf8SpanTests.TestData.cs" />
+    <Compile Include="System\Utf8StringFactoryTests.File.cs" />
+    <Compile Include="System\Utf8StringFactoryTests.ReadOnlySequence.cs" />
     <Compile Include="System\Utf8StringTests.cs" />
     <Compile Include="System\Utf8StringTests.Comparison.cs" />
     <Compile Include="System\Utf8StringTests.Conversion.cs" />

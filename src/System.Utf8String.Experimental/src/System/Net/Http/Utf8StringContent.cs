@@ -6,6 +6,9 @@ using System.IO;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
+// TODO_UTF8STRING: Re-enable nullable
+#nullable disable
+
 namespace System.Net.Http
 {
     public sealed class Utf8StringContent : HttpContent
