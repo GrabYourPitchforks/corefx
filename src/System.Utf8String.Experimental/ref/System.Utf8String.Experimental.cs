@@ -269,6 +269,15 @@ namespace System
             public void Deconstruct(out System.Utf8String before, out System.Utf8String? after) { throw null; }
         }
     }
+    public static partial class Utf8StringExtensions
+    {
+        public static void Write(this System.IO.TextWriter writer, System.Text.Utf8Span buffer) { }
+        public static void Write(this System.IO.TextWriter writer, System.Utf8String? value) { }
+        public static System.Threading.Tasks.Task WriteAsync(this System.IO.TextWriter writer, System.Utf8String? value, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
+        public static void WriteLine(this System.IO.TextWriter writer, System.Text.Utf8Span buffer) { }
+        public static void WriteLine(this System.IO.TextWriter writer, System.Utf8String? value) { }
+        public static System.Threading.Tasks.Task WriteLineAsync(this System.IO.TextWriter writer, System.Utf8String? value, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
+    }
     public static partial class Utf8StringFactory
     {
         public static System.Utf8String Create(System.Buffers.ReadOnlySequence<byte> buffer) { throw null; }
