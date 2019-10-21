@@ -10,12 +10,25 @@ using System_Memory::System.Buffers;
 
 namespace System
 {
+    /// <summary>
+    /// Contains static methods for creating <see cref="Utf8String"/> instances from existing data.
+    /// </summary>
     public static class Utf8StringFactory
     {
         /*
          * Factories from ReadOnlySequence<byte>
          */
 
+        /// <summary>
+        /// Given a <see cref="ReadOnlySequence{Byte}"/> that represents UTF-8 data,
+        /// creates a new <see cref="Utf8String"/> instance from that data.
+        /// </summary>
+        /// <param name="buffer">The <see cref="ReadOnlySequence{Byte}"/> containing data to interpret as UTF-8.</param>
+        /// <returns>A standalone <see cref="Utf8String"/> instance containing the data copied from <paramref name="buffer"/>.</returns>
+        /// <remarks>
+        /// Any UTF-8 byte order mark ([EF BB BF]) at the start of <paramref name="buffer"/> will be copied to the returned <see cref="Utf8String"/> instance.
+        /// If <paramref name="buffer"/> contains ill-formed UTF-8 data, this method will fail with an exception.
+        /// </remarks>
         public static Utf8String Create(ReadOnlySequence<byte> buffer)
         {
             return Utf8String.Create(SafeLength(buffer.Length), buffer, (span, buffer) =>
@@ -24,6 +37,16 @@ namespace System
             });
         }
 
+        /// <summary>
+        /// Given a <see cref="ReadOnlySequence{Byte}"/> that represents UTF-8 data,
+        /// creates a new <see cref="Utf8String"/> instance from that data.
+        /// </summary>
+        /// <param name="buffer">The <see cref="ReadOnlySequence{Byte}"/> containing data to interpret as UTF-8.</param>
+        /// <returns>A standalone <see cref="Utf8String"/> instance containing the data copied from <paramref name="buffer"/>.</returns>
+        /// <remarks>
+        /// Any UTF-8 byte order mark ([EF BB BF]) at the start of <paramref name="buffer"/> will be copied to the returned <see cref="Utf8String"/> instance.
+        /// If <paramref name="buffer"/> contains ill-formed UTF-8 data, those ill-formed subsequences will be replaced with U+FFFD in the returned instance.
+        /// </remarks>
         public static Utf8String CreateRelaxed(ReadOnlySequence<byte> buffer)
         {
             return Utf8String.CreateRelaxed(SafeLength(buffer.Length), buffer, (span, buffer) =>
@@ -32,6 +55,17 @@ namespace System
             });
         }
 
+        /// <summary>
+        /// Given a <see cref="ReadOnlySequence{Byte}"/> that represents UTF-8 data,
+        /// creates a new <see cref="Utf8String"/> instance from that data.
+        /// </summary>
+        /// <param name="buffer">The <see cref="ReadOnlySequence{Byte}"/> containing data to interpret as UTF-8.</param>
+        /// <returns>A standalone <see cref="Utf8String"/> instance containing the data copied from <paramref name="buffer"/>.</returns>
+        /// <remarks>
+        /// The caller is responsible for ensuring that <paramref name="buffer"/> contains only well-formed UTF-8 data. The behavior of
+        /// this method or of any resulting <see cref="Utf8String"/> instance is undefined if the caller violates this invariant.
+        /// Any UTF-8 byte order mark ([EF BB BF]) at the start of <paramref name="buffer"/> will be copied to the returned <see cref="Utf8String"/> instance.
+        /// </remarks>
         public static Utf8String UnsafeCreateWithoutValidation(ReadOnlySequence<byte> buffer)
         {
             return Utf8String.UnsafeCreateWithoutValidation(SafeLength(buffer.Length), buffer, (span, buffer) =>
@@ -44,6 +78,17 @@ namespace System
          * Factories from files
          */
 
+        /// <summary>
+        /// Given a path to a file which contains UTF-8 text, creates a new <see cref="Utf8String"/> instance from the contents of that file.
+        /// </summary>
+        /// <param name="path">The path to the file whose contents should be read.</param>
+        /// <returns>A standalone <see cref="Utf8String"/> instance containing the data copied from <paramref name="path"/>.</returns>
+        /// <exception cref="ArgumentException">When <paramref name="path"/> is <see langword="null"/> or empty.</exception>
+        /// <remarks>
+        /// If the content of <paramref name="path"/> begins with the UTF-8 byte order mark ([EF BB BF]), those bytes will be stripped
+        /// from the returned <see cref="Utf8String"/> instance. If the content of <paramref name="path"/> contains ill-formed UTF-8 data,
+        /// this method will fail with an exception.
+        /// </remarks>
         public static Utf8String CreateFromFile(string path)
         {
             return CreateFromFileCommon(path, Utf8String.Create);
@@ -88,11 +133,34 @@ namespace System
             }
         }
 
+        /// <summary>
+        /// Given a path to a file which contains UTF-8 text, creates a new <see cref="Utf8String"/> instance from the contents of that file.
+        /// </summary>
+        /// <param name="path">The path to the file whose contents should be read.</param>
+        /// <returns>A standalone <see cref="Utf8String"/> instance containing the data copied from <paramref name="path"/>.</returns>
+        /// <exception cref="ArgumentException">When <paramref name="path"/> is <see langword="null"/> or empty.</exception>
+        /// <remarks>
+        /// If the content of <paramref name="path"/> begins with the UTF-8 byte order mark ([EF BB BF]), those bytes will be stripped
+        /// from the returned <see cref="Utf8String"/> instance. If the content of <paramref name="path"/> contains ill-formed UTF-8 data,
+        /// those ill-formed subsequences will be replaced with U+FFFD in the returned instance.
+        /// </remarks>
         public static unsafe Utf8String CreateFromFileRelaxed(string path)
         {
             return CreateFromFileCommon(path, Utf8String.CreateRelaxed);
         }
 
+        /// <summary>
+        /// Given a path to a file which contains UTF-8 text, creates a new <see cref="Utf8String"/> instance from the contents of that file.
+        /// </summary>
+        /// <param name="path">The path to the file whose contents should be read.</param>
+        /// <returns>A standalone <see cref="Utf8String"/> instance containing the data copied from <paramref name="path"/>.</returns>
+        /// <exception cref="ArgumentException">When <paramref name="path"/> is <see langword="null"/> or empty.</exception>
+        /// <remarks>
+        /// The caller is responsible for ensuring that the content of <paramref name="path"/> contains only well-formed UTF-8 data.
+        /// The behavior of this method or of any resulting <see cref="Utf8String"/> instance is undefined if the caller violates this invariant.
+        /// If the content of <paramref name="path"/> begins with the UTF-8 byte order mark ([EF BB BF]), those bytes will be stripped
+        /// from the returned <see cref="Utf8String"/> instance.
+        /// </remarks>
         public static Utf8String UnsafeCreateFromFileWithoutValidation(string path)
         {
             return CreateFromFileCommon(path, Utf8String.UnsafeCreateWithoutValidation);
