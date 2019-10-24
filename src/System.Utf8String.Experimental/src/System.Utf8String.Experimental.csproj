@@ -1,10 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <IsPartialFacadeAssembly>true</IsPartialFacadeAssembly>
-    <Configurations>netcoreapp-Unix-Debug;netcoreapp-Unix-Release;netcoreapp-Windows_NT-Debug;netcoreapp-Windows_NT-Release</Configurations>
+    <IsPartialFacadeAssembly Condition="'$(TargetGroup)' != 'netstandard' AND '$(TargetsNetFx)' != 'true'">true</IsPartialFacadeAssembly>
+    <!-- disable warnings about obsolete APIs and unused fields -->
+    <NoWarn>$(NoWarn);0809;0618</NoWarn>
+    <Configurations>netcoreapp-Unix-Debug;netcoreapp-Unix-Release;netcoreapp-Windows_NT-Debug;netcoreapp-Windows_NT-Release;netstandard-Debug;netstandard-Release</Configurations>
     <RootNamespace>System</RootNamespace>
     <Nullable>enable</Nullable>
+    <!-- Don't ship nullable attributes in public API surface -->
+    <DefineConstants>$(DefineConstants);INTERNAL_NULLABLE_ATTRIBUTES</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition="'$(IsPrerelease)' != 'false'">
     <Compile Include="System\Utf8StringExtensions.cs" />
@@ -12,7 +16,24 @@
     <Compile Include="System\IO\Utf8StringStream.cs" />
     <Compile Include="System\Net\Http\Utf8StringContent.cs" />
   </ItemGroup>
-  <ItemGroup>
+  <!-- Section below is specifically for netcoreapp -->
+  <ItemGroup Condition="'$(IsPrerelease)' != 'false' AND '$(TargetGroup)' != 'netstandard' AND '$(TargetsNetFx)' != 'true'">
+    <Compile Include="System\IO\Utf8StringStream.netcoreapp.cs" />
+    <Compile Include="System\Net\Http\Utf8StringContent.netcoreapp.cs" />
+  </ItemGroup>
+  <!-- Section below is for copied types which aren't part of netstandard. -->
+  <ItemGroup Condition="'$(IsPrerelease)' != 'false' AND ('$(TargetGroup)' == 'netstandard' OR '$(TargetsNetFx)' == 'true')">
+    <Compile Include="System\Dummies.cs" />
+    <Compile Include="System\SpanAction.cs" />
+    <Compile Include="System\IO\StreamExtensions.netstandard.cs" />
+    <Compile Include="System\IO\TextWriterExtensions.netstandard.cs" />
+    <Compile Include="System\IO\Utf8StringStream.netstandard.cs" />
+    <Compile Include="System\Net\Http\Utf8StringContent.netstandard.cs" />
+    <Compile Include="$(CommonPath)\CoreLib\System\Diagnostics\CodeAnalysis\NullableAttributes.cs">
+      <Link>Common\CoreLib\System\Diagnostics\CodeAnalysis\NullableAttributes.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetGroup)' != 'netstandard' AND '$(TargetsNetFx)' != 'true'">
     <ReferenceFromRuntime Include="System.Private.CoreLib" />
     <Reference Include="System.Memory">
       <!--
@@ -25,5 +46,11 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Primitives" />
     <ProjectReference Include="..\..\System.Runtime\src\System.Runtime.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetGroup)' == 'netstandard' OR '$(TargetsNetFx)' == 'true'">
+    <Reference Include="netstandard" />
+    <Reference Include="System.Buffers" />
+    <Reference Include="System.Memory" />
+    <Reference Include="System.Threading.Tasks.Extensions" />
   </ItemGroup>
 </Project>

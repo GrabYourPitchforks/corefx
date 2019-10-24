@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace System.IO
 {
-    internal sealed class Utf8StringStream : Stream
+    internal sealed partial class Utf8StringStream : Stream
     {
         private readonly Utf8String _content;
         private int _position;
@@ -60,28 +60,9 @@ namespace System.IO
             return Read(new Span<byte>(buffer, offset, count));
         }
 
-        public override int Read(Span<byte> buffer)
-        {
-            ReadOnlySpan<byte> contentToWrite = _content.AsBytes(_position);
-            if (buffer.Length < contentToWrite.Length)
-            {
-                contentToWrite = contentToWrite.Slice(buffer.Length);
-            }
-
-            contentToWrite.CopyTo(buffer);
-            _position += contentToWrite.Length;
-
-            return contentToWrite.Length;
-        }
-
         public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             return Task.FromResult(Read(new Span<byte>(buffer, offset, count)));
-        }
-
-        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
-        {
-            return new ValueTask<int>(Read(buffer.Span));
         }
 
         public override int ReadByte()
@@ -125,11 +106,7 @@ namespace System.IO
 
         public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
 
-        public override void Write(ReadOnlySpan<byte> buffer) => throw new NotSupportedException();
-
         public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => throw new NotSupportedException();
-
-        public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default) => throw new NotSupportedException();
 
         public override void WriteByte(byte value) => throw new NotSupportedException();
     }

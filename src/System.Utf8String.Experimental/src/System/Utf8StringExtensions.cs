@@ -35,7 +35,7 @@ namespace System
                 throw new ArgumentNullException(nameof(writer));
             }
 
-             // TODO_UTF8STRING: Call the proper non-allocating overload when it comes online.
+            // TODO_UTF8STRING: Call the proper non-allocating overload when it comes online.
 
             writer.Write(buffer.ToString());
         }
@@ -64,14 +64,14 @@ namespace System
             writer.WriteLine(value?.ToString());
         }
 
-         public static void WriteLine(this TextWriter writer, Utf8Span buffer)
+        public static void WriteLine(this TextWriter writer, Utf8Span buffer)
         {
             if (writer is null)
             {
                 throw new ArgumentNullException(nameof(writer));
             }
 
-             // TODO_UTF8STRING: Call the proper non-allocating overload when it comes online.
+            // TODO_UTF8STRING: Call the proper non-allocating overload when it comes online.
 
             writer.WriteLine(buffer.ToString());
         }

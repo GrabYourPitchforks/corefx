@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Http
 {
-    public sealed class Utf8StringContent : HttpContent
+    public sealed partial class Utf8StringContent : HttpContent
     {
         private const string DefaultMediaType = "text/plain";
 
@@ -42,11 +42,6 @@ namespace System.Net.Http
         protected override Task<Stream> CreateContentReadStreamAsync()
         {
             return Task.FromResult<Stream>(new Utf8StringStream(_content));
-        }
-
-        protected override Task SerializeToStreamAsync(Stream stream, TransportContext context)
-        {
-            return stream.WriteAsync(_content.AsMemoryBytes()).AsTask();
         }
 
         protected override bool TryComputeLength(out long length)

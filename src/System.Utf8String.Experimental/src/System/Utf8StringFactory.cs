@@ -2,11 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#if NETCOREAPP
 extern alias System_Memory; // for accessing ReadOnlySequence<T>
+using System_Memory::System.Buffers;
+#endif
 
 using System.Buffers;
 using System.IO;
-using System_Memory::System.Buffers;
 
 namespace System
 {
