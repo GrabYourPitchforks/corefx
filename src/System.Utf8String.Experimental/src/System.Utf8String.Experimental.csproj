@@ -23,14 +23,63 @@
   </ItemGroup>
   <!-- Section below is for copied types which aren't part of netstandard. -->
   <ItemGroup Condition="'$(IsPrerelease)' != 'false' AND ('$(TargetGroup)' == 'netstandard' OR '$(TargetsNetFx)' == 'true')">
-    <Compile Include="System\Dummies.cs" />
-    <Compile Include="System\SpanAction.cs" />
+    <Compile Include="System\Dummies.netstandard.cs" />
+    <Compile Include="System\HashCode.netstandard.cs" />
+    <Compile Include="System\Index.netstandard.cs" />
+    <Compile Include="System\nuint.netstandard.cs" />
+    <Compile Include="System\Range.netstandard.cs" />
+    <Compile Include="System\ThrowHelper.netstandard.cs" />
+    <Compile Include="System\Utf8String.netstandard.cs" />
+    <Compile Include="System\Utf8String.Comparison.netstandard.cs" />
+    <Compile Include="System\Utf8String.Construction.netstandard.cs" />
+    <Compile Include="System\Utf8String.Conversion.netstandard.cs" />
+    <Compile Include="System\Utf8String.Enumeration.netstandard.cs" />
+    <Compile Include="System\Utf8String.Manipulation.netstandard.cs" />
+    <Compile Include="System\Utf8String.Searching.netstandard.cs" />
+    <Compile Include="System\Utf8StringSplitOptions.netstandard.cs" />
+    <Compile Include="System\Buffers\SpanAction.netstandard.cs" />
     <Compile Include="System\IO\StreamExtensions.netstandard.cs" />
     <Compile Include="System\IO\TextWriterExtensions.netstandard.cs" />
     <Compile Include="System\IO\Utf8StringStream.netstandard.cs" />
     <Compile Include="System\Net\Http\Utf8StringContent.netstandard.cs" />
+    <Compile Include="System\Numerics\BitOperations.netstandard.cs" />
+    <Compile Include="System\Text\ASCIIUtility.netstandard.cs" />
+    <Compile Include="System\Text\ASCIIUtility.Helpers.netstandard.cs" />
+    <Compile Include="System\Text\EncodingExtensions.netstandard.cs" />
+    <Compile Include="System\Text\Rune.netstandard.cs" />
+    <Compile Include="System\Text\Utf8Segment.netstandard.cs" />
+    <Compile Include="System\Text\Utf8Span.netstandard.cs" />
+    <Compile Include="System\Text\Utf8Span.Comparison.netstandard.cs" />
+    <Compile Include="System\Text\Utf8Span.Conversion.netstandard.cs" />
+    <Compile Include="System\Text\Utf8Span.Enumeration.netstandard.cs" />
+    <Compile Include="System\Text\Utf8Span.Manipulation.netstandard.cs" />
+    <Compile Include="System\Text\Utf8Span.Searching.netstandard.cs" />
+    <Compile Include="System\Text\Utf8StringComparer.netstandard.cs" />
+    <Compile Include="System\Text\Unicode\Utf16Utility.netstandard.cs" />
+    <Compile Include="System\Text\Unicode\Utf16Utility.Validation.netstandard.cs" />
+    <Compile Include="System\Text\Unicode\Utf8.netstandard.cs" />
+    <Compile Include="System\Text\Unicode\Utf8Utility.netstandard.cs" />
+    <Compile Include="System\Text\Unicode\Utf8Utility.Helpers.netstandard.cs" />
+    <Compile Include="System\Text\Unicode\Utf8Utility.Transcoding.netstandard.cs" />
+    <Compile Include="System\Text\Unicode\Utf8Utility.Validation.netstandard.cs" />
+    <Compile Include="System\Text\Unicode\Utf8Utility.WhiteSpace.netstandard.cs" />
+    <Compile Include="$(CommonPath)\System\Marvin.cs">
+      <Link>Common\System\Marvin.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\CoreLib\System\Diagnostics\StackTraceHiddenAttribute.cs">
+      <Link>Common\CoreLib\System\Diagnostics\StackTraceHiddenAttribute.cs</Link>
+    </Compile>
     <Compile Include="$(CommonPath)\CoreLib\System\Diagnostics\CodeAnalysis\NullableAttributes.cs">
       <Link>Common\CoreLib\System\Diagnostics\CodeAnalysis\NullableAttributes.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\CoreLib\System\Text\TrimType.cs">
+      <Link>Common\CoreLib\System\Text\TrimType.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\CoreLib\System\Text\UnicodeDebug.cs">
+      <Link>Common\CoreLib\System\Text\UnicodeDebug.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\CoreLib\System\Text\UnicodeUtility.cs">
+      <Link>Common\CoreLib\System\Text\UnicodeUtility.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup Condition="'$(TargetGroup)' != 'netstandard' AND '$(TargetsNetFx)' != 'true'">
@@ -51,6 +100,8 @@
     <Reference Include="netstandard" />
     <Reference Include="System.Buffers" />
     <Reference Include="System.Memory" />
+    <Reference Include="System.Numerics.Vectors" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe" />
     <Reference Include="System.Threading.Tasks.Extensions" />
   </ItemGroup>
 </Project>

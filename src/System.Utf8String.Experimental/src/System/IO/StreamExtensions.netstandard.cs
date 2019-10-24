@@ -16,5 +16,13 @@ namespace System.IO
             ArrayPool<byte>.Shared.Return(rented);
             return read;
         }
+
+        public static void Write(this Stream stream, ReadOnlySpan<byte> buffer)
+        {
+            byte[] rented = ArrayPool<byte>.Shared.Rent(buffer.Length);
+            buffer.CopyTo(rented);
+            stream.Write(rented, 0, buffer.Length);
+            ArrayPool<byte>.Shared.Return(rented);
+        }
     }
 }

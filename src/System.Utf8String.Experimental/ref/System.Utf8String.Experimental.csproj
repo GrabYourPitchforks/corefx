@@ -12,6 +12,9 @@
   <ItemGroup Condition="'$(IsPrerelease)' != 'false'">
     <Compile Include="System.Utf8String.Experimental.cs" />
   </ItemGroup>
+  <ItemGroup Condition="'$(IsPrerelease)' != 'false' AND '$(TargetGroup)' != 'netstandard' AND '$(TargetsNetFx)' != 'true'">
+    <Compile Include="System.Utf8String.Experimental.netcoreapp.cs" />
+  </ItemGroup>
   <ItemGroup Condition="'$(IsPrerelease)' != 'false' AND ('$(TargetGroup)' == 'netstandard' OR '$(TargetsNetFx)' == 'true')">
     <Compile Include="System.Utf8String.Experimental.netstandard.cs" />
     <!-- Common or Common-branched source files -->
