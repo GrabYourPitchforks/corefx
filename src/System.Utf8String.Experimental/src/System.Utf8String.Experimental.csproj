@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <IsPartialFacadeAssembly Condition="'$(TargetGroup)' != 'netstandard' AND '$(TargetsNetFx)' != 'true'">true</IsPartialFacadeAssembly>
+    <IsPartialFacadeAssembly Condition="'$(TargetsNetCoreApp)' == 'true'">true</IsPartialFacadeAssembly>
     <!-- disable warnings about obsolete APIs and unused fields -->
     <NoWarn>$(NoWarn);0809;0618</NoWarn>
-    <Configurations>netcoreapp-Unix-Debug;netcoreapp-Unix-Release;netcoreapp-Windows_NT-Debug;netcoreapp-Windows_NT-Release;netstandard-Debug;netstandard-Release</Configurations>
+    <Configurations>netcoreapp-Unix-Debug;netcoreapp-Unix-Release;netcoreapp-Windows_NT-Debug;netcoreapp-Windows_NT-Release;netstandard2.0-Debug;netstandard2.0-Release</Configurations>
     <RootNamespace>System</RootNamespace>
     <Nullable>enable</Nullable>
     <!-- Don't ship nullable attributes in public API surface -->
@@ -17,12 +17,12 @@
     <Compile Include="System\Net\Http\Utf8StringContent.cs" />
   </ItemGroup>
   <!-- Section below is specifically for netcoreapp -->
-  <ItemGroup Condition="'$(IsPrerelease)' != 'false' AND '$(TargetGroup)' != 'netstandard' AND '$(TargetsNetFx)' != 'true'">
+  <ItemGroup Condition="'$(IsPrerelease)' != 'false' AND '$(TargetsNetCoreApp)' == 'true'">
     <Compile Include="System\IO\Utf8StringStream.netcoreapp.cs" />
     <Compile Include="System\Net\Http\Utf8StringContent.netcoreapp.cs" />
   </ItemGroup>
   <!-- Section below is for copied types which aren't part of netstandard. -->
-  <ItemGroup Condition="'$(IsPrerelease)' != 'false' AND ('$(TargetGroup)' == 'netstandard' OR '$(TargetsNetFx)' == 'true')">
+  <ItemGroup Condition="'$(IsPrerelease)' != 'false' AND '$(TargetsNetCoreApp)' != 'true'">
     <Compile Include="System\Dummies.netstandard.cs" />
     <Compile Include="System\HashCode.netstandard.cs" />
     <Compile Include="System\Index.netstandard.cs" />
@@ -82,7 +82,7 @@
       <Link>Common\CoreLib\System\Text\UnicodeUtility.cs</Link>
     </Compile>
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetGroup)' != 'netstandard' AND '$(TargetsNetFx)' != 'true'">
+  <ItemGroup Condition="'$(TargetsNetCoreApp)' == 'true'">
     <ReferenceFromRuntime Include="System.Private.CoreLib" />
     <Reference Include="System.Memory">
       <!--
@@ -96,7 +96,7 @@
     <Reference Include="System.Net.Primitives" />
     <ProjectReference Include="..\..\System.Runtime\src\System.Runtime.csproj" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetGroup)' == 'netstandard' OR '$(TargetsNetFx)' == 'true'">
+  <ItemGroup Condition="'$(TargetsNetCoreApp)' != 'true'">
     <Reference Include="netstandard" />
     <Reference Include="System.Buffers" />
     <Reference Include="System.Memory" />

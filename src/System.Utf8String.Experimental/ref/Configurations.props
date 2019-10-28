@@ -3,7 +3,7 @@
   <PropertyGroup>
     <BuildConfigurations>
       netcoreapp;
-      netstandard;
+      netstandard2.0;
     </BuildConfigurations>
   </PropertyGroup>
 </Project>

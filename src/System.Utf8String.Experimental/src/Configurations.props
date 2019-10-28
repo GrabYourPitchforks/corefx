@@ -4,7 +4,7 @@
     <BuildConfigurations>
       netcoreapp-Windows_NT;
       netcoreapp-Unix;
-      netstandard;
+      netstandard2.0;
     </BuildConfigurations>
   </PropertyGroup>
 </Project>
