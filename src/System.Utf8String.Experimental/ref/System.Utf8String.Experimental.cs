@@ -513,6 +513,27 @@ namespace System.Text
 }
 namespace System.Text.Unicode
 {
+    public static class Ascii
+    {
+        public static bool ContainsIgnoreCase(System.ReadOnlySpan<byte> span, System.ReadOnlySpan<byte> value) { throw null; }
+        public static bool EndsWithIgnoreCase(System.ReadOnlySpan<byte> span, System.ReadOnlySpan<byte> value) { throw null; }
+        public static bool EqualsIgnoreCase(System.ReadOnlySpan<byte> left, System.ReadOnlySpan<byte> right) { throw null; }
+        public static int GetIndexOfFirstNonAsciiByte(System.ReadOnlySpan<byte> span) { throw null; }
+        public static int IndexOfIgnoreCase(System.ReadOnlySpan<byte> span, System.ReadOnlySpan<byte> value) { throw null; }
+        public static int IndexOfLastIgnoreCase(System.ReadOnlySpan<byte> span, System.ReadOnlySpan<byte> value) { throw null; }
+        public static bool IsAllAscii(System.ReadOnlySpan<byte> span) { throw null; }
+        public static bool StartsWithIgnoreCase(System.ReadOnlySpan<byte> span, System.ReadOnlySpan<byte> value) { throw null; }
+        public static int ToLowerInvariant(System.ReadOnlySpan<byte> source, System.Span<byte> destination) { throw null; }
+        public static void ToLowerInvariantInPlace(System.Span<byte> span) { throw null; }
+        public static int ToUpperInvariant(System.ReadOnlySpan<byte> source, System.Span<byte> destination) { throw null; }
+        public static void ToUpperInvariantInPlace(System.Span<byte> span) { throw null; }
+        public static System.ReadOnlySpan<byte> Trim(System.ReadOnlySpan<byte> span) { throw null; }
+        public static System.Span<byte> Trim(System.Span<byte> span) { throw null; }
+        public static System.ReadOnlySpan<byte> TrimEnd(System.ReadOnlySpan<byte> span) { throw null; }
+        public static System.Span<byte> TrimEnd(System.Span<byte> span) { throw null; }
+        public static System.ReadOnlySpan<byte> TrimStart(System.ReadOnlySpan<byte> span) { throw null; }
+        public static System.Span<byte> TrimStart(System.Span<byte> span) { throw null; }
+    }
     public static partial class TR29Utility
     {
         public static int GetLengthOfFirstUtf16ExtendedGraphemeCluster(System.ReadOnlySpan<char> input) { throw null; }
