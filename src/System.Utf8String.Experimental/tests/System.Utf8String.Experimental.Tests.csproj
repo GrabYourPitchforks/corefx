@@ -40,8 +40,9 @@
     <Compile Include="System\Utf8StringTests.Enumeration.cs" />
     <Compile Include="System\Utf8StringTests.Manipulation.cs" />
     <Compile Include="System\Utf8StringTests.Searching.cs" />
-    <Compile Include="Xunit\SpanAssert.cs" />
     <Compile Include="System\Utf8TestUtilities.cs" />
+    <Compile Include="System\Text\Unicode\AsciiTests.cs" />
+    <Compile Include="Xunit\SpanAssert.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(CommonTestPath)\Data\emoji-data-12.0.txt">
