@@ -284,14 +284,17 @@ namespace System.Net
     {
         public NetworkCredential() { }
         [System.CLSCompliantAttribute(false)]
+        [System.ObsoleteAttribute("OBSOLETE_SECURESTRING_MESSAGE")]
         public NetworkCredential(string userName, System.Security.SecureString password) { }
         [System.CLSCompliantAttribute(false)]
+        [System.ObsoleteAttribute("OBSOLETE_SECURESTRING_MESSAGE")]
         public NetworkCredential(string userName, System.Security.SecureString password, string domain) { }
         public NetworkCredential(string userName, string password) { }
         public NetworkCredential(string userName, string password, string domain) { }
         public string Domain { get { throw null; } set { } }
         public string Password { get { throw null; } set { } }
         [System.CLSCompliantAttribute(false)]
+        [System.ObsoleteAttribute("OBSOLETE_SECURESTRING_MESSAGE")]
         public System.Security.SecureString SecurePassword { get { throw null; } set { } }
         public string UserName { get { throw null; } set { } }
         public System.Net.NetworkCredential GetCredential(string host, int port, string authenticationType) { throw null; }

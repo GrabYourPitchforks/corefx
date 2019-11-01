@@ -119,8 +119,10 @@ namespace System.Diagnostics
         public static System.Diagnostics.Process Start(string fileName) { throw null; }
         public static System.Diagnostics.Process Start(string fileName, string arguments) { throw null; }
         [System.CLSCompliantAttribute(false)]
+        [System.ObsoleteAttribute("OBSOLETE_SECURESTRING_MESSAGE")]
         public static System.Diagnostics.Process Start(string fileName, string userName, System.Security.SecureString password, string domain) { throw null; }
         [System.CLSCompliantAttribute(false)]
+        [System.ObsoleteAttribute("OBSOLETE_SECURESTRING_MESSAGE")]
         public static System.Diagnostics.Process Start(string fileName, string arguments, string userName, System.Security.SecureString password, string domain) { throw null; }
         public override string ToString() { throw null; }
         public void WaitForExit() { }
@@ -174,6 +176,7 @@ namespace System.Diagnostics
         public string FileName { get { throw null; } set { } }
         public bool LoadUserProfile { get { throw null; } set { } }
         [System.CLSCompliantAttribute(false)]
+        [System.ObsoleteAttribute("OBSOLETE_SECURESTRING_MESSAGE")]
         public System.Security.SecureString Password { get { throw null; } set { } }
         public string PasswordInClearText { get { throw null; } set { } }
         public bool RedirectStandardError { get { throw null; } set { } }
