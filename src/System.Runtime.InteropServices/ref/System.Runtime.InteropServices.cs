@@ -1753,6 +1753,7 @@ namespace System.Runtime.InteropServices.ComTypes
 }
 namespace System.Security
 {
+    [System.ObsoleteAttribute("OBSOLETE_SECURESTRING_MESSAGE")]
     public sealed partial class SecureString : System.IDisposable
     {
         public SecureString() { }
