@@ -468,6 +468,7 @@ namespace System.Data.SqlClient
         public System.Data.SqlClient.SqlTransaction BeginTransaction(System.Data.IsolationLevel iso, string transactionName) { throw null; }
         public System.Data.SqlClient.SqlTransaction BeginTransaction(string transactionName) { throw null; }
         public override void ChangeDatabase(string database) { }
+        [System.ObsoleteAttribute("OBSOLETE_SECURESTRING_MESSAGE")]
         public static void ChangePassword(string connectionString, System.Data.SqlClient.SqlCredential credential, System.Security.SecureString newPassword) { }
         public static void ChangePassword(string connectionString, string newPassword) { }
         public static void ClearAllPools() { }
@@ -528,7 +529,9 @@ namespace System.Data.SqlClient
     }
     public sealed partial class SqlCredential
     {
+        [System.ObsoleteAttribute("OBSOLETE_SECURESTRING_MESSAGE")]
         public SqlCredential(string userId, System.Security.SecureString password) { }
+        [System.ObsoleteAttribute("OBSOLETE_SECURESTRING_MESSAGE")]
         public System.Security.SecureString Password { get { throw null; } }
         public string UserId { get { throw null; } }
     }

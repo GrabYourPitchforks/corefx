@@ -5,5 +5,7 @@
 // Changes to this file must follow the http://aka.ms/api-review process.
 // ------------------------------------------------------------------------------
 
+#pragma warning disable 0618 // SecureString is obsolete
+
 [assembly: System.Runtime.CompilerServices.TypeForwardedTo(typeof(System.Security.SecureString))]
 [assembly: System.Runtime.CompilerServices.TypeForwardedTo(typeof(System.Security.SecureStringMarshal))]
