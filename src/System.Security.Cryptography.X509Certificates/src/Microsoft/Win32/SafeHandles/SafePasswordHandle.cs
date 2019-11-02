@@ -22,7 +22,9 @@ namespace Microsoft.Win32.SafeHandles
             }
         }
 
+#pragma warning disable 0618 // SecureString is obsolete
         public SafePasswordHandle(SecureString password)
+#pragma warning restore 0618
             : base(IntPtr.Zero, ownsHandle: true)
         {
             if (password != null)

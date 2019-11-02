@@ -5,6 +5,8 @@
 using System.Runtime.InteropServices;
 using System.Security;
 
+#pragma warning disable 0618 // SecureString is obsolete
+
 namespace System.Net
 {
     /// <devdoc>

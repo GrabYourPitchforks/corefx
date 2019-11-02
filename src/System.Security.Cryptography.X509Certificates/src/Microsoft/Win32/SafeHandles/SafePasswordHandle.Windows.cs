@@ -15,10 +15,12 @@ namespace Microsoft.Win32.SafeHandles
             return Marshal.StringToHGlobalUni(password);
         }
 
+#pragma warning disable 0618 // SecureString is obsolete
         private IntPtr CreateHandle(SecureString password)
         {
             return Marshal.SecureStringToGlobalAllocUnicode(password);
         }
+#pragma warning restore 0618
 
         private void FreeHandle()
         {
